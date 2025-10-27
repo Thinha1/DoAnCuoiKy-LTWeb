@@ -1,0 +1,171 @@
+
+      body {
+        background-color: #fff; /* Nền trắng */
+        color: #000; /* Chữ đen */
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      /* --- Dòng đầu tiên --- */
+      .top-bar {
+        padding: 8px 0;
+        background-color: #f5f5f5; /* Màu xám nhạt để tách nhẹ với nền */
+        font-size: 14px;
+      }
+      .top-bar a {
+        color: #000;
+        text-decoration: none;
+        margin-left: 15px;
+      }
+      .top-bar a:hover {
+        color: #007bff; /* Màu xanh khi rê chuột */
+      }
+
+      /* --- Dropdown tài khoản --- */
+      .account-menu {
+        position: relative;
+        display: inline-block;
+      }
+      .account-dropdown {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        min-width: 140px;
+        right: 0;
+        z-index: 10;
+      }
+      .account-dropdown a {
+        color: #000;
+        padding: 8px 12px;
+        display: block;
+        text-decoration: none;
+      }
+      .account-dropdown a:hover {
+        background-color: #f0f0f0;
+      }
+      .account-menu:hover .account-dropdown {
+        display: block;
+      }
+
+      /* --- Dòng thứ 2: logo + search + icons --- */
+      .logo-row {
+        align-items: center;
+        padding: 20px 0;
+      }
+      .search-box {
+        display: flex;
+        align-items: center;
+        background-color: #f5f5f5;
+        border-radius: 30px;
+        overflow: hidden;
+        width: 100%;
+        max-width: 300px;
+      }
+      .search-box input {
+        border: none;
+        outline: none;
+        padding: 8px 12px;
+        flex: 1;
+        background-color: transparent;
+        color: #000;
+      }
+      .search-box button {
+        background-color: transparent;
+        border: none;
+        padding: 8px 12px;
+        color: #000;
+      }
+
+      /* --- Navbar (menu ngang) --- */
+      .navbar {
+        background-color: #fff !important;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .navbar a {
+        color: #000 !important;
+      }
+      .navbar a:hover {
+        color: #007bff !important;
+      }
+      .dropdown-menu {
+        background-color: #fff;
+        border: 1px solid #ddd;
+      }
+      .dropdown-menu a {
+        color: #000 !important;
+      }
+      .dropdown-menu a:hover {
+        background-color: #f0f0f0;
+      }
+      /* --- Hotline dòng 4 --- */
+      .hotline-banner {
+        text-align: center;
+        background-color: #f0f0f0;
+        padding: 10px 0;
+        font-weight: bold;
+      }
+
+      /* --- Carousel --- */
+      .carousel-item img {
+        height: 400px;
+        object-fit: cover;
+      }
+
+      /* --- Footer --- */
+      footer {
+        background-color: #111;
+        color: #f0f0f0;
+        padding: 30px 0;
+        text-align: center;
+      }
+      .footer-columns {
+        margin-top: 20px;
+      }
+      .footer-columns .col {
+        padding: 10px;
+      }
+      a.footer-link {
+        color: white;
+        text-decoration: underline;
+      }
+      .fixed-bottom-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #c2185b; /* Hồng đậm */
+        color: white;
+        display: flex;
+        justify-content: center; /* căn giữa toàn bộ nhóm */
+        align-items: center;
+        padding: 10px 0;
+        z-index: 1000;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .contact-group {
+        display: flex;
+        gap: 40px; /* khoảng cách giữa 3 mục */
+      }
+
+      .contact-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .contact-item:hover {
+        transform: scale(1.1);
+      }
+
+      .contact-item i {
+        font-size: 20px;
+        margin-bottom: 3px;
+      }

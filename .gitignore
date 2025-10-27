@@ -1,0 +1,22 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build folders
+bin/
+obj/
+Debug/
+Release/
+
+# IIS
+*.vspscc
+*.vssscc
+*.dbmdl
+
+# Others
+*.log
+*.cache
+*.config
+*.tmp
+*.bak
