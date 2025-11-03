@@ -409,3 +409,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /Scripts
+/packages
