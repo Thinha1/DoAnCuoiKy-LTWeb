@@ -1,0 +1,9 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Action("_DiscountingProducts", "Product")
+@Html.Action("_MostOrderedProducts", "Product")
+

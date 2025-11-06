@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="693407318c92495393e800f5b28c4454" Name="Diagram1">
+        <EntityTypeShape EntityType="QLBANHOAModel.Discount" Width="1.5" PointX="3" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.OrderDetail" Width="1.5" PointX="6" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Order" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Product" Width="1.5" PointX="0.75" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ProductType" Width="1.5" PointX="1.5" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Role" Width="1.5" PointX="1.5" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCart" Width="1.5" PointX="3.75" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCartItem" Width="1.5" PointX="6" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.User" Width="1.5" PointX="1.5" PointY="10" IsExpanded="true" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Discount_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_OrderDetail_OrderID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_OrderDetail_ProductID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Orders_UserID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Product_Type" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_ShoppingCartItem_ProductID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_ProductType" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Users_RoleID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_ShoppingCart_UserID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_ShoppingCartItem_ShoppingCartID" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

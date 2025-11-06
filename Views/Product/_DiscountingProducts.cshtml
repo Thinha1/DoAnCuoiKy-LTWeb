@@ -1,0 +1,46 @@
+﻿@model  List<WebBanHoa.Models.Product>
+
+<link href="~/Content/css/card_product.css" rel="stylesheet" />
+    <h2 class="mb-4 mt-4 text-center">ĐANG GIẢM GIÁ</h2>
+<div class="row" style="margin-top: 10px">
+
+    @foreach (var sp in Model)
+    {
+        <div class="col-md-3 col-sm-6 col-xs-6 mb-4">
+            <div class="product-card">
+
+                <div class="product-image-container">
+                    <img src="@Url.Content("~/Content/Images/" + sp.Image)" alt="@sp.ProductName" class="img-fluid" />
+
+                    <div class="sale-badge">
+                        GIẢM @sp.Discounts.FirstOrDefault().DiscountRate%
+                    </div>
+                </div>
+
+                <div class="product-info text-center">
+                    <h5 class="product-name">@sp.ProductName</h5>
+                    @{
+                        decimal? salePrice;
+                        var discount = sp.Discounts.FirstOrDefault();
+                        if (discount != null)
+                        {
+                            salePrice = sp.Price - (sp.Price * (decimal)discount.DiscountRate/100);
+                        }
+                        else
+                        {
+                            salePrice = sp.Price;
+                        }
+
+                        <div class="product-price">
+                            <span class="price-sale">@String.Format("{0:N0}", salePrice) VNĐ</span>
+                            <span class="price-original">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                        </div>
+                    }
+
+                    <a href="#" class="btn btn-order">ĐẶT HÀNG</a>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
