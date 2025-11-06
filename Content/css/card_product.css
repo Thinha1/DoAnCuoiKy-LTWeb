@@ -1,0 +1,96 @@
+﻿/* CSS tùy chỉnh */
+body {
+	background-color: #f8f9fa; /* Màu nền xám nhạt */
+	padding: 40px;
+	font-family: Montserrat, sans-serif;
+}
+
+.product-card {
+	background-color: #fff;
+	border: 1px solid #eee;
+	border-radius: 8px;
+	overflow: hidden; /* Đảm bảo ảnh bo góc theo card */
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+	transition: box-shadow 0.3s ease;
+}
+
+	.product-card:hover {
+		box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+	}
+
+/* Container cho ảnh để định vị nhãn giảm giá */
+.product-image-container {
+	position: relative;
+}
+
+/* Nhãn giảm giá */
+.sale-badge {
+	position: absolute;
+	top: 10px;
+	right: 15px;
+	background-color: #e74c3c; /* Màu đỏ */
+	color: white;
+	width: 65px; /* Kích thước hình tròn */
+	height: 65px;
+	border-radius: 50%; /* Biến thành hình tròn */
+	/* Dùng Flexbox để căn chữ vào giữa */
+	display: flex;
+	flex-direction: column; /* Xếp chữ theo chiều dọc */
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 1.2;
+	text-align: center;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+	overflow: hidden;
+}
+
+/* Phần thông tin sản phẩm */
+.product-info {
+	padding: 20px;
+}
+
+/* Tên sản phẩm */
+.product-name {
+	font-size: 1.15rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 12px;
+	/* Tên "Nồng Nàn Tình Yêu" đã được căn giữa bằng text-center */
+}
+
+/* Phần giá */
+.product-price {
+	margin-bottom: 20px;
+}
+
+.price-sale {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #e91e63; /* Màu hồng/đỏ của giá */
+	margin-right: 8px;
+}
+
+.price-original {
+	font-size: 0.95rem;
+	color: #999;
+	text-decoration: line-through; /* Kiểu gạch ngang */
+}
+
+/* Nút Đặt Hàng */
+.btn-order {
+	background-color: #e91e63; /* Màu hồng như hình */
+	color: white;
+	font-weight: bold;
+	border-radius: 5px;
+	padding: 10px 24px;
+	text-transform: uppercase; /* In hoa chữ */
+	transition: background-color 0.3s ease;
+	border: none;
+}
+
+	.btn-order:hover {
+		background-color: #c2185b; /* Màu hồng đậm hơn khi hover */
+		color: white;
+	}

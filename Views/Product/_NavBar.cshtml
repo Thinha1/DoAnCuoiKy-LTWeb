@@ -1,0 +1,26 @@
+﻿@model List<WebBanHoa.Models.ProductType>
+
+@foreach (var lsp in Model)
+{
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle"
+               href="#"
+               data-bs-toggle="dropdown">@lsp.ProductTypeName</a>
+            @{
+                if (lsp.ProductType1 != null && lsp.ProductType1.Any())
+                {
+
+                    <ul class="dropdown-menu">
+                        @foreach (var con in lsp.ProductType1)
+                        {
+                            <li><a class="dropdown-item" href="#">@con.ProductTypeName</a></li>
+                        }
+                    </ul>
+                }
+            }
+
+
+        </li>
+    </ul>
+}

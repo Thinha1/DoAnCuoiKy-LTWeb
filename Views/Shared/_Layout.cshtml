@@ -46,7 +46,7 @@
 
         <!-- Cột 2 -->
         <div class="col-8">
-            <img src="https://via.placeholder.com/300x100?text=LOGO"
+            <img src="~/Content/Images/logo/logo-flower-corner-horizontal.jpg"
                  alt="Logo"
                  class="img-fluid" />
         </div>
@@ -66,30 +66,7 @@
     <!-- Dòng 3: Menu ngang -->
     <nav class="navbar navbar-expand-lg">
         <div class="container justify-content-center">
-            <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle"
-                       href="#"
-                       data-bs-toggle="dropdown">Hoa Sinh Nhật</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Hoa Sinh Nhật</a></li>
-                        <li>
-                            <a class="dropdown-item" href="#">Lẵng Hoa Tặng Sinh Nhật</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Hoa Hồng Tặng Sinh Nhật</a>
-                        </li>
-                        <li><a class="dropdown-item" href="#">Giỏ Hoa Sinh Nhật</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Hoa Khai Trương</a>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="#">Lan Hồ Điệp</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Chủ Đề</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Thiết Kế</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Hoa Tươi</a></li>
-            </ul>
+            @Html.Action("_NavBar", "Product")
         </div>
     </nav>
 
@@ -101,31 +78,13 @@
     <!-- Dòng 5: Carousel -->
     <div id="carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="#"
+            @for(int i = 1; i <= 4; i++) {
+            <div class="carousel-item @(i == 1 ? "active" : "")">
+                <img src="@Url.Content("~/Content/Images/Banner/banner_" + i + ".jpg")" 
                      class="d-block w-100"
                      alt="" />
             </div>
-            <div class="carousel-item">
-                <img src="#"
-                     class="d-block w-100"
-                     alt="" />
-            </div>
-            <div class="carousel-item">
-                <img src="#"
-                     class="d-block w-100"
-                     alt="" />
-            </div>
-            <div class="carousel-item">
-                <img src="#"
-                     class="d-block w-100"
-                     alt="" />
-            </div>
-            <div class="carousel-item">
-                <img src="#"
-                     class="d-block w-100"
-                     alt="" />
-            </div>
+            }
         </div>
         <button class="carousel-control-prev"
                 type="button"
