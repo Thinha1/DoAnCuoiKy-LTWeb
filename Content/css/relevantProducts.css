@@ -1,0 +1,55 @@
+﻿<style >
+body {
+    background-color: #f8f9fa; /* Màu nền xám nhạt */
+}
+
+/* Tùy chỉnh màu nút "Đặt Hàng" */
+.btn-custom-pink {
+    background-color: #e73685; /* Màu hồng/magenta giống trong hình */
+    color: #fff;
+    border: none;
+    font-weight: bold;
+}
+
+    .btn-custom-pink:hover {
+        background-color: #c92a70; /* Màu đậm hơn khi hover */
+        color: #fff;
+    }
+
+/* Đảm bảo tất cả hình ảnh có cùng chiều cao và không bị méo */
+.card-img-top {
+    width: 100%;
+    height: 300px; /* Bạn có thể điều chỉnh chiều cao này */
+    object-fit: cover; /* Cắt ảnh vừa vặn, không làm méo */
+}
+
+/* Tùy chỉnh card */
+.product-card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+    }
+
+/* Đảm bảo khối giá có chiều cao cố định để nút bấm được căn đều */
+.price-text {
+    min-height: 2.2rem; /* Đủ chỗ cho 2 dòng giá (nếu có sale) */
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.product-title a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+    .product-title a:hover {
+        color: #e73685;
+    }
+
+</style >

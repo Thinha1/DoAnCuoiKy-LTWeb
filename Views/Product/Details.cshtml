@@ -1,0 +1,180 @@
+﻿@model WebBanHoa.Models.ProductDTO
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+<style>
+    body {
+        background-color: #f8f9fa; /* Màu nền xám nhạt */
+    }
+
+    /* Tùy chỉnh màu nút "Đặt Hàng" */
+    .btn-custom-pink {
+        background-color: #e73685; /* Màu hồng/magenta giống trong hình */
+        color: #fff;
+        border: none;
+        font-weight: bold;
+    }
+
+        .btn-custom-pink:hover {
+            background-color: #c92a70; /* Màu đậm hơn khi hover */
+            color: #fff;
+        }
+
+    /* Đảm bảo tất cả hình ảnh có cùng chiều cao và không bị méo */
+    .card-img-top {
+        width: 100%;
+        height: 300px; /* Bạn có thể điều chỉnh chiều cao này */
+        object-fit: cover; /* Cắt ảnh vừa vặn, không làm méo */
+    }
+
+    /* Tùy chỉnh card */
+    .product-card {
+        border: none;
+        border-radius: 0.5rem;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        }
+
+    /* Đảm bảo khối giá có chiều cao cố định để nút bấm được căn đều */
+    .price-text {
+        min-height: 2.2rem; /* Đủ chỗ cho 2 dòng giá (nếu có sale) */
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .product-title a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+        .product-title a:hover {
+            color: #e73685;
+        }
+</style>
+<div class="container my-5">
+    <div class="row g-4">
+
+        <div class="col-lg-6">
+            <img src="@Url.Content("~/Content/Images/" + Model.Image)" class="img-fluid rounded shadow-sm w-100" alt="Bó hoa Nồng Nàn Tình Yêu">
+        </div>
+
+        <div class="col-lg-6">
+            <h1 class="h2 fw-bold">@Model.ProductName</h1>
+
+            <div class="pricing-section mb-2">
+                @if (Model.DiscountRate != null)
+                {
+                    <span class="text-muted text-decoration-line-through fs-4 me-2">@String.Format("{0:N0}", Model.Price) VNĐ</span>
+                    <span class="text-danger fw-bold fs-2 me-3">@String.Format("{0:N0}", (Model.Price - (Model.Price * (decimal)Model.DiscountRate / 100))) VNĐ</span>
+                    <span class="badge bg-danger fs-6">@Model.DiscountRate% GIẢM</span>
+                }
+                else
+                {
+                    <span class="text-danger fs-4 me-2">@String.Format("{0:N0}", Model.Price) VNĐ</span>
+                }
+            </div>
+
+            <p class="text-muted fst-italic mb-4">Giá đã bao gồm 8% VAT</p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4 col-sm-12">
+                    <div class="usp-box">
+                        <i class="bi bi-truck fs-2 text-primary me-3"></i>
+                        <div>Giao hoa <br> <span class="fw-bold">MIỄN PHÍ</span></div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="usp-box">
+                        <i class="bi bi-card-text fs-2 text-danger me-3"></i>
+                        <div>Tặng kèm <br> <span class="fw-bold">THIỆP/BANNER</span></div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="usp-box">
+                        <i class="bi bi-stopwatch fs-2 text-success me-3"></i>
+                        <div>Giao nhanh <br> <span class="fw-bold">60 PHÚT</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold">Mua tại cửa hàng:</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="border p-3 rounded h-100">
+                        <p class="mb-2">142 Nguyễn Văn Cừ, Phường Cầu Ông Lãnh, TP.HCM</p>
+                        <a href="tel:1900633045" class="btn btn-outline-danger btn-sm me-2">
+                            <i class="bi bi-telephone-fill"></i> 1900 633 045
+                        </a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-geo-alt-fill"></i> Bản đồ
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border p-3 rounded h-100">
+                        <p class="mb-2">34B Lý Nam Đế, Phường Hoàn Kiếm, Hà Nội</p>
+                        <a href="tel:0942007921" class="btn btn-outline-danger btn-sm me-2">
+                            <i class="bi bi-telephone-fill"></i> 0942 007 921
+                        </a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-geo-alt-fill"></i> Bản đồ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 d-flex align-items-center">
+                <label for="quantity" class="form-label me-3 mb-0 fs-5">Số lượng</label>
+                <input type="number" class="form-control" id="quantity" value="1" style="max-width: 80px;" min="1">
+            </div>
+
+            <div class="d-grid mb-3">
+                <button class="btn btn-custom-order btn-lg text-uppercase py-3">
+                    <i class="bi bi-cart-plus-fill"></i> Đặt hoa ngay
+                </button>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-4 d-grid">
+                    <a href="#" class="btn btn-outline-warning text-dark">
+                        <i class="bi bi-telephone"></i> Đặt nhanh
+                    </a>
+                </div>
+                <div class="col-4 d-grid">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="bi bi-chat-left-text"></i> Zalo OA
+                    </a>
+                </div>
+                <div class="col-4 d-grid">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="bi bi-facebook"></i> Facebook
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="product-description-container">
+
+            <ul class="nav nav-tabs" style="border-bottom: 2px solid #dee2e6;">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#"
+                       style="border: 1px solid #dee2e6; border-bottom: none;
+                      font-weight: bold; color: #333; background-color: #fff;">
+                        Mô tả sản phẩm
+                    </a>
+                </li>
+            </ul>
+
+            <div class="description-content" style="border: 1px solid #dee2e6; border-top: none; padding: 20px;">
+                @Html.Raw(Model.Description)
+            </div>
+        </div>
+        @Html.Action("_RelevantProducts", "Product", new { productTypeID = Model.ProductTypeID, productID = Model.ProductID})
+    </div>
+</div>
+

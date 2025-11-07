@@ -197,6 +197,7 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\css\card_product.css" />
+    <Content Include="Content\css\relevantProducts.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\Images\Banner\banner_1.jpg" />
@@ -210,8 +211,23 @@
     <Content Include="Content\Images\img_SP005.jpg" />
     <Content Include="Content\Images\img_SP006.jpg" />
     <Content Include="Content\Images\img_SP007.jpg" />
+    <Content Include="Content\Images\img_SP008.jpg" />
+    <Content Include="Content\Images\img_SP009.jpg" />
+    <Content Include="Content\Images\img_SP010.jpg" />
+    <Content Include="Content\Images\img_SP011.jpg" />
+    <Content Include="Content\Images\img_SP012.jpg" />
+    <Content Include="Content\Images\img_SP013.jpg" />
+    <Content Include="Content\Images\img_SP014.jpg" />
+    <Content Include="Content\Images\img_SP015.jpg" />
+    <Content Include="Content\Images\img_SP016.jpg" />
+    <Content Include="Content\Images\img_SP017.jpg" />
+    <Content Include="Content\Images\img_SP018.jpg" />
+    <Content Include="Content\Images\img_SP019.jpg" />
+    <Content Include="Content\Images\img_SP020.jpg" />
+    <Content Include="Content\Images\img_SP021.jpg" />
+    <Content Include="Content\Images\img_SP022.jpg" />
     <Content Include="Content\Images\logo\logo-flower-corner-horizontal.jpg" />
-    <Content Include="Content\style.css" />
+    <Content Include="Content\css\style.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Global.asax" />
@@ -272,6 +288,11 @@
     <Content Include="Views\Product\_DiscountingProducts.cshtml" />
     <Content Include="Views\Product\_MostOrderedProducts.cshtml" />
     <Content Include="Views\Product\_NavBar.cshtml" />
+    <Content Include="Views\Product\_SPTheoTungLoai.cshtml" />
+    <Content Include="Views\Product\Details.cshtml" />
+    <Content Include="Views\Product\_RelevantProducts.cshtml" />
+    <Content Include="Views\Product\SPTheoLoai.cshtml" />
+    <Content Include="Views\Shared\_Layout2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
