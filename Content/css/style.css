@@ -77,6 +77,9 @@
       }
 
       /* --- Navbar (menu ngang) --- */
+        .navbar .nav-item.dropdown {
+            position: relative;
+        }
       .navbar {
         background-color: #fff !important;
         border-top: 1px solid #ddd;
@@ -85,6 +88,16 @@
         top: 0;
         z-index: 100;
       }
+        .navbar .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%; /* Hiển thị ngay bên dưới thẻ cha */
+        left: 0;
+        z-index: 1000;
+        }
+        .navbar .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+        }
       .navbar a {
         color: #000 !important;
       }

@@ -2,8 +2,17 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    List<WebBanHoa.Models.ProductType> productTypes = ViewBag.ParentTypes as List<WebBanHoa.Models.ProductType>;
 }
 
 @Html.Action("_DiscountingProducts", "Product")
 @Html.Action("_MostOrderedProducts", "Product")
+@*Những danh mục sản phẩm cha*@
+@foreach (var type in productTypes.Where(t => t.ProductTypeParentID == null))
+{
+    if (productTypes.Count > 0)
+    {
+        @Html.Action("_SPTheoTungLoai", "Product", new { productTypeId = type.ProductTypeID })
+    }
+}
 

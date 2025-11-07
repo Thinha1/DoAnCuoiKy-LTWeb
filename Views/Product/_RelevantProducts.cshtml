@@ -1,0 +1,48 @@
+﻿@model List<WebBanHoa.Models.ProductDTO>
+
+<link href="~/Content/css/relevantProducts.css" rel="stylesheet" />
+<div class="container my-5">
+
+    <h2 class="mb-4 fw-bold">Sản phẩm liên quan</h2>
+
+    <div class="row g-4">
+
+        @foreach (var sp in Model)
+        {
+            <div class="col-lg-3 col-md-6 col-6">
+                <a href="@Url.Action("Details", "Product", new {productID = sp.ProductID})" style="text-decoration: none">
+                    <div class="card h-100 product-card shadow-sm">
+                        <img src="@Url.Content("~/Content/Images/" + sp.Image)" class="card-img-top" alt="Mong Manh">
+                        <div class="card-body text-center d-flex flex-column">
+                            <h5 class="product-title fs-6 mb-2">
+                                <a href="#">@sp.ProductName</a>
+                            </h5>
+                            <div class="price-text">
+                                @if (sp.DiscountRate > 0)
+                                {
+                                    // 1. Tính giá cuối cùng (vì DiscountRate là 0.15)
+                                    var finalPrice = sp.Price - (sp.Price * (decimal)sp.DiscountRate/100);
+
+                                    // 2. Hiển thị giá mới (màu đỏ)
+                                    <span class="text-danger fw-bold me-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
+
+                                    // 3. Hiển thị giá gốc (gạch ngang)
+                                    <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                }
+                                else
+                                {
+                                    // Không giảm giá: Chỉ hiển thị giá gốc màu đỏ
+                                    <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                }
+                                </div>
+                                <a href="#" class="btn btn-custom-pink btn-sm text-uppercase mt-auto">Đặt hàng</a>
+                            </div>
+                        </div>
+                </a>
+            </div>
+
+        }
+
+    </div>
+</div>
+
