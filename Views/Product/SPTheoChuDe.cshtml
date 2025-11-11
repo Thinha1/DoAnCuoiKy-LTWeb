@@ -1,6 +1,6 @@
 ﻿@model List<WebBanHoa.Models.ProductDTO>
 @{
-    ViewBag.Title = "SPTheoLoai";
+    ViewBag.Title = "SPTheoChuDe";
     Layout = "~/Views/Shared/_Layout2.cshtml";
 }
 <style>
@@ -102,7 +102,7 @@
             box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
         }
 </style>
-<h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ProductTypeName </h2>
+<h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ThemeName </h2>
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center sort-bar mb-4">
     <div class="mb-2 mb-md-0">
@@ -110,12 +110,12 @@
     </div>
 
     <div class="d-flex align-items-center">
-        @using (@Html.BeginForm("SPTheoLoai", "Product",
+        @using (@Html.BeginForm("SPTheoChuDe", "Product",
             FormMethod.Get,
             new { @class = "d-flex align-items-center" }
         ))
         {
-            @Html.Hidden("categoryID", Model.FirstOrDefault().CategoryID)
+            @Html.Hidden("themeID", Model.FirstOrDefault().ThemeID)
             <label for="sort-by" class="form-label mb-0 me-2 text-nowrap">Sắp xếp theo</label>
             <select class="form-select form-select-sm me-3" id="sort-by" name="sort">
                 <option selected value="0">Mặc định</option>

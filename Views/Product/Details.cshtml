@@ -47,6 +47,18 @@
         font-size: 0.95rem;
     }
 
+    .btn-custom-order {
+        background-color: #f07f2c; /* Đây là màu cam giống trong hình */
+        color: #fff;
+        font-weight: bold;
+        border: none;
+    }
+
+        .btn-custom-order:hover {
+            background-color: #d97024; /* Màu cam đậm hơn một chút khi di chuột */
+            color: #fff;
+        }
+
     .product-title a {
         color: #333;
         text-decoration: none;
@@ -72,7 +84,7 @@
                 {
                     <span class="text-muted text-decoration-line-through fs-4 me-2">@String.Format("{0:N0}", Model.Price) VNĐ</span>
                     <span class="text-danger fw-bold fs-2 me-3">@String.Format("{0:N0}", (Model.Price - (Model.Price * (decimal)Model.DiscountRate / 100))) VNĐ</span>
-                    <span class="badge bg-danger fs-6">@Model.DiscountRate% GIẢM</span>
+                    <span class="badge bg-danger fs-6">GIẢM @Model.DiscountRate%</span>
                 }
                 else
                 {
@@ -128,19 +140,38 @@
                     </div>
                 </div>
             </div>
+            @using (Html.BeginForm("DatHang", "Product", FormMethod.Post))
+            {
+                @Html.Hidden("productID", Model.ProductID)
 
-            <div class="mb-3 d-flex align-items-center">
-                <label for="quantity" class="form-label me-3 mb-0 fs-5">Số lượng</label>
-                <input type="number" class="form-control" id="quantity" value="1" style="max-width: 80px;" min="1">
-            </div>
+                @Html.Hidden("currentPrice", (Model.Price - (Model.Price * (decimal)Model.DiscountRate / 100)))
 
-            <div class="d-grid mb-3">
-                <button class="btn btn-custom-order btn-lg text-uppercase py-3">
-                    <i class="bi bi-cart-plus-fill"></i> Đặt hoa ngay
-                </button>
-            </div>
+                <div class="row g-2 align-items-center">
 
-            <div class="row g-2">
+                    <div class="col-auto">
+                        <div class="d-flex align-items-center">
+                            <label for="quantity" class="form-label me-2 mb-0 fs-5">Số lượng</label>
+
+                            <input type="number" class="form-control"
+                                   id="quantity"
+                                   name="quantity"
+                                   value="1"
+                                   style="max-width: 80px;"
+                                   min="1">
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="d-grid">
+                            <button class="btn btn-custom-order btn-lg text-uppercase py-3" type="submit">
+                                <i class="bi bi-cart-plus-fill"></i> Đặt hoa ngay
+                            </button>
+                        </div>
+                    </div>
+
+                </div>  }
+
+            <div class="row g-2 my-2">
                 <div class="col-4 d-grid">
                     <a href="#" class="btn btn-outline-warning text-dark">
                         <i class="bi bi-telephone"></i> Đặt nhanh
@@ -174,7 +205,7 @@
                 @Html.Raw(Model.Description)
             </div>
         </div>
-        @Html.Action("_RelevantProducts", "Product", new { productTypeID = Model.ProductTypeID, productID = Model.ProductID})
+        @Html.Action("_RelevantProducts", "Product", new { categoryID = Model.CategoryID, productID = Model.ProductID })
     </div>
 </div>
 

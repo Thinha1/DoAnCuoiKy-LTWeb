@@ -8,7 +8,10 @@ namespace WebBanHoa.Models
     public class ProductDTO
     {
         public string ProductID { get; set; }
-        public string ProductTypeID { get; set; }
+        public string CategoryID { get; set; }
+
+        public string ThemeID { get; set; }
+
         public string ProductName { get; set; }
         public Nullable<decimal> Price { get; set; }
         public Nullable<decimal> FinalPrice { get; set; }
