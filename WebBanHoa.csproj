@@ -134,10 +134,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Category.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Discount.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ProductDTO.cs" />
     <Compile Include="Models\Order.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
@@ -147,9 +149,7 @@
     <Compile Include="Models\Product.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ProductType.cs">
-      <DependentUpon>QLBanHoa.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Models\ProductDTO.cs" />
     <Compile Include="Models\QLBanHoa.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -172,6 +172,9 @@
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ShoppingCartItem.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Theme.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User.cs">
@@ -249,6 +252,12 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\Images\logo\logo.webp" />
     <EntityDeploy Include="Models\QLBanHoa.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>QLBanHoa.Designer.cs</LastGenOutput>
@@ -256,12 +265,6 @@
     <Content Include="Models\QLBanHoa.edmx.diagram">
       <DependentUpon>QLBanHoa.edmx</DependentUpon>
     </Content>
-    <Content Include="fonts\FontAwesome.otf" />
-    <Content Include="fonts\fontawesome-webfont.woff2" />
-    <Content Include="fonts\fontawesome-webfont.woff" />
-    <Content Include="fonts\fontawesome-webfont.ttf" />
-    <Content Include="fonts\fontawesome-webfont.eot" />
-    <Content Include="Content\Images\logo\logo.webp" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -293,6 +296,7 @@
     <Content Include="Views\Product\_RelevantProducts.cshtml" />
     <Content Include="Views\Product\SPTheoLoai.cshtml" />
     <Content Include="Views\Shared\_Layout2.cshtml" />
+    <Content Include="Views\Product\SPTheoChuDe.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
