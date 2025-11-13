@@ -11,12 +11,13 @@ namespace WebBanHoa.Controllers
     public class ProductController : Controller
     {
         QLBANHOAEntities db = new QLBANHOAEntities();
+
         // GET: Product
         public ActionResult Index()
         {
             //Lấy ra những thằng loại cha để duyệt
-            var parentTypes = db.Categories
-                    .Where(t => t.ParentCategoryID == null)
+            var parentTypes = db.ProductTypes
+                    .Where(t => t.ProductTypeParentID == null)
                     .ToList();
             ViewBag.ParentTypes = parentTypes;
             return View();
@@ -24,8 +25,7 @@ namespace WebBanHoa.Controllers
 
         public ActionResult _NavBar()
         {
-            List<Category> lst = db.Categories.Where(pt => pt.ParentCategoryID == null).ToList();
-            ViewBag.Themes = db.Themes.Where(t => t.ParentThemeID == null).ToList();
+            List<ProductType> lst = db.ProductTypes.Where(pt => pt.ProductTypeParentID == null).ToList();
             return PartialView(lst);
         }
 
@@ -63,25 +63,25 @@ namespace WebBanHoa.Controllers
             return PartialView(lst);
         }
 
-        public ActionResult _SPTheoTungLoai(string categoryID)
+        public ActionResult _SPTheoTungLoai(string productTypeID)
         {
-            var childTypeIds = db.Categories
-                     .Where(t => t.ParentCategoryID == categoryID)
-                     .Select(t => t.CategoryID)
+            var childTypeIds = db.ProductTypes
+                     .Where(t => t.ProductTypeParentID == productTypeID)
+                     .Select(t => t.ProductTypeID)
                      .ToList();
 
-            List<ProductDTO> lst = db.Products.Where(p => childTypeIds.Contains(p.CategoryID))
+            List<ProductDTO> lst = db.Products.Where(p => childTypeIds.Contains(p.ProductTypeID))
             .Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
-                CategoryID = p.CategoryID,
+                ProductTypeID = p.ProductTypeID,
                 Price = p.Price,
                 Image = p.Image,
                 Description = p.Description,
                 DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate,
             }).OrderByDescending(p => p.ProductID).Take(8).ToList();
-            ViewBag.ParentProductType = db.Categories.FirstOrDefault(pt => pt.CategoryID == categoryID).CategoryName;
+            ViewBag.ParentProductType = db.ProductTypes.FirstOrDefault(pt => pt.ProductTypeID == productTypeID).ProductTypeName;
             return PartialView(lst);
         }
 
@@ -91,8 +91,7 @@ namespace WebBanHoa.Controllers
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
-                CategoryID = p.CategoryID,
-                ThemeID = p.ThemeID,
+                ProductTypeID = p.ProductTypeID,
                 Price = p.Price,
                 Image = p.Image,
                 Description = p.Description,
@@ -101,13 +100,13 @@ namespace WebBanHoa.Controllers
             return View(product);
         }
 
-        public ActionResult _RelevantProducts(string categoryID, string productID)
+        public ActionResult _RelevantProducts(string productTypeID, string productID)
         {
-            List<ProductDTO> products = db.Products.Where(p => p.CategoryID == categoryID && p.ProductID != productID).Select(p => new ProductDTO
+            List<ProductDTO> products = db.Products.Where(p => p.ProductTypeID == productTypeID && p.ProductID != productID).Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
-                CategoryID = p.CategoryID,
+                ProductTypeID = p.ProductTypeID,
                 Price = p.Price,
                 Image = p.Image,
                 Description = p.Description,
@@ -118,14 +117,14 @@ namespace WebBanHoa.Controllers
             return PartialView(products);
         }
 
-        public ActionResult SPTheoLoai(string categoryID, string sort, string size)
+        public ActionResult SPTheoLoai(string productTypeID, string sort, string size)
         {
             //Mặc định nếu ko chọn thì là 12
-            List<ProductDTO> products = db.Products.Where(p => p.CategoryID == categoryID).Select(p => new ProductDTO
+            List<ProductDTO> products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
-                CategoryID = p.CategoryID,
+                ProductTypeID = p.ProductTypeID,
                 Price = p.Price,
                 Image = p.Image,
                 Description = p.Description,
@@ -139,11 +138,11 @@ namespace WebBanHoa.Controllers
                 int iSize = Convert.ToInt32(size);
                 if (sort == "0" || sort == "1")
                 {
-                    products = db.Products.Where(p => p.CategoryID == categoryID).Select(p => new ProductDTO
+                    products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
                         ProductID = p.ProductID,
                         ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
+                        ProductTypeID = p.ProductTypeID,
                         Price = p.Price,
                         Image = p.Image,
                         Description = p.Description,
@@ -154,11 +153,11 @@ namespace WebBanHoa.Controllers
                 }
                 else if (sort == "2")
                 {
-                    products = db.Products.Where(p => p.CategoryID == categoryID).Select(p => new ProductDTO
+                    products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
                         ProductID = p.ProductID,
                         ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
+                        ProductTypeID = p.ProductTypeID,
                         Price = p.Price,
                         Image = p.Image,
                         Description = p.Description,
@@ -169,16 +168,15 @@ namespace WebBanHoa.Controllers
                 }
                 else if (sort == "3")
                 {
-                    products = db.Products.Where(p => p.CategoryID == categoryID).Select(p => new ProductDTO
+                    products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
                         ProductID = p.ProductID,
                         ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
+                        ProductTypeID = p.ProductTypeID,
                         Price = p.Price,
                         Image = p.Image,
                         Description = p.Description,
                         DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-                        //FinalPrice = p.Price - (p.Price * (decimal)(p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate) / 100)
                     })
                     .ToList()
                     .OrderBy(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
@@ -187,17 +185,15 @@ namespace WebBanHoa.Controllers
                 }
                 else if (sort == "4")
                 {
-                    products = db.Products.Where(p => p.CategoryID == categoryID).Select(p => new ProductDTO
+                    products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
                         ProductID = p.ProductID,
                         ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
+                        ProductTypeID = p.ProductTypeID,
                         Price = p.Price,
                         Image = p.Image,
                         Description = p.Description,
                         DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-                        //FinalPrice = p.Price - (p.Price * (decimal)(p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate)/100)
-                        
                     })
                     .ToList()
                     .OrderByDescending(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
@@ -205,102 +201,7 @@ namespace WebBanHoa.Controllers
                     .ToList();
                 }
             }
-            ViewBag.ProductTypeName = db.Categories.FirstOrDefault(pt => pt.CategoryID == categoryID).CategoryName;
-            return View(products);
-        }
-
-        //Sản phẩm theo chủ đề
-        public ActionResult SPTheoChuDe(string themeID, string sort, string size)
-        {
-            List<ProductDTO> products = db.Products.Where(p => p.ThemeID == themeID).Select(p => new ProductDTO
-            {
-                ProductID = p.ProductID,
-                ProductName = p.ProductName,
-                CategoryID = p.CategoryID,
-                Price = p.Price,
-                Image = p.Image,
-                Description = p.Description,
-                DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-            })
-            .OrderBy(p => p.ProductName).Take(12)
-            .ToList();
-
-            if (!string.IsNullOrWhiteSpace(sort) && !string.IsNullOrWhiteSpace(size))
-            {
-                int iSize = Convert.ToInt32(size);
-                if (sort == "0" || sort == "1")
-                {
-                    //Sort theo tên tăng dần
-                    products = db.Products.Where(p => p.ThemeID == themeID).Select(p => new ProductDTO
-                    {
-                        ProductID = p.ProductID,
-                        ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
-                        Price = p.Price,
-                        Image = p.Image,
-                        Description = p.Description,
-                        DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-                    })
-                    .OrderBy(p => p.ProductName).Take(iSize)
-                    .ToList();
-                }
-                //Sort theo tên
-                else if (sort == "2")
-                {
-                    products = db.Products.Where(p => p.ThemeID == themeID).Select(p => new ProductDTO
-                    {
-                        ProductID = p.ProductID,
-                        ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
-                        Price = p.Price,
-                        Image = p.Image,
-                        Description = p.Description,
-                        DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-                    })
-                    .OrderByDescending(p => p.ProductName).Take(iSize)
-                    .ToList();
-                }
-                //Sort giá đã giảm
-                else if (sort == "3")
-                {
-                    products = db.Products.Where(p => p.ThemeID == themeID).Select(p => new ProductDTO
-                    {
-                        ProductID = p.ProductID,
-                        ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
-                        Price = p.Price,
-                        Image = p.Image,
-                        Description = p.Description,
-                        DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-                        //FinalPrice = p.Price - (p.Price * (decimal)(p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate) / 100)
-                    })
-                    .ToList()
-                    .OrderBy(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
-                    .Take(iSize)
-                    .ToList();
-                }
-                //Sort theo giá 
-                else if (sort == "4")
-                {
-                    products = db.Products.Where(p => p.ThemeID == themeID).Select(p => new ProductDTO
-                    {
-                        ProductID = p.ProductID,
-                        ProductName = p.ProductName,
-                        CategoryID = p.CategoryID,
-                        Price = p.Price,
-                        Image = p.Image,
-                        Description = p.Description,
-                        DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-                        //FinalPrice = p.Price - (p.Price * (decimal)(p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate)/100)
-
-                    })
-                    .ToList()
-                    .OrderByDescending(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
-                    .Take(iSize)
-                    .ToList();
-                }
-            }
-            ViewBag.ThemeName = db.Themes.FirstOrDefault(pt => pt.ThemeID == themeID).ThemeName;
+            ViewBag.ProductTypeName = db.ProductTypes.FirstOrDefault(pt => pt.ProductTypeID == productTypeID).ProductTypeName;
             return View(products);
         }
     }

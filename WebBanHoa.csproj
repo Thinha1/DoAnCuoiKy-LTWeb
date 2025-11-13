@@ -47,6 +47,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCrypt.Net-Next, Version=4.0.3.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
+      <HintPath>packages\BCrypt.Net-Next.4.0.3\lib\net48\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -55,8 +58,21 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -127,26 +143,30 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Category.cs">
-      <DependentUpon>QLBanHoa.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Discount.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IDGenerator.cs" />
+    <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\Order.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\OrderDetail.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PasswordHelper.cs" />
     <Compile Include="Models\Product.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ProductDTO.cs" />
+    <Compile Include="Models\ProductType.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\QLBanHoa.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -162,21 +182,21 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>QLBanHoa.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Models\Role.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SessionHelper.cs" />
     <Compile Include="Models\ShoppingCart.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ShoppingCartItem.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Theme.cs">
-      <DependentUpon>QLBanHoa.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\User.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +252,13 @@
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\Images\logo\logo.webp" />
     <Content Include="Models\QLBanHoa.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>QLBanHoa.edmx</DependentUpon>
@@ -241,20 +268,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>QLBanHoa.edmx</DependentUpon>
       <LastGenOutput>QLBanHoa.cs</LastGenOutput>
-    </Content>
-    <Content Include="Areas\Admin\Views\web.config" />
-    <Content Include="fonts\FontAwesome.otf" />
-    <Content Include="fonts\fontawesome-webfont.woff2" />
-    <Content Include="fonts\fontawesome-webfont.woff" />
-    <Content Include="fonts\fontawesome-webfont.ttf" />
-    <Content Include="fonts\fontawesome-webfont.eot" />
-    <Content Include="Content\Images\logo\logo.webp" />
-    <EntityDeploy Include="Models\QLBanHoa.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>QLBanHoa.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\QLBanHoa.edmx.diagram">
-      <DependentUpon>QLBanHoa.edmx</DependentUpon>
     </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -307,6 +320,13 @@
     <Content Include="Content\bootstrap-grid.rtl.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <EntityDeploy Include="Models\QLBanHoa.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>QLBanHoa.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\QLBanHoa.edmx.diagram">
+      <DependentUpon>QLBanHoa.edmx</DependentUpon>
+    </Content>
     <None Include="packages.config" />
     <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Scripts\bootstrap.js.map" />
@@ -314,6 +334,8 @@
     <Content Include="Scripts\bootstrap.esm.js.map" />
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js.map" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

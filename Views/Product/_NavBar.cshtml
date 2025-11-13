@@ -1,50 +1,65 @@
-﻿@model List<WebBanHoa.Models.Category>
-@{
-    // Lấy danh sách Theme từ ViewBag
-    List<WebBanHoa.Models.Theme> themesList = ViewBag.Themes as List<WebBanHoa.Models.Theme>;
-}
+﻿@model List<WebBanHoa.Models.ProductType>
 
 <ul class="nav nav-pills nav-justified">
-
-    @foreach (var lsp in Model)
+    @foreach (var productType in Model.Where(pt => pt.ProductTypeParentID == null))
     {
         <li class="nav-item dropdown" style="margin: 0 10px">
-            <a class="nav-link" href="#" data-bs-toggle="dropdown">@lsp.CategoryName</a>
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                @productType.ProductTypeName
+            </a>
+
             @{
-                // Kiểm tra xem có danh mục con không
-                if (lsp.Category1 != null && lsp.Category1.Any())
+                // Lấy danh mục con
+                var childTypes = Model.Where(pt => pt.ProductTypeParentID == productType.ProductTypeID);
+                if (childTypes.Any())
                 {
                     <ul class="dropdown-menu">
-                        @foreach (var con in lsp.Category1)
+                        @foreach (var childType in childTypes)
                         {
-                            <li>@Html.ActionLink(con.CategoryName, "SPTheoLoai", "Product", new { categoryID = con.CategoryID }, new { @class = "dropdown-item" })</li>
+                            <li>
+                                @Html.ActionLink(
+                                    childType.ProductTypeName,
+                                    "SPTheoLoai",
+                                    "Product",
+                                    new { productTypeID = childType.ProductTypeID },
+                                    new { @class = "dropdown-item" }
+                                )
+                            </li>
                         }
                     </ul>
                 }
             }
         </li>
     }
+</ul>
 
-    @if (themesList != null) // Kiểm tra xem themesList có dữ liệu không
-    {
-        foreach (var th in themesList)
-        {
-            <li class="nav-item dropdown" style="margin: 0 10px">
-                <a class="nav-link" href="#" data-bs-toggle="dropdown">@th.ThemeName</a>
-                @{
-                    // Kiểm tra xem có chủ đề con không (Giả định tên thuộc tính là Theme1)
-                    if (th.Theme1 != null && th.Theme1.Any())
-                    {
-                        <ul class="dropdown-menu">
-                            @foreach (var con in th.Theme1)
-                            {
-                                <li>@Html.ActionLink(con.ThemeName, "SPTheoChuDe", "Product", new { themeID = con.ThemeID }, new { @class = "dropdown-item" })</li>
-                            }
-                        </ul>
-                    }
-                }
-            </li>
-        }
+<style>
+    .nav-pills .nav-link {
+        color: #333;
+        font-weight: 500;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
     }
 
-</ul>
+        .nav-pills .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+        }
+
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .dropdown-item {
+        padding: 8px 20px;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+
+        .dropdown-item:hover {
+            background-color: #007bff;
+            color: white;
+        }
+</style>

@@ -1,0 +1,60 @@
+﻿@model WebBanHoa.Models.LoginModel
+
+@{
+    ViewBag.Title = "Đăng nhập - FLOWER CORNER";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-pink text-white text-center">
+                    <h4>Đăng nhập</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Nhập email" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Nhập mật khẩu" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <button type="submit" class="btn btn-pink w-100">Đăng nhập</button>
+                    }
+
+                    <div class="text-center mt-3">
+                        <p>Chưa có tài khoản? @Html.ActionLink("Đăng ký ngay", "Register")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-pink {
+        background-color: #e91e63;
+    }
+
+    .btn-pink {
+        background-color: #e91e63;
+        color: white;
+        border: none;
+    }
+
+        .btn-pink:hover {
+            background-color: #c2185b;
+        }
+</style>
