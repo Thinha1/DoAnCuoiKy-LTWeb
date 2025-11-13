@@ -1,17 +1,17 @@
 ﻿@model List<WebBanHoa.Models.Category>
 @{
-    // Lấy danh sách Theme từ ViewBag
     List<WebBanHoa.Models.Theme> themesList = ViewBag.Themes as List<WebBanHoa.Models.Theme>;
 }
 
-<ul class="nav nav-pills nav-justified">
+<ul class="nav nav-pills">
+    @* Bỏ nav-justified *@
 
     @foreach (var lsp in Model)
     {
-        <li class="nav-item dropdown" style="margin: 0 10px">
+        <li class="nav-item dropdown mx-2">
+            @* Bỏ style, thêm class margin (ví dụ: mx-2) *@
             <a class="nav-link" href="#" data-bs-toggle="dropdown">@lsp.CategoryName</a>
             @{
-                // Kiểm tra xem có danh mục con không
                 if (lsp.Category1 != null && lsp.Category1.Any())
                 {
                     <ul class="dropdown-menu">
@@ -25,14 +25,14 @@
         </li>
     }
 
-    @if (themesList != null) // Kiểm tra xem themesList có dữ liệu không
+    @if (themesList != null)
     {
         foreach (var th in themesList)
         {
-            <li class="nav-item dropdown" style="margin: 0 10px">
+            <li class="nav-item dropdown mx-2">
+                @* Bỏ style, thêm class margin (ví dụ: mx-2) *@
                 <a class="nav-link" href="#" data-bs-toggle="dropdown">@th.ThemeName</a>
                 @{
-                    // Kiểm tra xem có chủ đề con không (Giả định tên thuộc tính là Theme1)
                     if (th.Theme1 != null && th.Theme1.Any())
                     {
                         <ul class="dropdown-menu">
@@ -46,5 +46,4 @@
             </li>
         }
     }
-
 </ul>

@@ -3,7 +3,27 @@ body {
 	background-color: #f8f9fa; /* Màu nền xám nhạt */
 	font-family: Montserrat, sans-serif;
 }
+.price-text {
+	/* Số '4.5em' này là ví dụ. 
+      Bạn hãy chỉnh tăng/giảm cho đến khi nó đủ cao 
+      để chứa 2 dòng (giá + badge) một cách thoải mái.
+    */
+	min-height: 4.5em;
+	/* Các thuộc tính này để căn nội dung của khối giá ra giữa (Đẹp hơn) */
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
 
+/* 2. (Tùy chọn) Đảm bảo 2 dòng bên trong cũng có chiều cao cố định */
+/* Điều này ngăn giá của card 'else' nhảy lên trên */
+.product-price-line {
+	min-height: 1.5em; /* Chiều cao cho 1 dòng giá */
+}
+
+.product-badge-line {
+	min-height: 1.5em; /* Chiều cao cho 1 dòng badge */
+}
 .product-card {
 	background-color: #fff;
 	border: 1px solid #eee;

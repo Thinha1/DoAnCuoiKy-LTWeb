@@ -182,3 +182,93 @@
         font-size: 20px;
         margin-bottom: 3px;
       }
+
+/* Màu sắc chủ đạo từ hình ảnh của bạn */
+/* Biến màu (đã có từ câu trước) */
+:root {
+    --brand-red: #dc3545;
+    --brand-bg-light: #fcf4f5;
+}
+
+/* CSS cho Footer chính (nhiều cột) */
+.main-footer {
+    background-color: #ffffff; /* Nền trắng */
+    padding: 60px 0;
+    border-top: 1px solid #eee; /* Đường viền mỏng phía trên */
+}
+
+.footer-heading {
+    /* Sử dụng font chữ và kiểu giống trong ảnh */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    font-weight: 600; /* Hơi đậm */
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-transform: uppercase; /* Viết hoa chữ đầu */
+}
+
+.footer-text {
+    color: #666; /* Màu chữ mô tả */
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.footer-links {
+    padding-left: 0; /* Xóa padding mặc định của UL */
+}
+
+    .footer-links li {
+        margin-bottom: 10px;
+    }
+
+    .footer-links a {
+        color: #555; /* Màu link */
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+        .footer-links a:hover {
+            color: var(--brand-red); /* Đổi màu đỏ khi hover */
+            text-decoration: underline;
+        }
+
+/* CSS cho Thanh Liên Hệ (đã có từ câu trước) */
+.simple-contact-footer {
+    background-color: var(--brand-bg-light);
+    padding: 20px 0;
+    border-top: 1px solid #f0e0e2;
+    width: 100%;
+}
+
+.footer-phone-link {
+    color: var(--brand-red);
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    .footer-phone-link i {
+        margin-right: 8px;
+    }
+
+    .footer-phone-link:hover {
+        color: #a72332;
+    }
+
+.btn-zalo-footer {
+    background-color: var(--brand-red);
+    color: #ffffff;
+    font-weight: bold;
+    border-radius: 25px;
+    padding: 12px 30px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-zalo-footer:hover {
+        background-color: #a72332;
+        color: #ffffff;
+    }
