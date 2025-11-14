@@ -1,18 +1,4 @@
-﻿@model List<WebBanHoa.Models.ProductType>
-
-<ul class="nav nav-pills nav-justified">
-    @foreach (var productType in Model.Where(pt => pt.ProductTypeParentID == null))
-    {
-        <li class="nav-item dropdown" style="margin: 0 10px">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                @productType.ProductTypeName
-            </a>
-
-            @{
-                // Lấy danh mục con
-                var childTypes = Model.Where(pt => pt.ProductTypeParentID == productType.ProductTypeID);
-                if (childTypes.Any())
-﻿@model List<WebBanHoa.Models.Category>
+﻿﻿@model List<WebBanHoa.Models.Category>
 @{
     List<WebBanHoa.Models.Theme> themesList = ViewBag.Themes as List<WebBanHoa.Models.Theme>;
 }
@@ -29,37 +15,16 @@
                 if (lsp.Category1 != null && lsp.Category1.Any())
                 {
                     <ul class="dropdown-menu">
-                        @foreach (var childType in childTypes)
+                        @foreach (var con in lsp.Category1)
                         {
-                            <li>
-                                @Html.ActionLink(
-                                    childType.ProductTypeName,
-                                    "SPTheoLoai",
-                                    "Product",
-                                    new { productTypeID = childType.ProductTypeID },
-                                    new { @class = "dropdown-item" }
-                                )
-                            </li>
+                            <li>@Html.ActionLink(con.CategoryName, "SPTheoLoai", "Product", new { categoryID = con.CategoryID }, new { @class = "dropdown-item" })</li>
                         }
                     </ul>
                 }
             }
         </li>
     }
-</ul>
 
-<style>
-    .nav-pills .nav-link {
-        color: #333;
-        font-weight: 500;
-        padding: 10px 20px;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    }
-
-        .nav-pills .nav-link:hover {
-            background-color: #f8f9fa;
-            color: #007bff;
     @if (themesList != null)
     {
         foreach (var th in themesList)
@@ -80,21 +45,5 @@
                 }
             </li>
         }
-
-    .dropdown-menu {
-        border: none;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-
-    .dropdown-item {
-        padding: 8px 20px;
-        color: #333;
-        transition: all 0.3s ease;
-    }
-
-        .dropdown-item:hover {
-            background-color: #007bff;
-            color: white;
-        }
-</style>
 </ul>

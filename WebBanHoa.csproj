@@ -144,10 +144,12 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Category.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Discount.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
@@ -165,9 +167,6 @@
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ProductDTO.cs" />
-    <Compile Include="Models\ProductType.cs">
-      <DependentUpon>QLBanHoa.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\QLBanHoa.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -192,6 +191,9 @@
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ShoppingCartItem.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Theme.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User.cs">
@@ -247,19 +249,6 @@
     <Content Include="Content\Images\img_SP020.jpg" />
     <Content Include="Content\Images\img_SP021.jpg" />
     <Content Include="Content\Images\img_SP022.jpg" />
-    <Content Include="Content\Images\img_SP023.jpg" />
-    <Content Include="Content\Images\img_SP024.jpg" />
-    <Content Include="Content\Images\img_SP025.jpg" />
-    <Content Include="Content\Images\img_SP026.jpg" />
-    <Content Include="Content\Images\img_SP027.jpg" />
-    <Content Include="Content\Images\img_SP028.jpg" />
-    <Content Include="Content\Images\img_SP029.jpg" />
-    <Content Include="Content\Images\img_SP030.jpg" />
-    <Content Include="Content\Images\img_SP031.jpg" />
-    <Content Include="Content\Images\img_SP032.jpg" />
-    <Content Include="Content\Images\img_SP033.jpg" />
-    <Content Include="Content\Images\img_SP034.jpg" />
-    <Content Include="Content\Images\img_SP035.jpg" />
     <Content Include="Content\Images\logo\logo-flower-corner-horizontal.jpg" />
     <Content Include="Content\css\style.css" />
     <Content Include="favicon.ico" />
@@ -316,7 +305,6 @@
     <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
-    <Folder Include="Views\Cart\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

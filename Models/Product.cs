@@ -23,7 +23,8 @@ namespace WebBanHoa.Models
         }
     
         public string ProductID { get; set; }
-        public string ProductTypeID { get; set; }
+        public string CategoryID { get; set; }
+        public string ThemeID { get; set; }
         public string ProductName { get; set; }
         public Nullable<decimal> Price { get; set; }
         public string Description { get; set; }
@@ -34,11 +35,12 @@ namespace WebBanHoa.Models
         public Nullable<System.DateTime> UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
     
+        public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Discount> Discounts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual ProductType ProductType { get; set; }
+        public virtual Theme Theme { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ShoppingCartItem> ShoppingCartItems { get; set; }
     }

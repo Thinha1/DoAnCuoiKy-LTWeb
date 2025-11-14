@@ -143,40 +143,33 @@
             @using (Html.BeginForm("DatHang", "Product", FormMethod.Post))
             {
                 @Html.Hidden("productID", Model.ProductID)
-                if (Model.DiscountRate != null)
-                {
-                    var currentPrice = (Model.Price - (Model.Price * (decimal)Model.DiscountRate / 100));
-                    @Html.Hidden("currentPrice", currentPrice)
-                }
-                else
-                {
-                    @Html.Hidden("currentPrice", Model.Price)
-                }
+
+                @Html.Hidden("currentPrice", (Model.Price - (Model.Price * (decimal)Model.DiscountRate / 100)))
 
                 <div class="row g-2 align-items-center">
 
-                <div class="col-auto">
-                    <div class="d-flex align-items-center">
-                        <label for="quantity" class="form-label me-2 mb-0 fs-5">Số lượng</label>
+                    <div class="col-auto">
+                        <div class="d-flex align-items-center">
+                            <label for="quantity" class="form-label me-2 mb-0 fs-5">Số lượng</label>
 
-                        <input type="number" class="form-control"
-                               id="quantity"
-                               name="quantity"
-                               value="1"
-                               style="max-width: 80px;"
-                               min="1">
+                            <input type="number" class="form-control"
+                                   id="quantity"
+                                   name="quantity"
+                                   value="1"
+                                   style="max-width: 80px;"
+                                   min="1">
+                        </div>
                     </div>
-                </div>
 
-                <div class="col">
-                    <div class="d-grid">
-                        <button class="btn btn-custom-order btn-lg text-uppercase py-3" type="submit">
-                            <i class="bi bi-cart-plus-fill"></i> Đặt hoa ngay
-                        </button>
+                    <div class="col">
+                        <div class="d-grid">
+                            <button class="btn btn-custom-order btn-lg text-uppercase py-3" type="submit">
+                                <i class="bi bi-cart-plus-fill"></i> Đặt hoa ngay
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-            </div>}
+                </div>  }
 
             <div class="row g-2 my-2">
                 <div class="col-4 d-grid">
@@ -212,7 +205,7 @@
                 @Html.Raw(Model.Description)
             </div>
         </div>
-        @Html.Action("_RelevantProducts", "Product", new { categoryID = Model.CategoryID, themeID = Model.ThemeID, productID = Model.ProductID })
+        @Html.Action("_RelevantProducts", "Product", new { categoryID = Model.CategoryID, productID = Model.ProductID })
     </div>
-    </div>
+</div>
 
