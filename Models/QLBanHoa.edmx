@@ -5,14 +5,6 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
       <Schema Namespace="QLBANHOAModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Category">
-          <Key>
-            <PropertyRef Name="CategoryID" />
-          </Key>
-          <Property Name="CategoryID" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="CategoryName" Type="nvarchar" MaxLength="50" />
-          <Property Name="ParentCategoryID" Type="nchar" MaxLength="10" />
-        </EntityType>
         <EntityType Name="Discount">
           <Key>
             <PropertyRef Name="DiscountID" />
@@ -58,8 +50,7 @@
             <PropertyRef Name="ProductID" />
           </Key>
           <Property Name="ProductID" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="CategoryID" Type="nchar" MaxLength="10" />
-          <Property Name="ThemeID" Type="nchar" MaxLength="10" />
+          <Property Name="ProductTypeID" Type="nchar" MaxLength="10" />
           <Property Name="ProductName" Type="nvarchar" MaxLength="30" />
           <Property Name="Price" Type="money" />
           <Property Name="Description" Type="nvarchar" MaxLength="1000" />
@@ -69,6 +60,14 @@
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="30" />
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="ProductType">
+          <Key>
+            <PropertyRef Name="ProductTypeID" />
+          </Key>
+          <Property Name="ProductTypeID" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="ProductTypeName" Type="nvarchar" MaxLength="50" />
+          <Property Name="ProductTypeParentID" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -97,14 +96,6 @@
           <Property Name="ProductID" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="Quantity" Type="int" />
         </EntityType>
-        <EntityType Name="Theme">
-          <Key>
-            <PropertyRef Name="ThemeID" />
-          </Key>
-          <Property Name="ThemeID" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="ThemeName" Type="nvarchar" MaxLength="50" />
-          <Property Name="ParentThemeID" Type="nchar" MaxLength="10" />
-        </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="UserID" />
@@ -122,18 +113,6 @@
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="30" />
         </EntityType>
-        <Association Name="FK_Category_Parent">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
-          <End Role="Category1" Type="Self.Category" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Category">
-              <PropertyRef Name="CategoryID" />
-            </Principal>
-            <Dependent Role="Category1">
-              <PropertyRef Name="ParentCategoryID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Discount_Product">
           <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
           <End Role="Discount" Type="Self.Discount" Multiplicity="*" />
@@ -182,27 +161,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Product_Category">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
+        <Association Name="FK_Product_Type">
+          <End Role="ProductType" Type="Self.ProductType" Multiplicity="0..1" />
           <End Role="Product" Type="Self.Product" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Category">
-              <PropertyRef Name="CategoryID" />
+            <Principal Role="ProductType">
+              <PropertyRef Name="ProductTypeID" />
             </Principal>
             <Dependent Role="Product">
-              <PropertyRef Name="CategoryID" />
+              <PropertyRef Name="ProductTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Product_Theme">
-          <End Role="Theme" Type="Self.Theme" Multiplicity="0..1" />
-          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+        <Association Name="FK_ProductType">
+          <End Role="ProductType" Type="Self.ProductType" Multiplicity="0..1" />
+          <End Role="ProductType1" Type="Self.ProductType" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Theme">
-              <PropertyRef Name="ThemeID" />
+            <Principal Role="ProductType">
+              <PropertyRef Name="ProductTypeID" />
             </Principal>
-            <Dependent Role="Product">
-              <PropertyRef Name="ThemeID" />
+            <Dependent Role="ProductType1">
+              <PropertyRef Name="ProductTypeParentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -242,18 +221,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Theme_Parent">
-          <End Role="Theme" Type="Self.Theme" Multiplicity="0..1" />
-          <End Role="Theme1" Type="Self.Theme" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Theme">
-              <PropertyRef Name="ThemeID" />
-            </Principal>
-            <Dependent Role="Theme1">
-              <PropertyRef Name="ParentThemeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Users_RoleID">
           <End Role="Role" Type="Self.Role" Multiplicity="0..1" />
           <End Role="Users" Type="Self.Users" Multiplicity="*" />
@@ -267,20 +234,15 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="QLBANHOAModelStoreContainer">
-          <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Discount" EntityType="Self.Discount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetail" EntityType="Self.OrderDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductType" EntityType="Self.ProductType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ShoppingCart" EntityType="Self.ShoppingCart" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ShoppingCartItem" EntityType="Self.ShoppingCartItem" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Theme" EntityType="Self.Theme" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Category_Parent" Association="Self.FK_Category_Parent">
-            <End Role="Category" EntitySet="Category" />
-            <End Role="Category1" EntitySet="Category" />
-          </AssociationSet>
           <AssociationSet Name="FK_Discount_Product" Association="Self.FK_Discount_Product">
             <End Role="Product" EntitySet="Product" />
             <End Role="Discount" EntitySet="Discount" />
@@ -297,13 +259,13 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="Orders" EntitySet="Orders" />
           </AssociationSet>
-          <AssociationSet Name="FK_Product_Category" Association="Self.FK_Product_Category">
-            <End Role="Category" EntitySet="Category" />
+          <AssociationSet Name="FK_Product_Type" Association="Self.FK_Product_Type">
+            <End Role="ProductType" EntitySet="ProductType" />
             <End Role="Product" EntitySet="Product" />
           </AssociationSet>
-          <AssociationSet Name="FK_Product_Theme" Association="Self.FK_Product_Theme">
-            <End Role="Theme" EntitySet="Theme" />
-            <End Role="Product" EntitySet="Product" />
+          <AssociationSet Name="FK_ProductType" Association="Self.FK_ProductType">
+            <End Role="ProductType" EntitySet="ProductType" />
+            <End Role="ProductType1" EntitySet="ProductType" />
           </AssociationSet>
           <AssociationSet Name="FK_ShoppingCart_UserID" Association="Self.FK_ShoppingCart_UserID">
             <End Role="Users" EntitySet="Users" />
@@ -317,10 +279,6 @@
             <End Role="ShoppingCart" EntitySet="ShoppingCart" />
             <End Role="ShoppingCartItem" EntitySet="ShoppingCartItem" />
           </AssociationSet>
-          <AssociationSet Name="FK_Theme_Parent" Association="Self.FK_Theme_Parent">
-            <End Role="Theme" EntitySet="Theme" />
-            <End Role="Theme1" EntitySet="Theme" />
-          </AssociationSet>
           <AssociationSet Name="FK_Users_RoleID" Association="Self.FK_Users_RoleID">
             <End Role="Role" EntitySet="Role" />
             <End Role="Users" EntitySet="Users" />
@@ -331,17 +289,6 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="QLBANHOAModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Category">
-          <Key>
-            <PropertyRef Name="CategoryID" />
-          </Key>
-          <Property Name="CategoryID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="CategoryName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ParentCategoryID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <NavigationProperty Name="Category1" Relationship="Self.FK_Category_Parent" FromRole="Category" ToRole="Category1" />
-          <NavigationProperty Name="Category2" Relationship="Self.FK_Category_Parent" FromRole="Category1" ToRole="Category" />
-          <NavigationProperty Name="Products" Relationship="Self.FK_Product_Category" FromRole="Category" ToRole="Product" />
-        </EntityType>
         <EntityType Name="Discount">
           <Key>
             <PropertyRef Name="DiscountID" />
@@ -392,8 +339,7 @@
             <PropertyRef Name="ProductID" />
           </Key>
           <Property Name="ProductID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="CategoryID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="ThemeID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="ProductTypeID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="ProductName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="Price" Type="Decimal" Precision="19" Scale="4" />
           <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
@@ -403,11 +349,21 @@
           <Property Name="CreatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Category" Relationship="Self.FK_Product_Category" FromRole="Product" ToRole="Category" />
           <NavigationProperty Name="Discounts" Relationship="Self.FK_Discount_Product" FromRole="Product" ToRole="Discount" />
           <NavigationProperty Name="OrderDetails" Relationship="Self.FK_OrderDetail_ProductID" FromRole="Product" ToRole="OrderDetail" />
-          <NavigationProperty Name="Theme" Relationship="Self.FK_Product_Theme" FromRole="Product" ToRole="Theme" />
+          <NavigationProperty Name="ProductType" Relationship="Self.FK_Product_Type" FromRole="Product" ToRole="ProductType" />
           <NavigationProperty Name="ShoppingCartItems" Relationship="Self.FK_ShoppingCartItem_ProductID" FromRole="Product" ToRole="ShoppingCartItem" />
+        </EntityType>
+        <EntityType Name="ProductType">
+          <Key>
+            <PropertyRef Name="ProductTypeID" />
+          </Key>
+          <Property Name="ProductTypeID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="ProductTypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ProductTypeParentID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Product_Type" FromRole="ProductType" ToRole="Product" />
+          <NavigationProperty Name="ProductType1" Relationship="Self.FK_ProductType" FromRole="ProductType" ToRole="ProductType1" />
+          <NavigationProperty Name="ProductType2" Relationship="Self.FK_ProductType" FromRole="ProductType1" ToRole="ProductType" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -441,17 +397,6 @@
           <NavigationProperty Name="Product" Relationship="Self.FK_ShoppingCartItem_ProductID" FromRole="ShoppingCartItem" ToRole="Product" />
           <NavigationProperty Name="ShoppingCart" Relationship="Self.FK_ShoppingCartItem_ShoppingCartID" FromRole="ShoppingCartItem" ToRole="ShoppingCart" />
         </EntityType>
-        <EntityType Name="Theme">
-          <Key>
-            <PropertyRef Name="ThemeID" />
-          </Key>
-          <Property Name="ThemeID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="ThemeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ParentThemeID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <NavigationProperty Name="Products" Relationship="Self.FK_Product_Theme" FromRole="Theme" ToRole="Product" />
-          <NavigationProperty Name="Theme1" Relationship="Self.FK_Theme_Parent" FromRole="Theme" ToRole="Theme1" />
-          <NavigationProperty Name="Theme2" Relationship="Self.FK_Theme_Parent" FromRole="Theme1" ToRole="Theme" />
-        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="UserID" />
@@ -472,30 +417,6 @@
           <NavigationProperty Name="Role" Relationship="Self.FK_Users_RoleID" FromRole="Users" ToRole="Role" />
           <NavigationProperty Name="ShoppingCarts" Relationship="Self.FK_ShoppingCart_UserID" FromRole="Users" ToRole="ShoppingCart" />
         </EntityType>
-        <Association Name="FK_Category_Parent">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
-          <End Role="Category1" Type="Self.Category" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Category">
-              <PropertyRef Name="CategoryID" />
-            </Principal>
-            <Dependent Role="Category1">
-              <PropertyRef Name="ParentCategoryID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Product_Category">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
-          <End Role="Product" Type="Self.Product" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Category">
-              <PropertyRef Name="CategoryID" />
-            </Principal>
-            <Dependent Role="Product">
-              <PropertyRef Name="CategoryID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Discount_Product">
           <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
           <End Role="Discount" Type="Self.Discount" Multiplicity="*" />
@@ -544,15 +465,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Product_Theme">
-          <End Role="Theme" Type="Self.Theme" Multiplicity="0..1" />
+        <Association Name="FK_Product_Type">
+          <End Role="ProductType" Type="Self.ProductType" Multiplicity="0..1" />
           <End Role="Product" Type="Self.Product" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Theme">
-              <PropertyRef Name="ThemeID" />
+            <Principal Role="ProductType">
+              <PropertyRef Name="ProductTypeID" />
             </Principal>
             <Dependent Role="Product">
-              <PropertyRef Name="ThemeID" />
+              <PropertyRef Name="ProductTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -565,6 +486,18 @@
             </Principal>
             <Dependent Role="ShoppingCartItem">
               <PropertyRef Name="ProductID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductType">
+          <End Role="ProductType" Type="Self.ProductType" Multiplicity="0..1" />
+          <End Role="ProductType1" Type="Self.ProductType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductType">
+              <PropertyRef Name="ProductTypeID" />
+            </Principal>
+            <Dependent Role="ProductType1">
+              <PropertyRef Name="ProductTypeParentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -604,37 +537,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Theme_Parent">
-          <End Role="Theme" Type="Self.Theme" Multiplicity="0..1" />
-          <End Role="Theme1" Type="Self.Theme" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Theme">
-              <PropertyRef Name="ThemeID" />
-            </Principal>
-            <Dependent Role="Theme1">
-              <PropertyRef Name="ParentThemeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="QLBANHOAEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Categories" EntityType="Self.Category" />
           <EntitySet Name="Discounts" EntityType="Self.Discount" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetail" />
           <EntitySet Name="Orders" EntityType="Self.Order" />
           <EntitySet Name="Products" EntityType="Self.Product" />
+          <EntitySet Name="ProductTypes" EntityType="Self.ProductType" />
           <EntitySet Name="Roles" EntityType="Self.Role" />
           <EntitySet Name="ShoppingCarts" EntityType="Self.ShoppingCart" />
           <EntitySet Name="ShoppingCartItems" EntityType="Self.ShoppingCartItem" />
-          <EntitySet Name="Themes" EntityType="Self.Theme" />
           <EntitySet Name="Users" EntityType="Self.User" />
-          <AssociationSet Name="FK_Category_Parent" Association="Self.FK_Category_Parent">
-            <End Role="Category" EntitySet="Categories" />
-            <End Role="Category1" EntitySet="Categories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Product_Category" Association="Self.FK_Product_Category">
-            <End Role="Category" EntitySet="Categories" />
-            <End Role="Product" EntitySet="Products" />
-          </AssociationSet>
           <AssociationSet Name="FK_Discount_Product" Association="Self.FK_Discount_Product">
             <End Role="Product" EntitySet="Products" />
             <End Role="Discount" EntitySet="Discounts" />
@@ -651,13 +563,17 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="Orders" EntitySet="Orders" />
           </AssociationSet>
-          <AssociationSet Name="FK_Product_Theme" Association="Self.FK_Product_Theme">
-            <End Role="Theme" EntitySet="Themes" />
+          <AssociationSet Name="FK_Product_Type" Association="Self.FK_Product_Type">
+            <End Role="ProductType" EntitySet="ProductTypes" />
             <End Role="Product" EntitySet="Products" />
           </AssociationSet>
           <AssociationSet Name="FK_ShoppingCartItem_ProductID" Association="Self.FK_ShoppingCartItem_ProductID">
             <End Role="Product" EntitySet="Products" />
             <End Role="ShoppingCartItem" EntitySet="ShoppingCartItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductType" Association="Self.FK_ProductType">
+            <End Role="ProductType" EntitySet="ProductTypes" />
+            <End Role="ProductType1" EntitySet="ProductTypes" />
           </AssociationSet>
           <AssociationSet Name="FK_Users_RoleID" Association="Self.FK_Users_RoleID">
             <End Role="Role" EntitySet="Roles" />
@@ -671,10 +587,6 @@
             <End Role="ShoppingCart" EntitySet="ShoppingCarts" />
             <End Role="ShoppingCartItem" EntitySet="ShoppingCartItems" />
           </AssociationSet>
-          <AssociationSet Name="FK_Theme_Parent" Association="Self.FK_Theme_Parent">
-            <End Role="Theme" EntitySet="Themes" />
-            <End Role="Theme1" EntitySet="Themes" />
-          </AssociationSet>
         </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
@@ -682,15 +594,6 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="QLBANHOAModelStoreContainer" CdmEntityContainer="QLBANHOAEntities">
-          <EntitySetMapping Name="Categories">
-            <EntityTypeMapping TypeName="QLBANHOAModel.Category">
-              <MappingFragment StoreEntitySet="Category">
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
-                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
-                <ScalarProperty Name="ParentCategoryID" ColumnName="ParentCategoryID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Discounts">
             <EntityTypeMapping TypeName="QLBANHOAModel.Discount">
               <MappingFragment StoreEntitySet="Discount">
@@ -737,8 +640,7 @@
             <EntityTypeMapping TypeName="QLBANHOAModel.Product">
               <MappingFragment StoreEntitySet="Product">
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
-                <ScalarProperty Name="ThemeID" ColumnName="ThemeID" />
+                <ScalarProperty Name="ProductTypeID" ColumnName="ProductTypeID" />
                 <ScalarProperty Name="ProductName" ColumnName="ProductName" />
                 <ScalarProperty Name="Price" ColumnName="Price" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
@@ -748,6 +650,15 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductTypes">
+            <EntityTypeMapping TypeName="QLBANHOAModel.ProductType">
+              <MappingFragment StoreEntitySet="ProductType">
+                <ScalarProperty Name="ProductTypeID" ColumnName="ProductTypeID" />
+                <ScalarProperty Name="ProductTypeName" ColumnName="ProductTypeName" />
+                <ScalarProperty Name="ProductTypeParentID" ColumnName="ProductTypeParentID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -777,15 +688,6 @@
                 <ScalarProperty Name="ShoppingCartID" ColumnName="ShoppingCartID" />
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Themes">
-            <EntityTypeMapping TypeName="QLBANHOAModel.Theme">
-              <MappingFragment StoreEntitySet="Theme">
-                <ScalarProperty Name="ThemeID" ColumnName="ThemeID" />
-                <ScalarProperty Name="ThemeName" ColumnName="ThemeName" />
-                <ScalarProperty Name="ParentThemeID" ColumnName="ParentThemeID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

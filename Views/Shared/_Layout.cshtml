@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shop Hoa Tươi FlowerCorner.vn</title>
+    <title>Shop Hoa Tươi FlowerCorner.vn - @ViewBag.Title</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet" />
     <link rel="stylesheet"
@@ -11,6 +11,161 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
           rel="stylesheet" />
     <link rel="stylesheet" href="~/Content/css/style.css" />
+    <style>
+        .top-bar {
+            background-color: #e91e63;
+            color: white;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .account-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .account-dropdown {
+            display: none;
+            position: absolute;
+            background: white;
+            color: #333;
+            min-width: 150px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+            .account-dropdown a {
+                display: block;
+                padding: 8px 15px;
+                color: #333;
+                text-decoration: none;
+            }
+
+                .account-dropdown a:hover {
+                    background-color: #f8f9fa;
+                }
+
+        .account-menu:hover .account-dropdown {
+            display: block;
+        }
+
+        .logo-row {
+            background-color: #2e7d32;
+            padding: 15px 0;
+        }
+
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: 25px;
+            padding: 5px 15px;
+        }
+
+            .search-box input {
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 150px;
+            }
+
+            .search-box button {
+                border: none;
+                background: transparent;
+                color: #e91e63;
+            }
+
+        .hotline-banner {
+            background-color: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .fixed-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #e91e63;
+            color: white;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .contact-group {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #2e7d32;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 60px; /* Tránh bị fixed-bottom-bar che */
+        }
+
+        .navbar {
+            background-color: #4caf50 !important;
+        }
+
+        .nav-pills .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+
+            .nav-pills .nav-link:hover {
+                background-color: rgba(255,255,255,0.1);
+            }
+
+        .dropdown-menu {
+            background-color: #4caf50;
+            border: none;
+        }
+
+        .dropdown-item {
+            color: white !important;
+        }
+
+            .dropdown-item:hover {
+                background-color: #45a049 !important;
+            }
+
+        /* MODAL STYLES */
+        .modal-backdrop {
+            background-color: rgba(0,0,0,0.7) !important;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .bg-pink {
+            background-color: #e91e63 !important;
+        }
+
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+            .btn-pink:hover {
+                background-color: #c2185b;
+            }
+    </style>
 </head>
 <body>
     <!-- Dòng 1 -->
@@ -18,10 +173,28 @@
         <div>HOTLINE: 1900 633 045 | 0865 160 360</div>
         <div class="d-flex" style="gap: 20px">
             <div class="account-menu">
-                <span>Tài Khoản <i class="fa fa-caret-down"></i></span>
+                <span>
+                    @if (Session["UserID"] != null)
+                    {
+                        <text>Xin chào, @Session["UserName"]</text>
+                    }
+                    else
+                    {
+                        <text>Tài Khoản</text>
+                    }
+                    <i class="fa fa-caret-down"></i>
+                </span>
                 <div class="account-dropdown">
-                    <a href="#">Đăng Ký</a>
-                    <a href="#">Đăng Nhập</a>
+                    @if (Session["UserID"] != null)
+                    {
+                        <a href="@Url.Action("Logout", "Account")">Đăng Xuất</a>
+                        <a href="#">Tài khoản của tôi</a>
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0)" onclick="$('#registerModal').modal('show')">Đăng Ký</a>
+                        <a href="javascript:void(0)" onclick="$('#loginModal').modal('show')">Đăng Nhập</a>
+                    }
                 </div>
             </div>
             <a href="#">Giỏ Hàng</a>
@@ -30,41 +203,47 @@
     </div>
 
     <!-- Dòng 2 -->
-    <div class="container logo-row row text-center">
-        <!-- Cột 1 -->
-        <div class="col-2 d-flex justify-content-center align-items-center gap-3">
-            <a href="#">
-                <i class="fab fa-facebook fa-lg" style="color: #1877f2"></i>
-            </a>
-            <a href="#">
-                <i class="fab fa-instagram fa-lg" style="color: #e1306c"></i>
-            </a>
-            <a href="#">
-                <i class="fab fa-twitter fa-lg" style="color: #1da1f2"></i>
-            </a>
-        </div>
+    <div class="container-fluid logo-row">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Cột 1: Social Media -->
+                <div class="col-md-2 d-flex justify-content-start">
+                    <div class="d-flex gap-3">
+                        <a href="#">
+                            <i class="fab fa-facebook fa-lg" style="color: #1877f2"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fab fa-instagram fa-lg" style="color: #e1306c"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fab fa-twitter fa-lg" style="color: #1da1f2"></i>
+                        </a>
+                    </div>
+                </div>
 
-        <!-- Cột 2 -->
-        <div class="col-8">
-            <a href="/Product/Index">
-                <img src="~/Content/Images/logo/logo-flower-corner-horizontal.jpg"
-                     alt="Logo"
-                     class="img-fluid" />
-            </a>
-        </div>
+                <!-- Cột 2: Logo -->
+                <div class="col-md-8 text-center">
+                    <a href="/Product/Index">
+                        <img src="~/Content/Images/logo/logo-flower-corner-horizontal.jpg"
+                             alt="Logo"
+                             class="img-fluid"
+                             style="max-height: 60px;" />
+                    </a>
+                </div>
 
-        <!-- Cột 3 -->
-        <div class="col-2 d-flex justify-content-center align-items-center gap-3">
-            <div class="search-box">
-                <input type="text" placeholder="Tìm kiếm" />
-                <button><i class="fa fa-search"></i></button>
+                <!-- Cột 3: Search & Cart -->
+                <div class="col-md-2 d-flex justify-content-end gap-3">
+                    <div class="search-box">
+                        <input type="text" placeholder="Tìm kiếm..." />
+                        <button type="button"><i class="fa fa-search"></i></button>
+                    </div>
+                    <a href="#" class="d-flex align-items-center">
+                        <i class="fa fa-shopping-cart fa-lg text-white"></i>
+                    </a>
+                </div>
             </div>
-            <a href="giohang.html">
-                <i class="fa fa-shopping-cart fa-lg text-white"></i>
-            </a>
         </div>
     </div>
-
     <!-- Dòng 3: Menu ngang -->
     <nav class="navbar navbar-expand-lg">
         <div class="container justify-content-center">
@@ -102,9 +281,12 @@
             <span class="carousel-control-next-icon"></span>
         </button>
     </div>
-    <div class="container">
+
+    <!-- Main Content -->
+    <div class="container mt-4">
         @RenderBody()
     </div>
+
     <!-- Thanh cố định cuối trang -->
     <div class="fixed-bottom-bar">
         <div class="contact-group">
@@ -126,6 +308,30 @@
     </div>
 
     <!-- Footer -->
+    <footer class="mt-5">
+        <div class="container footer-columns">
+            <div class="row justify-content-center align-items-start">
+                <!-- Cột 1 -->
+                <div class="col-md-5 text-center">
+                    <h5>FLOWER CORNER</h5>
+                    <p class="mb-1">Say it with Flowers</p>
+                    <p class="mb-3">ĐẶT HOA ONLINE CHỈ TỪ 300K</p>
+                    <a href="https://www.youtube.com/watch?v=slv6L1Bzk14&source_ve_path=MjM4NTE"
+                       target="_blank">
+                        <img src="https://img.youtube.com/vi/slv6L1Bzk14/hqdefault.jpg"
+                             alt="YouTube video thumbnail"
+                             class="img-fluid rounded mt-3"
+                             style="max-width: 300px; border: 2px solid white" />
+                    </a>
+                </div>
+
+                <!-- Cột 2 -->
+                <div class="col-md-5 text-center">
+                    <h5>THÔNG TIN LIÊN HỆ</h5>
+                    <p class="mb-1">📍 123 Đường Hoa, Quận 1, TP.HCM</p>
+                    <p class="mb-1">📞 Hotline: 1900 633 045</p>
+                    <p class="mb-1">📧 Email: contact@flowercorner.vn</p>
+                    <p>⏰ Giờ làm việc: 7:00 - 22:00</p>
     <footer class="main-footer">
         <div class="container">
             <div class="row">
@@ -174,6 +380,97 @@
         </div>
     </footer>
 
+    <!-- MODAL ĐĂNG NHẬP -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-pink text-white">
+                    <h5 class="modal-title">Đăng Nhập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="Email" class="form-control" placeholder="Nhập email" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" name="Password" class="form-control" placeholder="Nhập mật khẩu" required>
+                        </div>
+                        <button type="submit" class="btn btn-pink w-100">Đăng Nhập</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Chưa có tài khoản? <a href="javascript:void(0)" onclick="showRegister()">Đăng ký ngay</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ĐĂNG KÝ -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-pink text-white">
+                    <h5 class="modal-title">Đăng Ký Tài Khoản</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Họ tên</label>
+                                    <input type="text" name="Name" class="form-control" placeholder="Nhập họ tên" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="Email" class="form-control" placeholder="Nhập email" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Mật khẩu</label>
+                                    <input type="password" name="Password" class="form-control" placeholder="Nhập mật khẩu" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Xác nhận mật khẩu</label>
+                                    <input type="password" name="ConfirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Giới tính</label>
+                                    <select name="Gender" class="form-control">
+                                        <option value="">Chọn giới tính</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <input type="text" name="Address" class="form-control" placeholder="Nhập địa chỉ">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-pink w-100">Đăng Ký</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Đã có tài khoản? <a href="javascript:void(0)" onclick="showLogin()">Đăng nhập ngay</a></p>
+                    </div>
     <div class="simple-contact-footer">
         <div class="container">
             <div class="row align-items-center">
@@ -198,6 +495,49 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    function showLogin() {
+        $('#registerModal').modal('hide');
+        setTimeout(() => $('#loginModal').modal('show'), 500);
+    }
+
+    function showRegister() {
+        $('#loginModal').modal('hide');
+        setTimeout(() => $('#registerModal').modal('show'), 500);
+    }
+
+    // Xử lý submit form đăng nhập
+    $('#loginForm').submit(function (e) {
+        e.preventDefault();
+        $.post('@Url.Action("AjaxLogin", "Account")', $(this).serialize(), function (data) {
+            if (data.success) {
+                $('#loginModal').modal('hide');
+                location.reload();
+            } else {
+                alert(data.message || 'Đăng nhập thất bại');
+            }
+        }).fail(function () {
+            alert('Lỗi kết nối');
+        });
+    });
+
+    // Xử lý submit form đăng ký
+    $('#registerForm').submit(function (e) {
+        e.preventDefault();
+        $.post('@Url.Action("AjaxRegister", "Account")', $(this).serialize(), function (data) {
+            if (data.success) {
+                $('#registerModal').modal('hide');
+                location.reload();
+            } else {
+                alert(data.message || 'Đăng ký thất bại');
+            }
+        }).fail(function () {
+            alert('Lỗi kết nối');
+        });
+    });
+    </script>
 </body>
 </html>
