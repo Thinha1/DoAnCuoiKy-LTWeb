@@ -16,8 +16,8 @@ namespace WebBanHoa.Controllers
         public ActionResult Index()
         {
             //Lấy ra những thằng loại cha để duyệt
-            var parentTypes = db.ProductTypes
-                    .Where(t => t.ProductTypeParentID == null)
+            var parentTypes = db.Categories
+                    .Where(t => t.ParentCategoryID == null)
                     .ToList();
             ViewBag.ParentTypes = parentTypes;
             return View();
@@ -25,7 +25,8 @@ namespace WebBanHoa.Controllers
 
         public ActionResult _NavBar()
         {
-            List<ProductType> lst = db.ProductTypes.Where(pt => pt.ProductTypeParentID == null).ToList();
+            List<Category> lst = db.Categories.Where(pt => pt.ParentCategoryID == null).ToList();
+            ViewBag.Themes = db.Themes.Where(t => t.ParentThemeID == null).ToList();
             return PartialView(lst);
         }
 
@@ -63,25 +64,25 @@ namespace WebBanHoa.Controllers
             return PartialView(lst);
         }
 
-        public ActionResult _SPTheoTungLoai(string productTypeID)
+        public ActionResult _SPTheoTungLoai(string categoryID)
         {
-            var childTypeIds = db.ProductTypes
-                     .Where(t => t.ProductTypeParentID == productTypeID)
-                     .Select(t => t.ProductTypeID)
+            var childTypeIds = db.Categories
+                     .Where(t => t.ParentCategoryID == categoryID)
+                     .Select(t => t.CategoryID)
                      .ToList();
 
-            List<ProductDTO> lst = db.Products.Where(p => childTypeIds.Contains(p.ProductTypeID))
+            List<ProductDTO> lst = db.Products.Where(p => childTypeIds.Contains(p.CategoryID))
             .Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
-                ProductTypeID = p.ProductTypeID,
+                CategoryID = p.CategoryID,
                 Price = p.Price,
                 Image = p.Image,
                 Description = p.Description,
                 DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate,
             }).OrderByDescending(p => p.ProductID).Take(8).ToList();
-            ViewBag.ParentProductType = db.ProductTypes.FirstOrDefault(pt => pt.ProductTypeID == productTypeID).ProductTypeName;
+            ViewBag.ParentProductType = db.Categories.FirstOrDefault(pt => pt.CategoryID == categoryID).CategoryName;
             return PartialView(lst);
         }
 
@@ -91,7 +92,8 @@ namespace WebBanHoa.Controllers
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
-                ProductTypeID = p.ProductTypeID,
+                CategoryID = p.CategoryID,
+                ThemeID = p.ThemeID,
                 Price = p.Price,
                 Image = p.Image,
                 Description = p.Description,

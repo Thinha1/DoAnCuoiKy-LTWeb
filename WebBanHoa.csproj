@@ -143,11 +143,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-<<<<<<< HEAD
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\CartController.cs" />
-=======
->>>>>>> parent of d22846e (Merge pull request #7 from Thinha1/code_cua_thinh)
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
