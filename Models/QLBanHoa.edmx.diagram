@@ -4,26 +4,29 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="8843c4d5b14a478ab57970a9ebb8d94c" Name="Diagram1">
-        <EntityTypeShape EntityType="QLBANHOAModel.Discount" Width="1.5" PointX="3" PointY="4.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.OrderDetail" Width="1.5" PointX="6" PointY="5.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.Order" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.Product" Width="1.5" PointX="0.75" PointY="4.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.ProductType" Width="1.5" PointX="1.5" PointY="1.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.Role" Width="1.5" PointX="1.5" PointY="14.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCart" Width="1.5" PointX="3.75" PointY="11" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCartItem" Width="1.5" PointX="6" PointY="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.User" Width="1.5" PointX="1.5" PointY="10" IsExpanded="true" />
+      <Diagram DiagramId="22bcba69c2f64193a5373282ae35bcdc" Name="Diagram1">
+        <EntityTypeShape EntityType="QLBANHOAModel.Category" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Discount" Width="1.5" PointX="5.25" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.OrderDetail" Width="1.5" PointX="8.25" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Order" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Product" Width="1.5" PointX="3" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Role" Width="1.5" PointX="1.5" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCart" Width="1.5" PointX="6" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCartItem" Width="1.5" PointX="8.25" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Theme" Width="1.5" PointX="0.75" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.User" Width="1.5" PointX="3.75" PointY="10" IsExpanded="true" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Category_Parent" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Product_Category" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_Discount_Product" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_OrderDetail_OrderID" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_OrderDetail_ProductID" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_Orders_UserID" ManuallyRouted="false" />
-        <AssociationConnector Association="QLBANHOAModel.FK_Product_Type" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Product_Theme" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_ShoppingCartItem_ProductID" ManuallyRouted="false" />
-        <AssociationConnector Association="QLBANHOAModel.FK_ProductType" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_Users_RoleID" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_ShoppingCart_UserID" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_ShoppingCartItem_ShoppingCartID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_Theme_Parent" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
