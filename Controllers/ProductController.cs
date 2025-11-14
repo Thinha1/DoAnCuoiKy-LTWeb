@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 using WebBanHoa.Models;
 
 namespace WebBanHoa.Controllers
@@ -133,10 +134,15 @@ namespace WebBanHoa.Controllers
             .OrderBy(p => p.ProductName).Take(12)
             .ToList();
 
-            if (!string.IsNullOrWhiteSpace(sort) && !string.IsNullOrWhiteSpace(size))
+            if (string.IsNullOrWhiteSpace(sort))
             {
-                int iSize = Convert.ToInt32(size);
-                if (sort == "0" || sort == "1")
+                sort = "1"; // Mặc định sắp xếp theo Tên A-Z
+            }
+
+            //Truy vấn xuống cơ sở dữ liệu lấy toàn bộ products thoả điều kiện
+            var productsBase = db.Products
+                .Where(p => p.CategoryID == categoryID)
+                .Select(p => new ProductDTO
                 {
                     products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
@@ -150,8 +156,41 @@ namespace WebBanHoa.Controllers
                     })
                     .OrderBy(p => p.ProductName).Take(iSize)
                     .ToList();
+                    ProductID = p.ProductID,
+                    ProductName = p.ProductName,
+                    CategoryID = categoryID,
+                    ThemeID = p.ThemeID,
+                    Price = p.Price,
+                    Image = p.Image,
+                    Description = p.Description,
+                    DiscountRate = p.Discounts
+                        .Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now)
+                        .OrderBy(d => d.DiscountRate)
+                        .FirstOrDefault().DiscountRate
+                });
+
+
+            int totalRecords = productsBase.Count();
+            int noOfPages = (int)Math.Ceiling((double)totalRecords / numberOfRecordPerPage);
+            int noOfRecordToSkip = (page - 1) * numberOfRecordPerPage;
+
+            //Tạo list products để đẩy lên view
+            List<ProductDTO> products;
+
+            if (sort == "3" || sort == "4")
+            {
+
+                var allProducts = productsBase.ToList();
+
+                if (sort == "3") // Giá tăng
+                {
+                    products = allProducts
+                        .OrderBy(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
+                        .Skip(noOfRecordToSkip)
+                        .Take(numberOfRecordPerPage)
+                        .ToList();
                 }
-                else if (sort == "2")
+                else // sort == "4" (Giá giảm)
                 {
                     products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
@@ -165,8 +204,17 @@ namespace WebBanHoa.Controllers
                     })
                     .OrderByDescending(p => p.ProductName).Take(iSize)
                     .ToList();
+                    products = allProducts
+                        .OrderByDescending(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
+                        .Skip(noOfRecordToSkip)
+                        .Take(numberOfRecordPerPage)
+                        .ToList();
                 }
-                else if (sort == "3")
+            }
+            else
+            {
+                // Sắp xếp tại DATABASE (Nhanh hơn nhiều)
+                if (sort == "2") // Tên Z-A
                 {
                     products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
@@ -182,8 +230,9 @@ namespace WebBanHoa.Controllers
                     .OrderBy(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
                     .Take(iSize)
                     .ToList();
+                    productsBase = productsBase.OrderByDescending(p => p.ProductName);
                 }
-                else if (sort == "4")
+                else // sort == "1" or "0" (Tên A-Z)
                 {
                     products = db.Products.Where(p => p.ProductTypeID == productTypeID).Select(p => new ProductDTO
                     {
@@ -199,10 +248,116 @@ namespace WebBanHoa.Controllers
                     .OrderByDescending(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
                     .Take(iSize)
                     .ToList();
+                    productsBase = productsBase.OrderBy(p => p.ProductName);
                 }
+
+                products = productsBase
+                    .Skip(noOfRecordToSkip)
+                    .Take(numberOfRecordPerPage)
+                    .ToList();
             }
-            ViewBag.ProductTypeName = db.ProductTypes.FirstOrDefault(pt => pt.ProductTypeID == productTypeID).ProductTypeName;
+
+            ViewBag.Page = page;
+            ViewBag.NoOfPages = noOfPages;
+
+            ViewBag.CategoryName = db.Categories.FirstOrDefault(pt => pt.CategoryID == categoryID).CategoryName;
+
             return View(products);
         }
+
+        //Sản phẩm theo chủ đề
+        public ActionResult SPTheoChuDe(string themeID, string sort, string size, int page = 1)
+        {
+
+            int numberOfRecordPerPage = 8; 
+            if (!string.IsNullOrWhiteSpace(size))
+            {
+                numberOfRecordPerPage = Convert.ToInt32(size);
+            }
+
+            if (string.IsNullOrWhiteSpace(sort))
+            {
+                sort = "1"; // Mặc định sắp xếp theo Tên A-Z
+            }
+
+            //Truy vấn xuống cơ sở dữ liệu lấy toàn bộ products thoả điều kiện
+            var productsBase = db.Products
+                .Where(p => p.ThemeID == themeID)
+                .Select(p => new ProductDTO
+                {
+                    ProductID = p.ProductID,
+                    ProductName = p.ProductName,
+                    CategoryID = p.CategoryID,
+                    ThemeID = themeID,
+                    Price = p.Price,
+                    Image = p.Image,
+                    Description = p.Description,
+                    DiscountRate = p.Discounts
+                        .Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now)
+                        .OrderBy(d => d.DiscountRate)
+                        .FirstOrDefault().DiscountRate
+                });
+
+
+            int totalRecords = productsBase.Count();
+            int noOfPages = (int)Math.Ceiling((double)totalRecords / numberOfRecordPerPage);
+            int noOfRecordToSkip = (page - 1) * numberOfRecordPerPage;
+
+            //Tạo list products để đẩy lên view
+            List<ProductDTO> products;
+
+            if (sort == "3" || sort == "4")
+            {
+
+                var allProducts = productsBase.ToList();
+
+                if (sort == "3") // Giá tăng
+                {
+                    products = allProducts
+                        .OrderBy(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
+                        .Skip(noOfRecordToSkip)
+                        .Take(numberOfRecordPerPage)
+                        .ToList();
+                }
+                else // sort == "4" (Giá giảm)
+                {
+                    products = allProducts
+                        .OrderByDescending(p => p.Price - (p.Price * (decimal)(p.DiscountRate ?? 0) / 100))
+                        .Skip(noOfRecordToSkip)
+                        .Take(numberOfRecordPerPage)
+                        .ToList();
+                }
+            }
+            else
+            {
+                // Sắp xếp tại DATABASE (Nhanh hơn nhiều)
+                if (sort == "2") // Tên Z-A
+                {
+                    productsBase = productsBase.OrderByDescending(p => p.ProductName);
+                }
+                else // sort == "1" or "0" (Tên A-Z)
+                {
+                    productsBase = productsBase.OrderBy(p => p.ProductName);
+                }
+
+                products = productsBase
+                    .Skip(noOfRecordToSkip)
+                    .Take(numberOfRecordPerPage)
+                    .ToList();
+            }
+            ViewBag.ProductTypeName = db.ProductTypes.FirstOrDefault(pt => pt.ProductTypeID == productTypeID).ProductTypeName;
+
+            ViewBag.Page = page;
+            ViewBag.NoOfPages = noOfPages; 
+
+            ViewBag.ThemeName = db.Themes.FirstOrDefault(pt => pt.ThemeID == themeID).ThemeName;
+
+            return View(products);
+        }
+
+        //public ActionResult DatHang(string productID, string currentPrice)
+        //{
+
+        //}
     }
 }

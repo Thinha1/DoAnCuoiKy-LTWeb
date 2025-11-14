@@ -102,7 +102,7 @@
             box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
         }
 </style>
-<h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ProductTypeName </h2>
+<h2 class="text-center m-5 fw-bold page-title">@ViewBag.CategoryName </h2>
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center sort-bar mb-4">
     <div class="mb-2 mb-md-0">
@@ -127,7 +127,8 @@
 
             <label for="show-qty" class="form-label mb-0 me-2 text-nowrap">Số Lượng</label>
             <select class="form-select form-select-sm" id="show-qty" name="size">
-                <option selected value="12">12</option>
+                <option selected value="8">8</option>
+                <option value="12">12</option>
                 <option value="24">24</option>
                 <option value="36">36</option>
             </select>
@@ -142,7 +143,7 @@
     @foreach (var sp in Model)
     {
         <div class="col-lg-3 col-md-6 col-6">
-            <a href="#" class="product-link">
+            <a href="@Url.Action("Details", "Product", new { productID = sp.ProductID })" class="product-link">
                 <div class="card h-100 product-card">
                     <img src="@Url.Content("~/Content/Images/" + sp.Image)" class="card-img-top" alt="@sp.ProductName">
 
@@ -150,18 +151,28 @@
                         <h5 class="product-title fs-6 mb-2">
                             <span>@sp.ProductName</span>
                         </h5>
-                        <div class="price-text">
+                        <div class="price-text mt-auto">
                             @if (sp.DiscountRate != null)
                             {
                                 var finalPrice = sp.Price - (sp.Price * (decimal)sp.DiscountRate / 100);
-                                <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
-                                <span class="text-danger fw-bold me-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
 
-                                <span class="badge bg-danger fs-6">GIẢM @sp.DiscountRate%</span>
+                                <div class="product-price-line">
+                                    <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                    <span class="text-danger fw-bold ms-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
+                                </div>
+
+                                <div class="product-badge-line mt-1">
+                                    <span class="badge bg-danger fs-6">GIẢM @sp.DiscountRate%</span>
+                                </div>
                             }
                             else
                             {
-                                <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                <div class="product-price-line">
+                                    <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                </div>
+
+                                <div class="product-badge-line mt-1">
+                                </div>
                             }
                         </div>
                         <span class="btn btn-custom-pink btn-sm text-uppercase mt-auto">ĐẶT HÀNG</span>
@@ -170,6 +181,37 @@
             </a>
         </div>
     }
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            @{
+                int prevPage = ViewBag.Page - 1;
+                if (prevPage <= 0)
+                {
+                    prevPage = 1;
+                }
+                int nextPage = ViewBag.Page + 1;
+                if (nextPage > ViewBag.NoOfPages)
+                {
+                    nextPage = ViewBag.NoOfPages;
+                }
+            }
+            <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoLoai", "Product", new { categoryID = Model.FirstOrDefault().CategoryID, page = prevPage})">Previous</a></li>
+            @for (int i = 0; i < ViewBag.NoOfPages; i++)
+            {
+                int pageNumber = i + 1;
+                if (pageNumber == ViewBag.Page)
+                {
+                    <li class="page-item"><a class="page-link active" href="@Url.Action("SPTheoLoai", "Product", new { categoryID = Model.FirstOrDefault().CategoryID, page = pageNumber})">@(i + 1) </a></li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoLoai", "Product", new { categoryID = Model.FirstOrDefault().CategoryID, page = pageNumber})">@(i + 1) </a></li>
+                }
+
+            }
+        <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoLoai", "Product", new { categoryID = Model.FirstOrDefault().CategoryID, page = nextPage})">Next</a></li>
+        </ul>
+    </nav>
 </div>
 
 
