@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Flower Shop</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: white;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 250px;
+      }
+      .sidebar .nav-link {
+        color: white;
+        padding: 1rem;
+      }
+      .sidebar .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .nav-link.active {
+        background-color: #0d6efd;
+      }
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 100%;
+          height: auto;
+          position: relative;
+        }
+        .main-content {
+          margin-left: 0;
+        }
+      }
+      .card {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar p-3">
+      <h3 class="text-center mb-4">FlowerShop Admin</h3>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="#dashboard"
+            ><i class="fas fa-chart-line me-2"></i> Dashboard</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#products"
+            ><i class="fas fa-seedling me-2"></i> Quản lý hoa</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#orders"
+            ><i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#customers"
+            ><i class="fas fa-users me-2"></i> Quản lý khách hàng</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#promotions"
+            ><i class="fas fa-tags me-2"></i> Khuyến mãi</a
+          >
+        </li>
+        <li class="nav-item mt-auto">
+          <a class="nav-link" href="index.html"
+            ><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <!-- Dashboard -->
+      <section id="dashboard" class="active-section">
+        <h2 class="mb-4">Dashboard</h2>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="card text-white bg-primary">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-basket-shopping me-2"></i>Tổng sản phẩm
+                </h5>
+                <h2>0</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-white bg-success">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-shopping-cart me-2"></i>Tổng đơn hàng
+                </h5>
+                <h2>0</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-white bg-warning">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-users me-2"></i>Khách hàng mới
+                </h5>
+                <h2>0</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-white bg-info">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-money-bill-wave me-2"></i>Doanh thu tháng
+                </h5>
+                <h2>0đ</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Product Management -->
+      <section id="products" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Quản lý hoa</h2>
+          <button class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Thêm sản phẩm
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tên sản phẩm</th>
+                <th>Loại hoa (CategoryID)</th>
+                <th>Chủ đề (ThemeID)</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Hình ảnh</th>
+                <th>Mô tả</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Orders -->
+      <section id="orders" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Quản lý đơn hàng</h2>
+          <button class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Thêm đơn hàng
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID đơn hàng</th>
+                <th>Khách hàng (UserID)</th>
+                <th>Ngày đặt</th>
+                <th>Địa chỉ</th>
+                <th>Trạng thái</th>
+                <th>Phương thức thanh toán</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Customers -->
+      <section id="customers" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Quản lý khách hàng</h2>
+          <button class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Thêm khách hàng
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID khách hàng</th>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Giới tính</th>
+                <th>Địa chỉ</th>
+                <th>Vai trò</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Promotions -->
+      <section id="promotions" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Quản lý khuyến mãi</h2>
+          <button class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Thêm khuyến mãi
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID giảm giá</th>
+                <th>Sản phẩm (ProductID)</th>
+                <th>Tên giảm giá</th>
+                <th>Tỷ lệ (%)</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="promotionsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Promotions -->
+      <section id="promotions" class="d-none">
+        <h2 class="mb-4">Quản lý khuyến mãi</h2>
+        <button class="btn btn-primary">
+          <i class="fas fa-plus me-2"></i>Thêm Khuyễn Mãi
+        </button>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID giảm giá</th>
+                <th>Sản phẩm (ProductID)</th>
+                <th>Tên giảm giá</th>
+                <th>Tỷ lệ (%)</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="promotionsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin.js"></script>
+    <script>
+      const links = document.querySelectorAll(".sidebar .nav-link");
+      const sections = document.querySelectorAll("section");
+
+      links.forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          links.forEach((l) => l.classList.remove("active"));
+          this.classList.add("active");
+          const target = this.getAttribute("href").substring(1);
+          sections.forEach((sec) => sec.classList.add("d-none"));
+          document.getElementById(target).classList.remove("d-none");
+        });
+      });
+
+      // Thêm nút Sửa/Xóa
+      function editProduct(id) {
+        alert("Edit Product " + id);
+      }
+      function deleteProduct(id) {
+        alert("Delete Product " + id);
+      }
+      function editOrder(id) {
+        alert("Edit Order " + id);
+      }
+      function deleteOrder(id) {
+        alert("Delete Order " + id);
+      }
+      function editCustomer(id) {
+        alert("Edit Customer " + id);
+      }
+      function deleteCustomer(id) {
+        alert("Delete Customer " + id);
+      }
+      function editPromotion(id) {
+        alert("Edit Promotion " + id);
+      }
+      function deletePromotion(id) {
+        alert("Delete Promotion " + id);
+      }
+    </script>
+  </body>
+</html>

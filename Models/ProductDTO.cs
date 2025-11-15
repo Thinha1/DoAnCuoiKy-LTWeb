@@ -9,7 +9,6 @@ namespace WebBanHoa.Models
     {
         public string ProductID { get; set; }
         public string CategoryID { get; set; }
-        public string ProductTypeID { get; set; }  // THÊM DÒNG NÀY
         public string ThemeID { get; set; }
         public string ProductName { get; set; }
         public Nullable<decimal> Price { get; set; }
