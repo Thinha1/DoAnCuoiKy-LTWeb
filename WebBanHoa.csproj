@@ -143,8 +143,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -289,22 +290,20 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Product\Index.cshtml" />
-    <Content Include="Views\Product\_DiscountingProducts.cshtml" />
-    <Content Include="Views\Product\_MostOrderedProducts.cshtml" />
-    <Content Include="Views\Product\_NavBar.cshtml" />
-    <Content Include="Views\Product\_SPTheoTungLoai.cshtml" />
-    <Content Include="Views\Product\Details.cshtml" />
-    <Content Include="Views\Product\_RelevantProducts.cshtml" />
-    <Content Include="Views\Product\SPTheoLoai.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\_DiscountingProducts.cshtml" />
+    <Content Include="Views\Home\_MostOrderedProducts.cshtml" />
+    <Content Include="Views\Home\_NavBar.cshtml" />
+    <Content Include="Views\Home\_SPTheoTungLoai.cshtml" />
+    <Content Include="Views\Home\Details.cshtml" />
+    <Content Include="Views\Home\_RelevantProducts.cshtml" />
+    <Content Include="Views\Home\SPTheoLoai.cshtml" />
     <Content Include="Views\Shared\_Layout2.cshtml" />
-    <Content Include="Views\Product\SPTheoChuDe.cshtml" />
+    <Content Include="Views\Home\SPTheoChuDe.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -330,6 +329,8 @@
     <Content Include="Models\QLBanHoa.edmx.diagram">
       <DependentUpon>QLBanHoa.edmx</DependentUpon>
     </Content>
+    <Content Include="Areas\Admin\Views\Shared\Admin_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Scripts\bootstrap.js.map" />

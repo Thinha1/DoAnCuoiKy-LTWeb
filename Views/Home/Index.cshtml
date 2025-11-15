@@ -1,0 +1,44 @@
+﻿﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<WebBanHoa.Models.Category> categoryTypes = ViewBag.ParentTypes as List<WebBanHoa.Models.Category>;
+}
+
+@section Carousel{
+    <div id="carousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            @for (int i = 1; i <= 4; i++)
+            {
+                <div class="carousel-item @(i == 1 ? "active" : "")">
+                    <img src="@Url.Content("~/Content/Images/Banner/banner_" + i + ".jpg")"
+                         class="d-block w-100"
+                         alt="" />
+                </div>
+            }
+        </div>
+        <button class="carousel-control-prev"
+                type="button"
+                data-bs-target="#carousel"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next"
+                type="button"
+                data-bs-target="#carousel"
+                data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+}
+
+@Html.Action("_DiscountingProducts", "Home")
+@Html.Action("_MostOrderedProducts", "Home")
+@*Những danh mục sản phẩm cha*@
+@foreach (var type in categoryTypes.Where(t => t.ParentCategoryID == null))
+{
+    if (categoryTypes.Count > 0)
+    {
+        @Html.Action("_SPTheoTungLoai", "Home", new { categoryID = type.CategoryID })
+    }
+}

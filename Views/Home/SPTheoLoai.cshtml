@@ -1,7 +1,7 @@
 ﻿@model List<WebBanHoa.Models.ProductDTO>
 @{
-    ViewBag.Title = "SPTheoChuDe";
-    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewBag.Title = "SPTheoLoai";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
     body {
@@ -102,7 +102,7 @@
             box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
         }
 </style>
-<h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ThemeName </h2>
+<h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ProductTypeName </h2>
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center sort-bar mb-4">
     <div class="mb-2 mb-md-0">
@@ -110,12 +110,12 @@
     </div>
 
     <div class="d-flex align-items-center">
-        @using (@Html.BeginForm("SPTheoChuDe", "Product",
+        @using (@Html.BeginForm("SPTheoLoai", "Home",
             FormMethod.Get,
             new { @class = "d-flex align-items-center" }
         ))
         {
-            @Html.Hidden("themeID", Model.FirstOrDefault().ThemeID)
+            @Html.Hidden("categoryID", Model.FirstOrDefault().CategoryID)
             <label for="sort-by" class="form-label mb-0 me-2 text-nowrap">Sắp xếp theo</label>
             <select class="form-select form-select-sm me-3" id="sort-by" name="sort">
                 <option selected value="0">Mặc định</option>
@@ -142,7 +142,7 @@
     @foreach (var sp in Model)
     {
         <div class="col-lg-3 col-md-6 col-6">
-            <a href="#" class="product-link">
+            <a href="@Url.Action("Details", "Home", new {productID = sp.ProductID})" class="product-link">
                 <div class="card h-100 product-card">
                     <img src="@Url.Content("~/Content/Images/" + sp.Image)" class="card-img-top" alt="@sp.ProductName">
 
@@ -170,6 +170,37 @@
             </a>
         </div>
     }
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            @{
+                int prevPage = ViewBag.Page - 1;
+                if (prevPage <= 0)
+                {
+                    prevPage = 1;
+                }
+                int nextPage = ViewBag.Page + 1;
+                if (nextPage > ViewBag.NoOfPages)
+                {
+                    nextPage = ViewBag.NoOfPages;
+                }
+            }
+            <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoLoai", "Home", new { categoryID = Model.FirstOrDefault().CategoryID, page = prevPage})">Previous</a></li>
+            @for (int i = 0; i < ViewBag.NoOfPages; i++)
+            {
+                int pageNumber = i + 1;
+                if (pageNumber == ViewBag.Page)
+                {
+                    <li class="page-item"><a class="page-link active" href="@Url.Action("SPTheoLoai", "Home", new { categoryID = Model.FirstOrDefault().CategoryID, page = pageNumber})">@(i + 1) </a></li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoLoai", "Home", new { categoryID = Model.FirstOrDefault().CategoryID, page = pageNumber})">@(i + 1) </a></li>
+                }
+
+            }
+            <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoLoai", "Home", new { categoryID = Model.FirstOrDefault().CategoryID, page = nextPage})">Next</a></li>
+        </ul>
+    </nav>
 </div>
 
 

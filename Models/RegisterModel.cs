@@ -12,7 +12,6 @@ namespace WebBanHoa.Models
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
-        [MinLength(6, ErrorMessage = "Mật khẩu ít nhất 6 ký tự")]
         public string Password { get; set; }
 
         [Compare("Password", ErrorMessage = "Mật khẩu xác nhận không khớp")]

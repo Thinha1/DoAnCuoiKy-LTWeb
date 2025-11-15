@@ -17,7 +17,7 @@
                     <ul class="dropdown-menu">
                         @foreach (var con in lsp.Category1)
                         {
-                            <li>@Html.ActionLink(con.CategoryName, "SPTheoLoai", "Product", new { categoryID = con.CategoryID }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink(con.CategoryName, "SPTheoLoai", "Home", new { categoryID = con.CategoryID }, new { @class = "dropdown-item" })</li>
                         }
                     </ul>
                 }
@@ -38,7 +38,7 @@
                         <ul class="dropdown-menu">
                             @foreach (var con in th.Theme1)
                             {
-                                <li>@Html.ActionLink(con.ThemeName, "SPTheoChuDe", "Product", new { themeID = con.ThemeID }, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink(con.ThemeName, "SPTheoChuDe", "Home", new { themeID = con.ThemeID }, new { @class = "dropdown-item" })</li>
                             }
                         </ul>
                     }
