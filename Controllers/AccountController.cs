@@ -10,10 +10,10 @@ namespace WebBanHoa.Controllers
         private QLBANHOAEntities db = new QLBANHOAEntities();
 
         // GET: /Account/Login
-        public ActionResult Login()
-        {
-            return View();
-        }
+        //public ActionResult Login()
+        //{
+        //    return View();
+        //}
 
         //[HttpPost]
         //[ValidateAntiForgeryToken]
@@ -90,10 +90,10 @@ namespace WebBanHoa.Controllers
         }
 
         // GET: /Account/Register
-        public ActionResult Register()
-        {
-            return View();
-        }
+        //public ActionResult Register()
+        //{
+        //    return View();
+        //}
 
         //[HttpPost]
         //[ValidateAntiForgeryToken]
@@ -214,7 +214,7 @@ namespace WebBanHoa.Controllers
         {
             SessionHelper.ClearSession();
             TempData["SuccessMessage"] = "Đăng xuất thành công!";
-            return RedirectToAction("Index", "Product");
+            return RedirectToAction("Index", "Home");
         }
 
         // AJAX LOGOUT

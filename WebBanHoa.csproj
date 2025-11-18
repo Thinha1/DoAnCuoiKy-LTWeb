@@ -143,8 +143,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\DashBoardController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -250,6 +252,24 @@
     <Content Include="Content\Images\img_SP020.jpg" />
     <Content Include="Content\Images\img_SP021.jpg" />
     <Content Include="Content\Images\img_SP022.jpg" />
+    <Content Include="Content\Images\img_SP023.jpg" />
+    <Content Include="Content\Images\img_SP024.jpg" />
+    <Content Include="Content\Images\img_SP025.jpg" />
+    <Content Include="Content\Images\img_SP026.jpg" />
+    <Content Include="Content\Images\img_SP027.jpg" />
+    <Content Include="Content\Images\img_SP028.jpg" />
+    <Content Include="Content\Images\img_SP029.jpg" />
+    <Content Include="Content\Images\img_SP030.jpg" />
+    <Content Include="Content\Images\img_SP031.jpg" />
+    <Content Include="Content\Images\img_SP032.jpg" />
+    <Content Include="Content\Images\img_SP033.jpg" />
+    <Content Include="Content\Images\img_SP034.jpg" />
+    <Content Include="Content\Images\img_SP035.jpg" />
+    <Content Include="Content\Images\img_SP036.jpg" />
+    <Content Include="Content\Images\img_SP037.jpg" />
+    <Content Include="Content\Images\img_SP038.jpg" />
+    <Content Include="Content\Images\img_SP039.jpg" />
+    <Content Include="Content\Images\img_SP040.jpg" />
     <Content Include="Content\Images\logo\logo-flower-corner-horizontal.jpg" />
     <Content Include="Content\css\style.css" />
     <Content Include="favicon.ico" />
@@ -304,6 +324,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Views\AdminBase\" />
+    <Folder Include="Views\Cart\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -331,6 +353,7 @@
     </Content>
     <Content Include="Areas\Admin\Views\Shared\Admin_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\DashBoard\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Scripts\bootstrap.js.map" />

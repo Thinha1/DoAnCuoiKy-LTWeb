@@ -185,6 +185,10 @@
                     {
                         <a href="@Url.Action("Logout", "Account")">Đăng Xuất</a>
                         <a href="#">Tài khoản của tôi</a>
+                        if (Session["UserRole"].ToString().Trim() == "R001")
+                        {
+                            <a href="@Url.Action("Index", "Dashboard", new {area = "Admin"})">Trang quản trị</a>
+                        }
                     }
                     else
                     {
