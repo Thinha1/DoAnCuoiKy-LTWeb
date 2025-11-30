@@ -24,5 +24,19 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 }).ToList();
             return View(odLists);
         }
+
+        public ActionResult Details(string orderID)
+        {
+            List<OrderDetailsDTO> orderDetails = db.OrderDetails.Select(
+                od => new OrderDetailsDTO
+                {
+                    ProductID = od.ProductID,
+                    OrderID = od.OrderID,
+                    ProductName = od.Product.ProductName,
+                    Quantity = od.Quantity,
+                    UnitPrice = od.UnitPrice,
+                }).ToList();
+            return View(orderDetails);
+        }
     }
 }
