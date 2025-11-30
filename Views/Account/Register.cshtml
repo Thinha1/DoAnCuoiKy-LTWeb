@@ -13,7 +13,7 @@
                     <h4>Đăng ký tài khoản</h4>
                 </div>
                 <div class="card-body">
-                    @using (Html.BeginForm())
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
 
@@ -72,7 +72,7 @@
                     }
 
                     <div class="text-center mt-3">
-                        <p>Đã có tài khoản? @Html.ActionLink("Đăng nhập ngay", "Login", new {@class = "btn btn-primary"})</p>
+                        <p>Đã có tài khoản? @Html.ActionLink("Đăng nhập ngay", "Login", new { @class = "btn btn-primary" })</p>
                     </div>
                 </div>
             </div>
@@ -95,3 +95,25 @@
             background-color: #c2185b;
         }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@{
+    string errorMessage = null;
+
+    if (ViewBag.Message != null)
+    {
+        errorMessage = ViewBag.Message;
+    }
+
+    if (errorMessage != null)
+    {
+        <script>
+        Swal.fire({
+            title: 'Đăng ký thất bại!',
+            html: '@Html.Raw(errorMessage)',
+            icon: 'error',
+            confirmButtonText: 'Thử lại'
+        });
+        </script>
+    }
+
+}

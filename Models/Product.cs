@@ -34,6 +34,7 @@ namespace WebBanHoa.Models
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public Nullable<int> IsAvailable { get; set; }
     
         public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

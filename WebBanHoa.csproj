@@ -144,7 +144,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashBoardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
+    <Compile Include="Areas\Admin\Security\CheckAuthorize.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -165,6 +167,7 @@
     <Compile Include="Models\OrderDetail.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderDTO.cs" />
     <Compile Include="Models\PasswordHelper.cs" />
     <Compile Include="Models\Product.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
@@ -318,13 +321,11 @@
     <Content Include="Views\Home\Details.cshtml" />
     <Content Include="Views\Home\_RelevantProducts.cshtml" />
     <Content Include="Views\Home\SPTheoLoai.cshtml" />
-    <Content Include="Views\Shared\_Layout2.cshtml" />
     <Content Include="Views\Home\SPTheoChuDe.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Views\AdminBase\" />
     <Folder Include="Views\Cart\" />
   </ItemGroup>
   <ItemGroup>
@@ -344,6 +345,12 @@
     <Content Include="Content\bootstrap-grid.rtl.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="Areas\Admin\Views\Shared\Admin_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\DashBoard\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Order\Index.cshtml" />
     <EntityDeploy Include="Models\QLBanHoa.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>QLBanHoa.Designer.cs</LastGenOutput>
@@ -351,9 +358,6 @@
     <Content Include="Models\QLBanHoa.edmx.diagram">
       <DependentUpon>QLBanHoa.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\Shared\Admin_Layout.cshtml" />
-    <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\DashBoard\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Scripts\bootstrap.js.map" />

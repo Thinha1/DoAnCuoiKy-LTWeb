@@ -69,6 +69,7 @@
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="30" />
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="30" />
+          <Property Name="IsAvailable" Type="int" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -121,6 +122,7 @@
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="30" />
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="30" />
+          <Property Name="IsEnabled" Type="int" />
         </EntityType>
         <Association Name="FK_Category_Parent">
           <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
@@ -403,6 +405,7 @@
           <Property Name="CreatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="IsAvailable" Type="Int32" />
           <NavigationProperty Name="Category" Relationship="Self.FK_Product_Category" FromRole="Product" ToRole="Category" />
           <NavigationProperty Name="Discounts" Relationship="Self.FK_Discount_Product" FromRole="Product" ToRole="Discount" />
           <NavigationProperty Name="OrderDetails" Relationship="Self.FK_OrderDetail_ProductID" FromRole="Product" ToRole="OrderDetail" />
@@ -468,6 +471,7 @@
           <Property Name="CreatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="IsEnabled" Type="Int32" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_UserID" FromRole="Users" ToRole="Orders" />
           <NavigationProperty Name="Role" Relationship="Self.FK_Users_RoleID" FromRole="Users" ToRole="Role" />
           <NavigationProperty Name="ShoppingCarts" Relationship="Self.FK_ShoppingCart_UserID" FromRole="Users" ToRole="ShoppingCart" />
@@ -748,6 +752,7 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="IsAvailable" ColumnName="IsAvailable" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -804,6 +809,7 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -115,9 +115,9 @@
             background-color: #4caf50 !important;
         }*/
 
-        .nav-pills .nav-link {
+/*        .nav-pills .nav-link {
             font-weight: 500;
-        }
+        }*/
 
             .nav-pills .nav-link:hover {
                 background-color: rgba(255,255,255,0.1);
@@ -192,8 +192,8 @@
                     }
                     else
                     {
-                        <a href="javascript:void(0)" onclick="$('#registerModal').modal('show')">Đăng Ký</a>
-                        <a href="javascript:void(0)" onclick="$('#loginModal').modal('show')">Đăng Nhập</a>
+                        <a href="@Url.Action("Register", "Account")">Đăng Ký</a>
+                        <a href="@Url.Action("Login", "Account")">Đăng Nhập</a>
                     }
                 </div>
             </div>
@@ -454,20 +454,20 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    @RenderSection("Script", required: false)
     <script>
-    function showLogin() {
-        $('#registerModal').modal('hide');
-        setTimeout(() => $('#loginModal').modal('show'), 500);
-    }
+    //function showLogin() {
+    //    $('#registerModal').modal('hide');
+    //    setTimeout(() => $('#loginModal').modal('show'), 500);
+    //}
 
-    function showRegister() {
-        $('#loginModal').modal('hide');
-        setTimeout(() => $('#registerModal').modal('show'), 500);
-    }
+    //function showRegister() {
+    //    $('#loginModal').modal('hide');
+    //    setTimeout(() => $('#registerModal').modal('show'), 500);
+    //}
 
     // Xử lý submit form đăng nhập
-    $('#loginForm').submit(function (e) {
+    @*$('#loginForm').submit(function (e) {
         e.preventDefault();
         $.post('@Url.Action("AjaxLogin", "Account")', $(this).serialize(), function (data) {
             if (data.success) {
@@ -528,7 +528,7 @@
                 text: data.message || 'Vui lòng thử lại sau!'
             });
         });
-    });
+    });*@
     </script>
 </body>
 </html>

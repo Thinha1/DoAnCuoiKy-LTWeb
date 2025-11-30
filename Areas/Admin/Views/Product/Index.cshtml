@@ -4,27 +4,46 @@
     Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
 }
 <style>
-    /* Class để giới hạn kích thước ảnh thumbnail trong bảng */
+    /* 1. Tinh chỉnh ảnh thumbnail */
     .product-thumbnail {
-        width: 80px;
-        height: 80px;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy mà không bị méo */
-        border-radius: 4px;
-        border: 1px solid #ddd;
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 6px; /* Bo tròn nhẹ góc ảnh */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Đổ bóng nhẹ cho ảnh */
     }
 
-    /* Căn giữa nội dung trong bảng theo chiều dọc */
+    /* 2. Căn giữa nội dung */
     .table.align-middle td,
     .table.align-middle th {
         vertical-align: middle;
     }
 
-    /* Giới hạn độ dài của cột mô tả */
-    .description-cell {
-        max-width: 250px; /* Đặt chiều rộng tối đa */
-        white-space: nowrap; /* Ngăn không cho xuống dòng */
-        overflow: hidden; /* Ẩn phần thừa */
-        text-overflow: ellipsis; /* Thêm dấu "..." */
+    /* 3. Style cho tiêu đề bảng */
+    .admin-table thead th {
+        background-color: #f8f9fa; /* Màu nền xám rất nhạt */
+        color: #6c757d; /* Màu chữ xám đậm */
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase; /* Chữ in hoa */
+        border-bottom: 2px solid #dee2e6;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* 4. Hiệu ứng khi di chuột vào hàng */
+    .admin-table tbody tr:hover {
+        background-color: #fdfdfd;
+    }
+
+    /* 5. Giới hạn mô tả (nếu dùng) */
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.9rem;
+        color: #555;
     }
 </style>
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -35,7 +54,7 @@
 </div>
 
 <div class="table-responsive">
-    <table class="table table-striped table-hover align-middle text-center">
+    <table class="table table-hover align-middle admin-table mb-0">
         <thead>
             <tr>
                 <th style="width: 20%;">Tên sản phẩm</th>
@@ -66,12 +85,12 @@
                         <a href="@Url.Action("Edit", "Product", new { productID = sp.ProductID, area = "Admin" })" class="btn btn-sm btn-outline-primary" title="Sửa">
                             <i class="fas fa-pencil-alt"></i>
                         </a>
-                        <a href="@Url.Action("Details", "Product", new { productID = sp.ProductID, area = "" })"
+                        <a href="@Url.Action("Details", "Home", new { productID = sp.ProductID, area = "" })"
                            class="btn btn-sm btn-outline-info"
                            title="Xem chi tiết">
                             <i class="fas fa-eye"></i>
                         </a>
-                        <a href="@Url.Action("Delete", "Product", new { productID = sp.ProductID, area = "Admin" })" class="btn btn-sm btn-outline-danger" title="Xóa">
+                        <a href="@Url.Action("Delete", "Product", new { productID = sp.ProductID, area = "Admin" })" class="btn btn-sm btn-outline-danger delete-btn" title="Xóa">
                             <i class="fas fa-trash"></i>
                         </a>
                     </td>
@@ -80,3 +99,36 @@
         </tbody>
     </table>
 </div>
+@section Script{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.delete-btn').on('click', function (e) {
+                // 1. Ngăn không cho chuyển trang ngay
+                e.preventDefault();
+
+                var self = $(this);
+                var deleteUrl = self.attr('href'); // Lấy đường dẫn xóa
+
+                // 2. Hiện SweetAlert
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn xoá?',
+                    text: "Sản phẩm sẽ ngừng kinh doanh và các đơn hàng sẽ bị huỷ!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+
+                    confirmButtonText: 'Xóa ngay',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // 3. Nếu đồng ý -> Chuyển trang thủ công bằng JS
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebBanHoa.Models;
+using WebBanHoa.Areas.Security;
 
 namespace WebBanHoa.Areas.Admin.Controllers
 {
+    [CheckAuthorize]
     public class DashBoardController : Controller
     {
         private QLBANHOAEntities db = new QLBANHOAEntities();

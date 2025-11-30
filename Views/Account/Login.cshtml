@@ -13,7 +13,7 @@
                     <h4>Đăng nhập</h4>
                 </div>
                 <div class="card-body">
-                    @using (Html.BeginForm())
+                    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
 
@@ -58,3 +58,26 @@
             background-color: #c2185b;
         }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@{
+    string errorMessage = null;
+
+    if (ViewBag.Message != null)
+    {
+        errorMessage = ViewBag.Message;
+    }
+
+    if (errorMessage != null)
+    {
+        <script>
+        Swal.fire({
+            title: 'Đăng nhập thất bại!',
+            html: '@Html.Raw(errorMessage)',
+            icon: 'error',
+            confirmButtonText: 'Thử lại'
+        });
+        </script>
+    }
+
+}
