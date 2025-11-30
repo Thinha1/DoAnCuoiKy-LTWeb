@@ -1,31 +1,134 @@
-﻿
+﻿@model List<WebBanHoa.Models.ProductDTO>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
 }
+<style>
+    /* 1. Tinh chỉnh ảnh thumbnail */
+    .product-thumbnail {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 6px; /* Bo tròn nhẹ góc ảnh */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Đổ bóng nhẹ cho ảnh */
+    }
 
+    /* 2. Căn giữa nội dung */
+    .table.align-middle td,
+    .table.align-middle th {
+        vertical-align: middle;
+    }
+
+    /* 3. Style cho tiêu đề bảng */
+    .admin-table thead th {
+        background-color: #f8f9fa; /* Màu nền xám rất nhạt */
+        color: #6c757d; /* Màu chữ xám đậm */
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase; /* Chữ in hoa */
+        border-bottom: 2px solid #dee2e6;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* 4. Hiệu ứng khi di chuột vào hàng */
+    .admin-table tbody tr:hover {
+        background-color: #fdfdfd;
+    }
+
+    /* 5. Giới hạn mô tả (nếu dùng) */
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.9rem;
+        color: #555;
+    }
+</style>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Quản lý hoa</h2>
-    <button class="btn btn-primary">
+    <a class="btn btn-primary" href="@Url.Action("Create", "Product")">
         <i class="fas fa-plus me-2"></i>Thêm sản phẩm
-    </button>
-</div>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tên sản phẩm</th>
-                <th>Loại hoa (CategoryID)</th>
-                <th>Chủ đề (ThemeID)</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Hình ảnh</th>
-                <th>Mô tả</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody id="productTableBody"></tbody>
-    </table>
+    </a>
 </div>
 
+<div class="table-responsive">
+    <table class="table table-hover align-middle admin-table mb-0">
+        <thead>
+            <tr>
+                <th style="width: 20%;">Tên sản phẩm</th>
+                <th style="width: 15%;">Loại hoa</th>
+                <th style="width: 15%;">Chủ đề</th>
+                <th style="width: 10%;">Giá</th>
+                <th style="width: 10%;">Số lượng</th>
+                <th style="width: 10%;">Hình ảnh</th>
+                <th class="text-center" style="width: 150px;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sp in Model)
+            {
+                <tr>
+                    <td>@sp.ProductName</td>
+                    <td>@sp.CategoryName</td>
+                    <td>@sp.ThemeName</td>
+                    <td>@String.Format("{0:N0}", sp.Price) VNĐ</td>
+                    <td>@sp.Quantity</td>
+
+                    <td>
+                        <img src="@Url.Content("~/Content/Images/" + sp.Image)"
+                             alt="@sp.ProductName"
+                             class="product-thumbnail" />
+                    </td>
+                    <td class="text-center">
+                        <a href="@Url.Action("Edit", "Product", new { productID = sp.ProductID, area = "Admin" })" class="btn btn-sm btn-outline-primary" title="Sửa">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <a href="@Url.Action("Details", "Home", new { productID = sp.ProductID, area = "" })"
+                           class="btn btn-sm btn-outline-info"
+                           title="Xem chi tiết">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="@Url.Action("Delete", "Product", new { productID = sp.ProductID, area = "Admin" })" class="btn btn-sm btn-outline-danger delete-btn" title="Xóa">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Script{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.delete-btn').on('click', function (e) {
+                // 1. Ngăn không cho chuyển trang ngay
+                e.preventDefault();
+
+                var self = $(this);
+                var deleteUrl = self.attr('href'); // Lấy đường dẫn xóa
+
+                // 2. Hiện SweetAlert
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn xoá?',
+                    text: "Sản phẩm sẽ ngừng kinh doanh và các đơn hàng sẽ bị huỷ!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+
+                    confirmButtonText: 'Xóa ngay',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // 3. Nếu đồng ý -> Chuyển trang thủ công bằng JS
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    </script>
+}

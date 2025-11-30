@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+}
+
+<section id="dashboard" class="active-section">
+    <h2 class="mb-4">Dashboard</h2>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-basket-shopping me-2"></i>Tổng sản phẩm
+                    </h5>
+                    <h2>@ViewBag.NoOfProducts</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-shopping-cart me-2"></i>Tổng đơn hàng
+                    </h5>
+                    <h2>@ViewBag.NoOfOrders</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-users me-2"></i>Tổng khách hàng
+                    </h5>
+                    <h2>@ViewBag.NoOfCustomers</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-money-bill-wave me-2"></i>Doanh thu tháng
+                    </h5>
+                    <h2>0đ</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

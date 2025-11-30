@@ -1,0 +1,146 @@
+﻿@model WebBanHoa.Models.ProductDTO
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tiny.cloud/1/ntjn1x7xodddb5xd6aojdl4pncz9ufjf77rzij4cz6ooerjt/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h2 class="mt-4">Chỉnh sửa sản phẩm</h2>
+        <a href="@Url.Action("Index", "Product", new {area = "Admin"})" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <i class="fas fa-pencil-alt me-1"></i>
+            Thông tin sản phẩm
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("Edit", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(model => model.ProductID)
+
+                <input type="hidden" name="OldImage" value="@Model.Image" />
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.ProductName, "Tên sản phẩm", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Nhập tên sản phẩm", @required = "required" } })
+                                @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.CategoryID, "Loại hoa (Category)", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.DropDownListFor(model => model.CategoryID,
+                                    new SelectList(ViewBag.Category, "CategoryID", "CategoryName"),
+                                    "-- Chọn loại hoa --",
+                                    new { @class = "form-select", @id = "CategoryID" })
+                                @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.ThemeID, "Chủ đề (Theme)", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.DropDownListFor(model => model.ThemeID,
+                                    new SelectList(ViewBag.Theme, "ThemeID", "ThemeName"),
+                                    "-- Chọn chủ đề --",
+                                    new { @class = "form-select", @id = "ThemeID" })
+                                @Html.ValidationMessageFor(model => model.ThemeID, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.Price, "Giá bán (VNĐ)", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control", @type = "number", @required = "required" } })
+                                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.Quantity, "Số lượng", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "0", @required = "required" } })
+                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.Description, "Mô tả chi tiết", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @id = "txtDescription", @rows = "10" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light fw-bold">Hình ảnh sản phẩm</div>
+                            <div class="card-body text-center">
+                                <img id="imgPreview"
+                                     src="@(string.IsNullOrEmpty(Model.Image) ? Url.Content("~/Content/Images/no-image.jpg") : Url.Content("~/Content/Images/" + Model.Image))"
+                                     style="max-height: 250px; width: 100%; object-fit: contain; background: #f8f9fa;"
+                                     class="img-fluid mb-3 border rounded" />
+
+                                <label for="imageUploadFile" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                                    <i class="fas fa-upload me-1"></i> Chọn ảnh mới
+                                </label>
+                                <input type="file" name="ImageUpload" id="imageUploadFile" class="d-none" accept="image/*" onchange="previewImage(this)" />
+                                <small class="text-muted">Giữ nguyên nếu không muốn đổi ảnh.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-light border-0">
+                        <div class="card-body">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox"
+                                       value="1"
+                                       style="cursor: pointer;" name="IsAvailable" 
+                                       @(Model.IsAvailable == 1 ? "checked" : "")/>
+
+                                <label class="form-check-label fw-bold" for="IsAvailableSwitch">Kích hoạt ngay</label>
+                            </div>
+
+                            <div class="form-text mt-2" style="font-size: 0.85rem;">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Sản phẩm sẽ hiển thị ngay sau khi tạo.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                    <a href="@Url.Action("Index", "Product", new {area = "Admin"})" class="btn btn-light border me-2">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Khởi tạo TinyMCE
+    tinymce.init({
+        selector: '#txtDescription',
+        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+    });
+
+    // 2. Preview ảnh khi chọn file mới
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('imgPreview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

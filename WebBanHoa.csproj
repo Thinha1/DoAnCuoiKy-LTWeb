@@ -143,8 +143,12 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\DashBoardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
+    <Compile Include="Areas\Admin\Security\CheckAuthorize.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -163,6 +167,7 @@
     <Compile Include="Models\OrderDetail.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderDTO.cs" />
     <Compile Include="Models\PasswordHelper.cs" />
     <Compile Include="Models\Product.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
@@ -250,6 +255,24 @@
     <Content Include="Content\Images\img_SP020.jpg" />
     <Content Include="Content\Images\img_SP021.jpg" />
     <Content Include="Content\Images\img_SP022.jpg" />
+    <Content Include="Content\Images\img_SP023.jpg" />
+    <Content Include="Content\Images\img_SP024.jpg" />
+    <Content Include="Content\Images\img_SP025.jpg" />
+    <Content Include="Content\Images\img_SP026.jpg" />
+    <Content Include="Content\Images\img_SP027.jpg" />
+    <Content Include="Content\Images\img_SP028.jpg" />
+    <Content Include="Content\Images\img_SP029.jpg" />
+    <Content Include="Content\Images\img_SP030.jpg" />
+    <Content Include="Content\Images\img_SP031.jpg" />
+    <Content Include="Content\Images\img_SP032.jpg" />
+    <Content Include="Content\Images\img_SP033.jpg" />
+    <Content Include="Content\Images\img_SP034.jpg" />
+    <Content Include="Content\Images\img_SP035.jpg" />
+    <Content Include="Content\Images\img_SP036.jpg" />
+    <Content Include="Content\Images\img_SP037.jpg" />
+    <Content Include="Content\Images\img_SP038.jpg" />
+    <Content Include="Content\Images\img_SP039.jpg" />
+    <Content Include="Content\Images\img_SP040.jpg" />
     <Content Include="Content\Images\logo\logo-flower-corner-horizontal.jpg" />
     <Content Include="Content\css\style.css" />
     <Content Include="favicon.ico" />
@@ -298,12 +321,12 @@
     <Content Include="Views\Home\Details.cshtml" />
     <Content Include="Views\Home\_RelevantProducts.cshtml" />
     <Content Include="Views\Home\SPTheoLoai.cshtml" />
-    <Content Include="Views\Shared\_Layout2.cshtml" />
     <Content Include="Views\Home\SPTheoChuDe.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Views\Cart\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -322,6 +345,12 @@
     <Content Include="Content\bootstrap-grid.rtl.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="Areas\Admin\Views\Shared\Admin_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\DashBoard\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Order\Index.cshtml" />
     <EntityDeploy Include="Models\QLBanHoa.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>QLBanHoa.Designer.cs</LastGenOutput>
@@ -329,8 +358,6 @@
     <Content Include="Models\QLBanHoa.edmx.diagram">
       <DependentUpon>QLBanHoa.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\Shared\Admin_Layout.cshtml" />
-    <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Scripts\bootstrap.js.map" />
