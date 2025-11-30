@@ -52,7 +52,7 @@
                 <a class="nav-link @(currentController == "product" ? "active" : "")" href="@Url.Action("Index", "Product")"><i class="fas fa-seedling me-2"></i> Quản lý hoa</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#orders"><i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng</a>
+                <a class="nav-link @(currentController == "order" ? "active" : "")" href="@Url.Action("Index", "Order")"><i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#customers"><i class="fas fa-users me-2"></i> Quản lý khách hàng</a>

@@ -167,6 +167,7 @@
     <Compile Include="Models\OrderDetail.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderDetailsDTO.cs" />
     <Compile Include="Models\OrderDTO.cs" />
     <Compile Include="Models\PasswordHelper.cs" />
     <Compile Include="Models\Product.cs">
