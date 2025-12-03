@@ -1,0 +1,111 @@
+﻿@model WebBanHoa.Models.UserDTO
+@{
+    ViewBag.Title = "Cập nhật tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h2 class="mt-4">Cập nhật thông tin khách hàng</h2>
+        <a href="@Url.Action("Index", "User", new {area = "Admin"})" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <i class="fas fa-user-edit me-1"></i>
+            Thông tin chi tiết
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("Edit", "User", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.UserID)
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.Name, "Họ và Tên", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Nhập họ tên...", @required = "required" } })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.Email, "Địa chỉ Email", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @type = "email", @required = "required" } })
+                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.Gender, "Giới tính", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @{
+                                    var genderList = new List<SelectListItem>
+                                                        {
+                                        new SelectListItem { Text = "Nam", Value = "Nam" },
+                                        new SelectListItem { Text = "Nữ", Value = "Nữ" },
+                                        new SelectListItem { Text = "Khác", Value = "Khác" }
+                                    };
+                                }
+                                @Html.DropDownListFor(model => model.Gender, genderList, "Chọn giới tính", new { @class = "form-select" })
+                                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Mã khách hàng</label>
+                                <input type="text" class="form-control bg-light" value="@Model.UserID" readonly disabled />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.Address, "Địa chỉ giao hàng", htmlAttributes: new { @class = "form-label fw-bold" })
+                            @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @rows = "3", @placeholder = "Nhập địa chỉ..." })
+                            @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card bg-light border-0">
+                            <div class="card-header fw-bold">Trạng thái tài khoản</div>
+                            <div class="card-body">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="IsEnabledSwitch"
+                                           name="isEnabled"
+                                           value="1"
+                                           style="cursor: pointer; transform: scale(1.2);"
+                                           @(Model.IsEnabled == 1 ? "checked" : "") />
+
+                                    <input type="hidden" name="IsEnabled" value="0" />
+
+                                    <label class="form-check-label fw-bold ms-2" for="IsEnabledSwitch">
+                                        Đang hoạt động
+                                    </label>
+                                </div>
+
+                                <div class="alert alert-info d-flex align-items-center" role="alert" style="font-size: 0.85rem;">
+                                    <i class="fas fa-info-circle me-2 fs-4"></i>
+                                    <div>
+                                        Nếu tắt trạng thái này, người dùng sẽ <strong>không thể đăng nhập</strong> vào hệ thống.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                    <a href="@Url.Action("Index", "User", new {area = "Admin"})" class="btn btn-light border me-2">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
