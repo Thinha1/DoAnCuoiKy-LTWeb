@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Giỏ Hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var gioHang = Session["GioHang"] as WebBanHoa.Models.GioHang;
+}
+
+<h2>Giỏ Hàng</h2>
+
+@if (gioHang == null || gioHang.TongSoLuong == 0)
+{
+    <div class="alert alert-info">
+        <i class="bi bi-cart-x"></i> Giỏ hàng của bạn đang trống
+    </div>
+    <p>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Tiếp tục mua sắm</a>
+    </p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Hình ảnh</th>
+                <th>Sản phẩm</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in gioHang.Items)
+            {
+                <tr>
+                    <td>
+                        <img src="@Url.Content("~/Content/Images/" + item.SanPham.Image)"
+                             alt="@item.SanPham.ProductName"
+                             style="width: 80px; height: 80px; object-fit: cover;" />
+                    </td>
+                    <td>
+                        <strong>@item.SanPham.ProductName</strong>
+                        <p class="text-muted small mb-0">Mã: @item.SanPham.ProductID</p>
+                    </td>
+                    <td>@String.Format("{0:N0}", item.SanPham.Price) VNĐ</td>
+                    <td>
+                        @using (Html.BeginForm("CapNhatSoLuong", "GioHang", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="number"
+                                   name="quantity"
+                                   value="@item.SoLuong"
+                                   min="1"
+                                   style="width: 70px;"
+                                   class="form-control d-inline-block" />
+                            <input type="hidden" name="productId" value="@item.SanPham.ProductID" />
+                            <button type="submit" class="btn btn-sm btn-warning mt-1">Cập nhật</button>
+                        }
+                    </td>
+                    <td><strong>@String.Format("{0:N0}", item.ThanhTien) VNĐ</strong></td>
+                    <td>
+                        @using (Html.BeginForm("XoaKhoiGioHang", "GioHang", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.SanPham.ProductID" />
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Xóa
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot class="table-secondary">
+            <tr>
+                <td colspan="3"><strong>Tổng cộng:</strong></td>
+                <td><strong>@gioHang.TongSoLuong sản phẩm</strong></td>
+                <td><strong class="text-danger fs-5">@String.Format("{0:N0}", gioHang.TongTien) VNĐ</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">Tiếp tục mua sắm</a>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-grid gap-2 d-md-block">
+                @using (Html.BeginForm("ClearCart", "GioHang", FormMethod.Post, new { style = "display:inline;" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        <i class="bi bi-cart-x"></i> Xóa giỏ hàng
+                    </button>
+                }
+
+                <a href="@Url.Action("ThanhToan", "GioHang")" class="btn btn-success btn-lg">
+                    <i class="bi bi-credit-card"></i> Thanh Toán
+                </a>
+            </div>
+        </div>
+    </div>
+}
