@@ -1,0 +1,207 @@
+﻿@model List<WebBanHoa.Models.ProductDTO>
+@{
+    ViewBag.Title = "Tìm kiếm sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    /* Tùy chỉnh màu nút "Đặt Hàng" */
+    .btn-custom-pink {
+        background-color: #e73685; /* Màu hồng/magenta */
+        color: #fff;
+        border: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+        .btn-custom-pink:hover {
+            background-color: #c92a70;
+            color: #fff;
+        }
+
+    /* Đảm bảo tất cả hình ảnh có cùng chiều cao và không bị méo */
+    .card-img-top {
+        width: 100%;
+        height: 320px; /* Bạn có thể điều chỉnh chiều cao này */
+        object-fit: cover; /* Cắt ảnh vừa vặn, không làm méo */
+    }
+
+    /* Tùy chỉnh card */
+    .product-card {
+        border: none;
+        /* Thêm shadow nhẹ nếu muốn */
+        /* box-shadow: 0 2px 8px rgba(0,0,0,.05); */
+    }
+
+        .product-card .card-body {
+            padding: 1rem 0; /* Bỏ padding trái phải để căn giữa */
+        }
+
+    .product-title a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+        .product-title a:hover {
+            color: #e73685;
+        }
+
+    /* Đảm bảo khối giá có chiều cao cố định để nút bấm được căn đều */
+    .price-text {
+        min-height: 2.2rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    /* Thanh sắp xếp */
+    .sort-bar {
+        background-color: #f8f9fa;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+    }
+
+        .sort-bar .form-select {
+            width: auto; /* Để select box co lại vừa với nội dung */
+            font-size: 0.9rem;
+        }
+
+    /* Tiêu đề trang */
+    .page-title {
+        text-decoration: underline;
+        text-decoration-color: #e73685;
+        text-decoration-thickness: 3px;
+        text-underline-offset: 10px; /* Khoảng cách của gạch chân */
+    }
+
+    /* Nhãn giảm giá */
+    .sale-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #dc3545; /* Màu đỏ */
+        font-size: 0.8rem;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+    /* Bọc thẻ <a> quanh card để click được */
+    .product-link {
+        text-decoration: none;
+        color: inherit; /* Kế thừa màu chữ mặc định */
+        display: block; /* Để thẻ <a> chiếm toàn bộ card */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .product-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
+        }
+</style>
+<h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ThemeName </h2>
+
+@*<div class="d-flex flex-column flex-md-row justify-content-between align-items-center sort-bar mb-4">
+    <div class="mb-2 mb-md-0">
+        <i class="bi bi-grid-fill fs-5"></i>
+    </div>*@
+
+    @*<div class="d-flex align-items-center">
+        @using (@Html.BeginForm("SPTheoChuDe", "Home",
+            FormMethod.Get,
+            new { @class = "d-flex align-items-center" }
+        ))
+        {
+            @Html.Hidden("themeID", Model.FirstOrDefault().ThemeID)
+            <label for="sort-by" class="form-label mb-0 me-2 text-nowrap">Sắp xếp theo</label>
+            <select class="form-select form-select-sm me-3" id="sort-by" name="sort">
+                <option selected value="0">Mặc định</option>
+                <option value="1">Tên (A-Z)</option>
+                <option value="2">Tên (Z-A)</option>
+                <option value="3">Giá tăng dần</option>
+                <option value="4">Giá giảm dần</option>
+            </select>
+
+            <label for="show-qty" class="form-label mb-0 me-2 text-nowrap">Số Lượng</label>
+            <select class="form-select form-select-sm" id="show-qty" name="size">
+                <option selected value="12">12</option>
+                <option value="24">24</option>
+                <option value="36">36</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        }
+    </div>*@
+@*</div>*@
+
+
+<div class="row g-4">
+
+    @foreach (var sp in Model)
+    {
+        <div class="col-lg-3 col-md-6 col-6">
+            <a href="@Url.Action("Details", "Home", new {productID = sp.ProductID})" class="product-link">
+                <div class="card h-100 product-card">
+                    <img src="@Url.Content("~/Content/Images/" + sp.Image)" class="card-img-top" alt="@sp.ProductName">
+
+                    <div class="card-body text-center d-flex flex-column">
+                        <h5 class="product-title fs-6 mb-2">
+                            <span>@sp.ProductName</span>
+                        </h5>
+                        <div class="price-text">
+                            @if (sp.DiscountRate != null)
+                            {
+                                var finalPrice = sp.Price - (sp.Price * (decimal)sp.DiscountRate / 100);
+                                <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                <span class="text-danger fw-bold me-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
+
+                                <span class="badge bg-danger fs-6">GIẢM @sp.DiscountRate%</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                            }
+                        </div>
+                        <span class="btn btn-custom-pink btn-sm text-uppercase mt-auto">ĐẶT HÀNG</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+    @*<nav aria-label="Page navigation example">
+        <ul class="pagination">
+            @{
+                int prevPage = ViewBag.Page - 1;
+                if (prevPage <= 0)
+                {
+                    prevPage = 1;
+                }
+                int nextPage = ViewBag.Page + 1;
+                if (nextPage > ViewBag.NoOfPages)
+                {
+                    nextPage = ViewBag.NoOfPages;
+                }
+            }
+
+            <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = prevPage})">Previous</a></li>
+            @for (int i = 0; i < ViewBag.NoOfPages; i++)
+            {
+                int pageNumber = i + 1;
+                if (pageNumber == ViewBag.Page)
+                {
+                    <li class="page-item"><a class="page-link active" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = pageNumber})">@(i + 1) </a></li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = pageNumber})">@(i + 1) </a></li>
+                }
+
+            }
+            <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = nextPage})">Next</a></li>
+        </ul>
+    </nav>*@
+</div>
+
+

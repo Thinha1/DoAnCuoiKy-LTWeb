@@ -1,0 +1,92 @@
+﻿@model List<WebBanHoa.Models.OrderDetailsDTO>
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+
+    // Tính tổng tiền đơn hàng ngay tại View (đơn giản, không cần xử lý trong Controller)
+    decimal grandTotal = 0;
+    if (Model != null)
+    {
+        grandTotal = (decimal)Model.Sum(item => item.Quantity * item.UnitPrice);
+    }
+
+    string currentOrderId = Model != null && Model.Count > 0 ? Model[0].OrderID.ToString() : "---";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Chi tiết đơn hàng <span class="text-primary">#@currentOrderId</span></h2>
+        <p class="text-muted mb-0">Xem danh sách sản phẩm thuộc đơn hàng này.</p>
+    </div>
+    <a href="@Url.Action("Index", "Order")" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-secondary">
+                    <tr>
+                        <th class="ps-4" style="width: 5%">STT</th>
+                        <th style="width: 15%">Hình ảnh</th>
+                        <th style="width: 35%">Tên sản phẩm</th>
+                        <th class="text-center" style="width: 15%">Số lượng</th>
+                        <th class="text-end" style="width: 15%">Đơn giá</th>
+                        <th class="text-end pe-4" style="width: 15%">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        int stt = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">@stt</td>
+                                <td>
+                                    <img src="@Url.Content("~/Content/Images/" + item.Image)" alt="@item.ProductName"
+                                         class="img-thumbnail"
+                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark">@item.ProductName</span>
+                                    <div class="small text-muted">Mã SP: @item.ProductID</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border px-3 py-2">@item.Quantity</span>
+                                </td>
+                                <td class="text-end">
+                                    @string.Format("{0:N0} đ", item.UnitPrice)
+                                </td>
+                                <td class="text-end pe-4 fw-bold text-primary">
+                                    @string.Format("{0:N0} đ", item.Quantity * item.UnitPrice)
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+
+                        <tr class="bg-light">
+                            <td colspan="5" class="text-end py-3">
+                                <span class="fw-bold text-uppercase me-2">Tổng giá trị đơn hàng:</span>
+                            </td>
+                            <td class="text-end pe-4 py-3">
+                                <h5 class="mb-0 text-danger fw-bold">@string.Format("{0:N0} đ", grandTotal)</h5>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-box-open fa-3x mb-3"></i>
+                                <p>Không tìm thấy chi tiết sản phẩm cho đơn hàng này.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

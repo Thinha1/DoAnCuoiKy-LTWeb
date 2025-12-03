@@ -19,7 +19,7 @@ namespace WebBanHoa.Areas.Security
                 filterContext.Result = new RedirectToRouteResult(
                     new RouteValueDictionary(new
                     {
-                        controller = "Home",
+                        controller = "Account",
                         action = "Login",
                         area = ""
                     })

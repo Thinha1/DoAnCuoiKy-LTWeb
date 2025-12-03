@@ -1,0 +1,205 @@
+﻿@model List<WebBanHoa.Models.UserDTO>
+@{
+    ViewBag.Title = "Quản lý Khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+}
+
+<style>
+    /* Kế thừa style bảng từ trang Order */
+    .admin-table thead th {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid #dee2e6;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .admin-table tbody tr:hover {
+        background-color: #fdfdfd;
+    }
+
+    /* Style riêng cho user bị vô hiệu hóa (IsEnabled != 1) */
+    .row-disabled {
+        background-color: #e9ecef !important; /* Màu nền xám */
+        color: #adb5bd !important; /* Màu chữ nhạt */
+    }
+
+        .row-disabled td {
+            text-decoration: line-through; /* Gạch ngang chữ */
+        }
+
+        /* Không gạch ngang nút thao tác để vẫn bấm được */
+        .row-disabled .action-cell {
+            text-decoration: none !important;
+        }
+
+    .search-form .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .search-form .btn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        background-color: #e2e6ea;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-weight: bold;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Quản lý Khách hàng</h2>
+    @using (Html.BeginForm("Index", "User", FormMethod.Get, new { @class = "d-flex search-form me-3" }))
+    {
+        <div class="input-group">
+            <input type="text" name="TuKhoa" class="form-control"
+                   placeholder="Nhập tên hoặc email..."
+                   value="@ViewBag.CurrentFilter">
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    }
+</div>
+
+<p class="text-danger">@TempData["Error"]</p>
+<p class="text-success">@TempData["Success"]</p>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle admin-table mb-0">
+        <thead>
+            <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 20%;">Họ và Tên</th>
+                <th style="width: 20%;">Email</th>
+                <th style="width: 10%;">Giới tính</th>
+                <th style="width: 25%;">Địa chỉ</th>
+                <th style="width: 10%;">Trạng thái</th>
+                <th class="text-center" style="width: 10%;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var user in Model)
+                {
+                    bool isActive = user.IsEnabled == 1;
+                    string rowClass = isActive ? "" : "row-disabled";
+
+                    <tr class="@rowClass">
+                        <td>
+                            <small class="text-muted">@user.UserID</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-2 d-none d-md-flex">
+                                    @(string.IsNullOrEmpty(user.Name) ? "?" : user.Name.Substring(0,1).ToUpper())
+                                </div>
+                                <strong>@user.Name</strong>
+                            </div>
+                        </td>
+                        <td>
+                            @if (isActive)
+                            {
+                                <a href="mailto:@user.Email" class="text-decoration-none">@user.Email</a>
+                            }
+                            else
+                            {
+                                <span>@user.Email</span>
+                            }
+                        </td>
+                        <td>
+                            @user.Gender
+                        </td>
+                        <td>
+                            <span class="text-truncate d-inline-block" style="max-width: 250px;" title="@user.Address">
+                                @(string.IsNullOrEmpty(user.Address) ? "---" : user.Address)
+                            </span>
+                        </td>
+
+                        <td class="action-cell">
+                            @if (isActive)
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Đã khóa</span>
+                            }
+                        </td>
+
+                        <td class="text-center action-cell">
+                            <a href="@Url.Action("Edit", "User", new { userId = user.UserID, area = "Admin" })"
+                               class="btn btn-sm btn-outline-primary" title="Cập nhật thông tin">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            @if (isActive)
+                            {
+                                <a href="@Url.Action("LockUser", "User", new { userId = user.UserID, area = "Admin" })"
+                                   class="btn btn-sm btn-outline-danger ms-1 delete-btn" title="Khóa tài khoản">
+                                    <i class="fas fa-lock"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("UnlockUser", "User", new { userId = user.UserID, area = "Admin" })"
+                                   class="btn btn-sm btn-outline-success ms-1" title="Mở khóa tài khoản">
+                                    <i class="fas fa-unlock"></i>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">Không có khách hàng nào được tìm thấy.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Script{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Logic SweetAlert cho nút Khóa/Xóa
+            $('.delete-btn').on('click', function (e) {
+                e.preventDefault();
+                var self = $(this);
+                var deleteUrl = self.attr('href');
+
+                Swal.fire({
+                    title: 'Xác nhận KHÓA tài khoản?',
+                    text: "Người dùng này sẽ không thể đăng nhập hệ thống!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Đồng ý khóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    </script>
+}

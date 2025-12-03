@@ -55,7 +55,7 @@
                 <a class="nav-link @(currentController == "order" ? "active" : "")" href="@Url.Action("Index", "Order")"><i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#customers"><i class="fas fa-users me-2"></i> Quản lý khách hàng</a>
+                <a class="nav-link @(currentController == "user" ? "active" : "")" href="@Url.Action("Index", "User")"><i class="fas fa-users me-2"></i> Quản lý khách hàng</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#promotions"><i class="fas fa-tags me-2"></i> Khuyến mãi</a>

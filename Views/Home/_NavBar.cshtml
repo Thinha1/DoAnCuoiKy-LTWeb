@@ -9,7 +9,6 @@
     @foreach (var lsp in Model)
     {
         <li class="nav-item dropdown mx-2">
-            @* Bỏ style, thêm class margin (ví dụ: mx-2) *@
             <a class="nav-link" href="#" data-bs-toggle="dropdown">@lsp.CategoryName</a>
             @{
                 if (lsp.Category1 != null && lsp.Category1.Any())
@@ -30,7 +29,6 @@
         foreach (var th in themesList)
         {
             <li class="nav-item dropdown mx-2">
-                @* Bỏ style, thêm class margin (ví dụ: mx-2) *@
                 <a class="nav-link" href="#" data-bs-toggle="dropdown">@th.ThemeName</a>
                 @{
                     if (th.Theme1 != null && th.Theme1.Any())

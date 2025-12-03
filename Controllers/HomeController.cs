@@ -23,6 +23,21 @@ namespace WebBanHoa.Controllers
             return View();
         }
 
+        public ActionResult Search(string TuKhoa)
+        {
+            List<ProductDTO> lst = db.Products.Where(pd => pd.ProductName.Contains(TuKhoa)).Select(p => new ProductDTO
+            {
+                ProductID = p.ProductID,
+                ProductName = p.ProductName,
+                Price = p.Price,
+                Image = p.Image,
+                //Lấy giảm giá sâu nhất còn hạn sử dụng
+                DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderByDescending(d => d.DiscountRate).FirstOrDefault().DiscountRate,
+                Description = p.Description,
+            }).ToList();
+            return View(lst);
+        }
+
         public ActionResult _NavBar()
         {
             List<Category> lst = db.Categories.Where(pt => pt.ParentCategoryID == null).ToList();
@@ -33,7 +48,7 @@ namespace WebBanHoa.Controllers
         public ActionResult _DiscountingProducts()
         {
             //Lấy ra 8 sản phẩm đang giảm giá sâu nhất
-            List<ProductDTO> lst = db.Products.Select(p => new ProductDTO
+            List<ProductDTO> lst = db.Products.Where(sp => sp.IsAvailable == 1).Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
@@ -49,7 +64,7 @@ namespace WebBanHoa.Controllers
         public ActionResult _MostOrderedProducts()
         {
             //lấy ra những sản phẩm nhiều người đặt nhất
-            List<ProductDTO> lst = db.Products.Select(p => new ProductDTO
+            List<ProductDTO> lst = db.Products.Where(sp => sp.IsAvailable == 1).Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
@@ -71,7 +86,7 @@ namespace WebBanHoa.Controllers
                      .Select(t => t.CategoryID)
                      .ToList();
 
-            List<ProductDTO> lst = db.Products.Where(p => childTypeIds.Contains(p.CategoryID))
+            List<ProductDTO> lst = db.Products.Where(sp => sp.IsAvailable == 1).Where(p => childTypeIds.Contains(p.CategoryID))
             .Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
@@ -135,7 +150,7 @@ namespace WebBanHoa.Controllers
 
         public ActionResult _RelevantProducts(string categoryID, string productID)
         {
-            List<ProductDTO> products = db.Products.Where(p => p.CategoryID == categoryID && p.ProductID != productID).Select(p => new ProductDTO
+            List<ProductDTO> products = db.Products.Where(p => p.CategoryID == categoryID && p.ProductID != productID && p.IsAvailable == 1).Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
@@ -165,7 +180,7 @@ namespace WebBanHoa.Controllers
 
             //Truy vấn xuống cơ sở dữ liệu lấy toàn bộ products thoả điều kiện
             var productsBase = db.Products
-                .Where(p => p.CategoryID == categoryID)
+                .Where(p => p.CategoryID == categoryID && p.IsAvailable == 1)
                 .Select(p => new ProductDTO
                 {
                     ProductID = p.ProductID,
@@ -254,7 +269,7 @@ namespace WebBanHoa.Controllers
 
             //Truy vấn xuống cơ sở dữ liệu lấy toàn bộ products thoả điều kiện
             var productsBase = db.Products
-                .Where(p => p.ThemeID == themeID)
+                .Where(p => p.ThemeID == themeID && p.IsAvailable == 1)
                 .Select(p => new ProductDTO
                 {
                     ProductID = p.ProductID,

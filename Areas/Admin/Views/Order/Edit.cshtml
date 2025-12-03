@@ -1,0 +1,80 @@
+﻿@model WebBanHoa.Models.OrderDTO
+@{
+    ViewBag.Title = "Cập nhật đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+
+    // Tạo danh sách trạng thái để chọn (Bạn hãy sửa Value cho khớp với quy ước trong Database của bạn)
+    var listStatus = new List<SelectListItem>
+{
+        new SelectListItem { Text = "Chờ xử lý", Value = "Chờ xử lý" },
+        new SelectListItem { Text = "Đang giao", Value = "Đang giao" },
+        new SelectListItem { Text = "Đã giao", Value = "Đã giao" },
+        new SelectListItem { Text = "Đã huỷ", Value = "Đã huỷ" }
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Cập nhật đơn hàng <span class="text-primary">#@Model.OrderID</span></h2>
+    <a href="@Url.Action("Index", "Order")" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Thông tin đơn hàng</h5>
+    </div>
+    <div class="card-body p-4">
+        @using (Html.BeginForm("Edit", "Order", FormMethod.Post, new { @class = "needs-validation" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.OrderID)
+
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h6 class="text-muted text-uppercase mb-3">Thông tin khách hàng</h6>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tên khách hàng:</label>
+                        <input type="text" class="form-control bg-light" value="@Model.CustomerName" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ngày đặt hàng:</label>
+                        <input type="text" class="form-control bg-light" value="@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Phương thức thanh toán</label>
+                        <input type="text" class="form-control bg-light" value="@Model.UserPaymentMethod" readonly />
+                    </div>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <h6 class="text-muted text-uppercase mb-3">Thông tin xử lý</h6>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.Address, "Địa chỉ giao hàng", new { @class = "form-label fw-bold" })
+                        @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @rows = "3", @placeholder = "Nhập địa chỉ giao hàng..." })
+                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.Status, "Trạng thái đơn hàng", new { @class = "form-label fw-bold" })
+                        @Html.DropDownListFor(model => model.Status,
+                                                        new SelectList(listStatus, "Value", "Text", Model.Status),
+                                                        new { @class = "form-select form-control" })
+                        @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="fas fa-save me-2"></i>Lưu thay đổi
+                </button>
+            </div>
+        }
+    </div>
+</div>
