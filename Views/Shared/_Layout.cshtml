@@ -128,14 +128,6 @@
             border: none;
         }
 
-        /*        .dropdown-item {
-            color: white !important;
-        }*/
-
-        /*            .dropdown-item:hover {
-                background-color: #45a049 !important;
-            }*/
-
         /* MODAL STYLES */
         .modal-backdrop {
             background-color: rgba(0,0,0,0.7) !important;
@@ -233,10 +225,12 @@
 
                 <!-- Cột 3: Search & Cart -->
                 <div class="col-md-2 d-flex justify-content-end gap-3">
+                    @using(Html.BeginForm("Search", "Home", new {area = ""})) {
                     <div class="search-box">
-                        <input type="text" placeholder="Tìm kiếm..." />
-                        <button type="button"><i class="fa fa-search"></i></button>
+                        <input name="TuKhoa" type="text" placeholder="Tìm kiếm..." />
+                        <button type="submit"><i class="fa fa-search"></i></button>
                     </div>
+                    }
                     <a href="#" class="d-flex align-items-center">
                         <i class="fa fa-shopping-cart fa-lg text-white"></i>
                     </a>

@@ -15,7 +15,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
     {
         private QLBANHOAEntities db = new QLBANHOAEntities();
         // GET: Admin/Product
-        public ActionResult Index()
+        public ActionResult Index(string TuKhoa)
         {
             List<ProductDTO> products = db.Products.Select(p => new ProductDTO
             {
@@ -29,7 +29,14 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 //Lấy giảm giá sâu nhất còn hạn sử dụng
                 DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderByDescending(d => d.DiscountRate).FirstOrDefault().DiscountRate,
                 Description = p.Description,
+                IsAvailable = p.IsAvailable,
             }).ToList();
+
+            if (!string.IsNullOrWhiteSpace(TuKhoa))
+            {
+                products = products.Where(od => od.ProductName.Contains(TuKhoa)).ToList();
+                return View(products);
+            }
             return View(products);
         }
 
@@ -55,7 +62,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 p.Price = dto.Price;
                 p.Quantity = dto.Quantity;
                 p.Description = dto.Description;
-                if(IsAvailable != null)
+                if (IsAvailable != null)
                 {
                     p.IsAvailable = 1;
                 }
@@ -116,7 +123,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(ProductDTO dto, HttpPostedFileBase ImageUpload, string IsAvailable)
+        public ActionResult Edit(ProductDTO dto, HttpPostedFileBase ImageUpload, string isAvailable)
         {
             if (ModelState.IsValid)
             {
@@ -128,10 +135,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 p.Price = dto.Price;
                 p.Quantity = dto.Quantity;
                 p.Description = dto.Description;
-                if(IsAvailable != null)
-                {
-                    p.IsAvailable = 1;
-                }
+                p.IsAvailable = Convert.ToInt16(isAvailable);
                 if (ImageUpload != null)
                 {
                     string extension = Path.GetExtension(ImageUpload.FileName);
@@ -161,24 +165,42 @@ namespace WebBanHoa.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult Delete(string productID)
+        public ActionResult DisableProduct(string productID)
         {
             Product p = db.Products.FirstOrDefault(product => product.ProductID == productID);
             if (p != null)
             {
-                //if (!string.IsNullOrEmpty(p.Image))
-                //{
-                //    string fullPath = Server.MapPath("~/Content/Images/" + p.Image);
-                //    if (System.IO.File.Exists(fullPath))
-                //    {
-                //        System.IO.File.Delete(fullPath);
-                //    }
-                //}
-
                 p.IsAvailable = 0;
+                CancelOrder(productID);
                 db.SaveChanges();
             }
+            TempData["Success"] = "Khoá sản phẩm thành công!";
             return RedirectToAction("Index");
+        }
+
+        public ActionResult EnableProduct(string productID)
+        {
+            Product p = db.Products.FirstOrDefault(product => product.ProductID == productID);
+            if (p != null)
+            {
+                p.IsAvailable = 1;
+                db.SaveChanges();
+            }
+            TempData["Success"] = "Mở khoá sản phẩm thành công!";
+            return RedirectToAction("Index");
+        }
+        public void CancelOrder(string productID)
+        {
+            //huỷ đơn hàng sau khi disable sản phẩm
+            List<Order> orders = db.Orders.Where(o => o.Status == "Chờ xử lý"
+            && o.OrderDetails.Any(sp => sp.ProductID == productID)).ToList();
+            if (orders.Count > 0)
+            {
+                foreach (var order in orders)
+                {
+                    order.Status = "Đã huỷ";
+                }
+            }
         }
     }
 }

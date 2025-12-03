@@ -18,6 +18,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             ViewBag.NoOfProducts = db.Products.Count();
             ViewBag.NoOfOrders = db.Orders.Count();
             ViewBag.NoOfCustomers = db.Users.Where(u => u.RoleID == "R002").Count();
+            ViewBag.Revenue = db.OrderDetails.Where(o => o.Order.Status != "Đã huỷ").Sum(od => od.UnitPrice * od.Quantity);
             return View();
         }
     }
