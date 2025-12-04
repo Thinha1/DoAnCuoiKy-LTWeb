@@ -1,8 +1,11 @@
 ﻿@model List<WebBanHoa.Models.ProductDTO>
+@{
+    bool isLoggedIn = Session["UserID"] != null;
+}
 
 <link href="~/Content/css/card_product.css" rel="stylesheet" />
 
-<!-- BỔ SUNG CSS THÔNG BÁO -->
+<!-- BỔ SUNG CSS THÔNG BÁO (GIỮ NGUYÊN) -->
 <style>
     .cart-notification {
         position: fixed;
@@ -108,14 +111,30 @@
                             }
                         }
 
-                        <!-- NÚT THÊM VÀO GIỎ (BỔ SUNG) -->
-                        <button class="btn btn-order add-to-cart-list"
-                                type="button"
-                                data-product-id="@sp.ProductID"
-                                data-product-name="@sp.ProductName"
-                                onclick="addToCartFromList(event, this)">
-                            Thêm vào giỏ
-                        </button>
+                        <!-- NÚT THÊM VÀO GIỎ - SỬA THÀNH FORM -->
+                        @if (isLoggedIn)
+                        {
+                            <form method="post" action="@Url.Action("ThemVaoGioHang", "Cart")"
+                                  style="display: inline;">
+                                <input type="hidden" name="id" value="@sp.ProductID" />
+                                <input type="hidden" name="soLuong" value="1" />
+                                <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery" />
+                                <button type="submit" class="btn btn-order add-to-cart-list"
+                                        data-product-id="@sp.ProductID"
+                                        data-product-name="@sp.ProductName">
+                                    Thêm vào giỏ
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })"
+                               class="btn btn-order add-to-cart-list"
+                               data-product-id="@sp.ProductID"
+                               data-product-name="@sp.ProductName">
+                                Thêm vào giỏ
+                            </a>
+                        }
                     </div>
 
                 </div>
@@ -124,118 +143,39 @@
     }
 </div>
 
-<!-- IFRAME ẨN (BỔ SUNG) -->
-<iframe name="cartIframe" id="cartIframe"
-        style="display:none; width:0; height:0; border:0; position:absolute; left:-9999px;"></iframe>
+<!-- HIỂN THỊ THÔNG BÁO TỪ SERVER (KHÔNG CẦN SCRIPT) -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="cart-notification" class="cart-notification" style="display: block;">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
-<!-- FORM ẨN ĐỂ GỬI DỮ LIỆU (BỔ SUNG) -->
-<form id="globalCartForm" method="post" action="@Url.Action("AddToCart", "Cart")"
-      target="cartIframe" class="hidden-cart-form">
-    <input type="hidden" name="productId" id="formProductId" />
-    <input type="hidden" name="quantity" id="formQuantity" value="1" />
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <strong>Lỗi!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<!-- SỬA FORM ẨN THÀNH GET METHOD -->
+<form id="globalCartForm" method="get" action="@Url.Action("ThemVaoGioHang", "Cart")"
+      class="hidden-cart-form">
+    <input type="hidden" name="id" id="formProductId" />
+    <input type="hidden" name="soLuong" id="formQuantity" value="1" />
     <input type="hidden" name="returnUrl" id="formReturnUrl" value="@Request.Url.PathAndQuery" />
 </form>
 
-<!-- SCRIPT XỬ LÝ (BỔ SUNG) -->
+<!-- CHỈ GIỮ LẠI PHẦN SCRIPT ĐỂ XỬ LÝ AUTO HIDE -->
 <script>
-    // Thêm vào giỏ hàng từ danh sách
-    function addToCartFromList(event, button) {
-        // Ngăn sự kiện mặc định
-        event.preventDefault();
-        event.stopPropagation();
-
-        // KIỂM TRA ĐĂNG NHẬP (BỔ SUNG)
-        var isLoggedIn = checkLoginStatus();
-        if (!isLoggedIn) {
-            showLoginRequiredNotification();
-            // Chuyển đến trang đăng nhập sau 2 giây
-            setTimeout(function() {
-                window.location.href = '@Url.Action("Login", "Account")?returnUrl=' + encodeURIComponent(window.location.pathname);
-            }, 2000);
-            return; // Dừng lại không thực hiện tiếp
-        }
-
-        // Lấy dữ liệu từ button
-        var productId = button.getAttribute('data-product-id');
-        var productName = button.getAttribute('data-product-name');
-
-        // Hiển thị thông báo
-        showSuccessNotification(productName);
-
-        // Cập nhật số lượng giỏ hàng
-        updateCartBadge();
-
-        // Gửi dữ liệu đến server
-        submitCartForm(productId);
-    }
-
-    // KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP (BỔ SUNG)
-    function checkLoginStatus() {
-        // Cách 1: Kiểm tra cookie/session (nếu có)
-        // Cách 2: Kiểm tra xem có userID trong session không (server-side)
-        // Cách 3: Gọi AJAX để kiểm tra
-
-        // Tạm thời kiểm tra bằng cách gọi action (có thể dùng AJAX)
-        // Hoặc dùng biến từ server
-        var isAuthenticated = @(Session["UserID"] != null ? "true" : "false");
-        return isAuthenticated;
-    }
-
-    // HIỂN THỊ THÔNG BÁO YÊU CẦU ĐĂNG NHẬP (BỔ SUNG)
-    function showLoginRequiredNotification() {
-        var notification = document.getElementById('login-required-notification');
-        if (!notification) {
-            notification = document.createElement('div');
-            notification.id = 'login-required-notification';
-            notification.className = 'login-required-notification';
-            document.body.appendChild(notification);
-        }
-
-        notification.innerHTML = '⚠️ Vui lòng đăng nhập để thêm vào giỏ hàng. Đang chuyển đến trang đăng nhập...';
-        notification.style.display = 'block';
-
-        // Tự động ẩn sau 3 giây
-        setTimeout(function() {
-            notification.style.display = 'none';
-        }, 3000);
-    }
-
-    // Hiển thị thông báo thành công
-    function showSuccessNotification(productName) {
-        // Tạo hoặc cập nhật thông báo
+    // Tự động ẩn thông báo sau 3 giây
+    setTimeout(function () {
         var notification = document.getElementById('cart-notification');
-        if (!notification) {
-            notification = document.createElement('div');
-            notification.id = 'cart-notification';
-            notification.className = 'cart-notification';
-            document.body.appendChild(notification);
-        }
-
-        notification.innerHTML = '✓ Đã thêm "' + productName + '" vào giỏ hàng';
-        notification.style.display = 'block';
-
-        // Tự động ẩn sau 3 giây
-        setTimeout(function() {
+        if (notification) {
             notification.style.display = 'none';
-        }, 3000);
-    }
-
-    // Cập nhật badge giỏ hàng
-    function updateCartBadge() {
-        var badge = document.querySelector('.cart-badge');
-        if (badge) {
-            var currentCount = parseInt(badge.textContent) || 0;
-            badge.textContent = currentCount + 1;
-            badge.style.display = 'block';
         }
-    }
-
-    // Gửi form đến server
-    function submitCartForm(productId) {
-        // Đặt giá trị vào form ẩn
-        document.getElementById('formProductId').value = productId;
-
-        // Submit form
-        document.getElementById('globalCartForm').submit();
-    }
+    }, 3000);
 </script>

@@ -1,0 +1,439 @@
+﻿@model QLBANHOA.Models.GioHang
+
+@{
+    ViewBag.Title = "Thanh Toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userID = Session["UserID"] as string;
+    var userName = Session["UserName"] as string;
+}
+
+<style>
+    .banking-info {
+        display: none;
+        border-left: 4px solid #28a745;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
+
+        .banking-info.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+    .form-control:invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control:valid {
+        border-color: #28a745;
+    }
+
+    .sticky-card {
+        max-height: calc(100vh - 150px);
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .qr-code {
+        max-width: 200px;
+        height: auto;
+    }
+</style>
+
+<div class="container py-5">
+    <h1 class="text-center mb-4">THANH TOÁN ĐƠN HÀNG</h1>
+
+    @if (Model == null || Model.Items.Count == 0)
+    {
+        <div class="alert alert-info text-center py-4">
+            <i class="bi bi-cart-x fs-1"></i>
+            <h4 class="mt-3">Giỏ hàng của bạn đang trống</h4>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">
+                <i class="bi bi-shop"></i> Mua sắm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- CỘT TRÁI: THÔNG TIN GIAO HÀNG -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-danger mb-4">
+                            <i class="bi bi-geo-alt-fill me-2"></i>Thông tin giao hàng
+                        </h3>
+
+                        @using (Html.BeginForm("ThanhToan", "Orders", FormMethod.Post, new { id = "checkoutForm", @class = "needs-validation" }))
+                        {
+                            
+
+                            <!-- Thông tin khách hàng -->
+                            <div class="alert alert-info mb-4">
+                                <i class="bi bi-person-circle me-2"></i>
+                                <strong>Khách hàng:</strong> @userName
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Họ và tên (bắt buộc) -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <span class="text-danger">*</span> Họ và tên
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg"
+                                           name="CustomerName"
+                                           value="@userName"
+                                           required
+                                           pattern="[A-Za-zÀ-ỹ\s]+"
+                                           title="Vui lòng nhập họ tên hợp lệ (chỉ chữ cái và khoảng trắng)">
+                                    <div class="invalid-feedback">Vui lòng nhập họ tên hợp lệ</div>
+                                </div>
+
+                                <!-- Số điện thoại (bắt buộc) -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <span class="text-danger">*</span> Số điện thoại
+                                    </label>
+                                    <input type="tel" class="form-control form-control-lg"
+                                           name="Phone"
+                                           required
+                                           pattern="(09|03|07|08|05)[0-9]{8}"
+                                           title="Số điện thoại phải có 10 số và bắt đầu bằng 09, 03, 07, 08 hoặc 05"
+                                           placeholder="Ví dụ: 0912345678">
+                                    <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ (10 số, bắt đầu bằng 09/03/07/08/05)</div>
+                                </div>
+
+                                <!-- Địa chỉ giao hàng (bắt buộc) -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">
+                                        <span class="text-danger">*</span> Địa chỉ giao hàng
+                                    </label>
+                                    <textarea class="form-control"
+                                              name="Address"
+                                              rows="3"
+                                              required
+                                              minlength="10"
+                                              placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+                                    <div class="invalid-feedback">Vui lòng nhập địa chỉ chi tiết (ít nhất 10 ký tự)</div>
+                                </div>
+
+                                <!-- Email (không bắt buộc) -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control"
+                                           name="Email"
+                                           placeholder="example@gmail.com">
+                                    <div class="invalid-feedback">Vui lòng nhập email hợp lệ</div>
+                                </div>
+
+                                <!-- Ghi chú (không bắt buộc) -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Ghi chú</label>
+                                    <input type="text" class="form-control"
+                                           name="Note"
+                                           placeholder="Ghi chú thêm (nếu có)">
+                                </div>
+                            </div>
+
+                            <!-- Phương thức giao hàng -->
+                            <h5 class="mt-5 mb-3 fw-bold">
+                                <i class="bi bi-truck me-2"></i>Phương thức giao hàng
+                            </h5>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio"
+                                           name="DeliveryMethod"
+                                           id="standard"
+                                           value="Giao tiêu chuẩn"
+                                           checked>
+                                    <label class="form-check-label" for="standard">
+                                        <span class="fw-bold">Giao hàng tiêu chuẩn</span><br>
+                                        <small class="text-muted">Giao trong 2-4 ngày làm việc</small>
+                                        <span class="badge bg-success float-end">MIỄN PHÍ</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Phương thức thanh toán -->
+                            <h5 class="mt-5 mb-3 fw-bold">
+                                <i class="bi bi-credit-card me-2"></i>Phương thức thanh toán
+                            </h5>
+
+                            <div class="mb-4">
+                                <!-- COD -->
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input payment-method"
+                                           type="radio"
+                                           name="PaymentMethod"
+                                           id="cod"
+                                           value="COD"
+                                           checked>
+                                    <label class="form-check-label" for="cod">
+                                        <span class="fw-bold">Thanh toán khi nhận hàng (COD)</span><br>
+                                        <small class="text-muted">Thanh toán bằng tiền mặt khi nhận hàng</small>
+                                    </label>
+                                </div>
+
+                                <!-- Chuyển khoản -->
+                                <div class="form-check">
+                                    <input class="form-check-input payment-method"
+                                           type="radio"
+                                           name="PaymentMethod"
+                                           id="banking"
+                                           value="Chuyển khoản">
+                                    <label class="form-check-label" for="banking">
+                                        <span class="fw-bold">Chuyển khoản ngân hàng</span><br>
+                                        <small class="text-muted">Chuyển khoản qua ngân hàng</small>
+                                    </label>
+                                </div>
+
+                                <!-- Thông tin chuyển khoản (ẩn khi chọn COD) -->
+                                <div id="bankingInfo" class="banking-info">
+                                    <h6 class="text-success mb-3">
+                                        <i class="bi bi-bank me-2"></i>Thông tin chuyển khoản
+                                    </h6>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="alert alert-success mb-3">
+                                                <strong><i class="bi bi-building"></i> Ngân hàng:</strong><br>
+                                                <span class="fw-bold">Vietcombank</span>
+                                            </div>
+
+                                            <div class="alert alert-success mb-3">
+                                                <strong><i class="bi bi-credit-card"></i> Số tài khoản:</strong><br>
+                                                <span class="fw-bold fs-5">0123456789</span>
+                                            </div>
+
+                                            <div class="alert alert-success">
+                                                <strong><i class="bi bi-person"></i> Chủ tài khoản:</strong><br>
+                                                <span class="fw-bold">CÔNG TY TNHH HOA TƯƠI ABC</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 text-center">
+                                            <div class="alert alert-light">
+                                                <strong class="d-block mb-2">Mã QR thanh toán</strong>
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=VCB-0123456789-CONGTYHOAABC"
+                                                     alt="QR Code"
+                                                     class="qr-code img-fluid">
+                                                <small class="text-muted d-block mt-2">Quét mã QR để chuyển khoản</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="alert alert-warning mt-3">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        <strong>Lưu ý:</strong> Vui lòng ghi nội dung:
+                                        <code>@userID-@DateTime.Now.ToString("ddMMyyyyHHmm")</code>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Điều khoản (bắt buộc) -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="agreeTerms"
+                                       required>
+                                <label class="form-check-label fw-bold" for="agreeTerms">
+                                    <span class="text-danger">*</span> Tôi đồng ý với
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">điều khoản dịch vụ</a>
+                                </label>
+                                <div class="invalid-feedback">Vui lòng đồng ý với điều khoản dịch vụ</div>
+                            </div>
+
+                            <!-- Nút đặt hàng -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-danger btn-lg py-3">
+                                    <i class="bi bi-check-circle"></i> ĐẶT HÀNG NGAY
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: TÓM TẮT ĐƠN HÀNG -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 sticky-card">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-danger mb-4">
+                            <i class="bi bi-receipt me-2"></i>Tóm tắt đơn hàng
+                        </h3>
+
+                        <!-- Danh sách sản phẩm -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Sản phẩm (@Model.TongSoLuong)</h6>
+
+                            @foreach (var item in Model.Items)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <div style="max-width: 60%;">
+                                        <h6 class="mb-1">@item.SanPham.ProductName</h6>
+                                        <small class="text-muted">Số lượng: @item.SoLuong</small>
+                                        @if (item.TyLeGiamGia > 0)
+                                        {
+                                            <span class="badge bg-danger ms-2">-@item.TyLeGiamGia%</span>
+                                        }
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold">@String.Format("{0:N0}", item.ThanhTien) VNĐ</div>
+                                        @if (item.TyLeGiamGia > 0)
+                                        {
+                                            <small class="text-muted text-decoration-line-through d-block">
+                                                @String.Format("{0:N0}", item.GiaGoc * item.SoLuong) VNĐ
+                                            </small>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Tính toán tổng tiền -->
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tạm tính:</span>
+                                <span>@String.Format("{0:N0}", Model.TongTien) VNĐ</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Phí vận chuyển:</span>
+                                <span class="text-success">MIỄN PHÍ</span>
+                            </div>
+
+                            @if (Model.TongTienGiam > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Giảm giá:</span>
+                                    <span class="text-danger">-@String.Format("{0:N0}", Model.TongTienGiam) VNĐ</span>
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-between mt-3 pt-3 border-top fw-bold fs-5">
+                                <span>Tổng thanh toán:</span>
+                                <span class="text-danger">@String.Format("{0:N0}", Model.TongTien) VNĐ</span>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal Điều khoản dịch vụ -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Điều khoản dịch vụ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Thông tin đơn hàng</h6>
+                <p>Khách hàng cung cấp thông tin chính xác về họ tên, số điện thoại và địa chỉ giao hàng.</p>
+
+                <h6>2. Thanh toán</h6>
+                <p>Chấp nhận thanh toán COD hoặc chuyển khoản ngân hàng. Đơn hàng chỉ được xử lý sau khi thanh toán thành công.</p>
+
+                <h6>3. Giao hàng</h6>
+                <p>Thời gian giao hàng từ 2-4 ngày làm việc. Miễn phí vận chuyển cho tất cả đơn hàng.</p>
+
+                <h6>4. Đổi trả</h6>
+                <p>Chấp nhận đổi trả trong vòng 7 ngày nếu sản phẩm có lỗi từ nhà sản xuất.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hiển thị thông báo -->
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+}
+
+<!-- JavaScript -->
+<script>
+    // Hiển thị thông tin chuyển khoản khi chọn phương thức
+    document.querySelectorAll('.payment-method').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const bankingInfo = document.getElementById('bankingInfo');
+            if (this.value === 'Chuyển khoản') {
+                bankingInfo.classList.add('show');
+            } else {
+                bankingInfo.classList.remove('show');
+            }
+        });
+    });
+
+    // Validation form
+    document.getElementById('checkoutForm').addEventListener('submit', function(event) {
+        if (!this.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        // Kiểm tra riêng checkbox điều khoản
+        const agreeTerms = document.getElementById('agreeTerms');
+        if (!agreeTerms.checked) {
+            alert('Vui lòng đồng ý với điều khoản dịch vụ');
+            agreeTerms.focus();
+            event.preventDefault();
+            return false;
+        }
+
+        this.classList.add('was-validated');
+    });
+
+    // Real-time validation
+    document.querySelectorAll('input[required], textarea[required]').forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+    });
+
+    // Kiểm tra số điện thoại
+    document.querySelector('input[name="Phone"]').addEventListener('input', function() {
+        const phonePattern = /(09|03|07|08|05)[0-9]{8}/;
+        if (phonePattern.test(this.value)) {
+            this.setCustomValidity('');
+        } else {
+            this.setCustomValidity('Số điện thoại không hợp lệ');
+        }
+    });
+</script>

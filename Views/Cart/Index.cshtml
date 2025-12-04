@@ -1,103 +1,179 @@
-﻿@{
+﻿@model QLBANHOA.Models.GioHang
+
+
+@{
     ViewBag.Title = "Giỏ Hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var gioHang = Session["GioHang"] as WebBanHoa.Models.GioHang;
 }
 
-<h2>Giỏ Hàng</h2>
+<h2>Giỏ Hàng Của Bạn</h2>
 
-@if (gioHang == null || gioHang.TongSoLuong == 0)
+@if (Model == null || Model.Items.Count == 0)
 {
     <div class="alert alert-info">
-        <i class="bi bi-cart-x"></i> Giỏ hàng của bạn đang trống
-    </div>
-    <p>
+        <p>Giỏ hàng của bạn đang trống</p>
         <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Tiếp tục mua sắm</a>
-    </p>
+    </div>
 }
 else
 {
-    <table class="table table-hover">
-        <thead class="table-light">
+    <table class="table table-bordered">
+        <thead class="thead-light">
             <tr>
-                <th>Hình ảnh</th>
-                <th>Sản phẩm</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-                <th></th>
+                <th style="width: 40%">Sản phẩm</th>
+                <th style="width: 15%">Giá</th>
+                <th style="width: 15%">Số lượng</th>
+                <th style="width: 15%">Thành tiền</th>
+                <th style="width: 15%">Thao tác</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in gioHang.Items)
+            @foreach (var item in Model.Items)
             {
                 <tr>
                     <td>
-                        <img src="@Url.Content("~/Content/Images/" + item.SanPham.Image)"
-                             alt="@item.SanPham.ProductName"
-                             style="width: 80px; height: 80px; object-fit: cover;" />
+                        <div class="d-flex align-items-center">
+                            @if (!string.IsNullOrEmpty(item.SanPham.Image))
+                            {
+                                <img src="@Url.Content("~/Content/Images/" + item.SanPham.Image)"
+                                     alt="@item.SanPham.ProductName"
+                                     style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;" />
+                            }
+                            <div>
+                                <h6 class="mb-1">@item.SanPham.ProductName</h6>
+                                <small class="text-muted">Mã: @item.SanPham.ProductID</small>
+                                <br />
+                                <small class="text-muted">Tồn kho: @item.SanPham.Quantity</small>
+                            </div>
+                        </div>
                     </td>
                     <td>
-                        <strong>@item.SanPham.ProductName</strong>
-                        <p class="text-muted small mb-0">Mã: @item.SanPham.ProductID</p>
-                    </td>
-                    <td>@String.Format("{0:N0}", item.SanPham.Price) VNĐ</td>
-                    <td>
-                        @using (Html.BeginForm("CapNhatSoLuong", "GioHang", FormMethod.Post))
+                        @if (item.TyLeGiamGia > 0)
                         {
-                            @Html.AntiForgeryToken()
-                            <input type="number"
-                                   name="quantity"
-                                   value="@item.SoLuong"
-                                   min="1"
-                                   style="width: 70px;"
-                                   class="form-control d-inline-block" />
-                            <input type="hidden" name="productId" value="@item.SanPham.ProductID" />
-                            <button type="submit" class="btn btn-sm btn-warning mt-1">Cập nhật</button>
+                            <div>
+                                <del class="text-muted small">@String.Format("{0:N0}", item.GiaGoc) VNĐ</del>
+                                <br />
+                                <span class="text-danger font-weight-bold">
+                                    @String.Format("{0:N0}", item.GiaSauGiam) VNĐ
+                                </span>
+                                <br />
+                                <span class="badge badge-success">-@item.TyLeGiamGia%</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="font-weight-bold">@String.Format("{0:N0}", item.GiaGoc) VNĐ</span>
                         }
                     </td>
-                    <td><strong>@String.Format("{0:N0}", item.ThanhTien) VNĐ</strong></td>
                     <td>
-                        @using (Html.BeginForm("XoaKhoiGioHang", "GioHang", FormMethod.Post))
+                        @using (Html.BeginForm("CapNhatSoLuong", "Cart", FormMethod.Post, new { @class = "update-quantity-form" }))
                         {
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="productId" value="@item.SanPham.ProductID" />
-                            <button type="submit" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i> Xóa
-                            </button>
+                            <div class="input-group input-group-sm" style="width: 180px;">
+                                <input type="number"
+                                       name="soLuong"
+                                       value="@item.SoLuong"
+                                       min="1"
+                                       max="@item.SanPham.Quantity"
+                                       class="form-control text-center"
+                                       aria-label="Số lượng">
+
+                                <input type="hidden" name="id" value="@item.SanPham.ProductID" />
+
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="fas fa-redo"></i> Cập nhật
+                                </button>
+                            </div>
+
+                            <small class="text-muted d-block mt-1">
+                                Còn lại: @item.SanPham.Quantity sản phẩm
+                            </small>
+                        }
+                    </td>
+                    <td class="font-weight-bold text-danger">
+                        @String.Format("{0:N0}", item.ThanhTien) VNĐ
+                        @if (item.TyLeGiamGia > 0)
+                        {
+                            <br />
+                            <small class="text-success">Tiết kiệm: @String.Format("{0:N0}", item.TienGiam) VNĐ</small>
+                        }
+                    </td>
+                    <td>
+                        @using (Html.BeginForm("XoaKhoiGioHang", "Cart", FormMethod.Post))
+                        {
+                           
+                            <input type="hidden" name="id" value="@item.SanPham.ProductID" />
+
+                            <div class="border rounded p-2 bg-light" style="max-width: 200px;">
+                                <p class="small mb-2">
+                                    <i class="fas fa-exclamation-circle text-danger"></i>
+                                    Xóa <strong>@item.SanPham.ProductName</strong>?
+                                </p>
+
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="agree_@item.SanPham.ProductID"
+                                           name="agree" required>
+                                    <label class="form-check-label small" for="agree_@item.SanPham.ProductID">
+                                        Đồng ý xóa sản phẩm này
+                                    </label>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-danger btn-sm flex-fill">
+                                        <i class="fas fa-check"></i> Xóa
+                                    </button>
+                                  
+                                </div>
+                            </div>
                         }
                     </td>
                 </tr>
             }
         </tbody>
-        <tfoot class="table-secondary">
+        <tfoot class="table-active">
             <tr>
-                <td colspan="3"><strong>Tổng cộng:</strong></td>
-                <td><strong>@gioHang.TongSoLuong sản phẩm</strong></td>
-                <td><strong class="text-danger fs-5">@String.Format("{0:N0}", gioHang.TongTien) VNĐ</strong></td>
-                <td></td>
+                <td colspan="2" class="text-right">
+                    <h5 class="mb-0">Tổng cộng:</h5>
+                    @if (Model.TongTienGiam > 0)
+                    {
+                        <p class="text-success mb-0">Tiết kiệm được: @String.Format("{0:N0}", Model.TongTienGiam) VNĐ</p>
+                    }
+                </td>
+                <td>
+                    <h5 class="mb-0">@Model.TongSoLuong sản phẩm</h5>
+                </td>
+                <td colspan="2">
+                    <h4 class="text-danger mb-0">@String.Format("{0:N0}", Model.TongTien) VNĐ</h4>
+                </td>
             </tr>
         </tfoot>
     </table>
 
     <div class="row mt-4">
         <div class="col-md-6">
-            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">Tiếp tục mua sắm</a>
+            @Html.ActionLink("← Tiếp tục mua hàng", "Index", "Home", null,
+                new { @class = "btn btn-outline-primary" })
         </div>
-        <div class="col-md-6 text-end">
-            <div class="d-grid gap-2 d-md-block">
-                @using (Html.BeginForm("ClearCart", "GioHang", FormMethod.Post, new { style = "display:inline;" }))
-                {
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-warning btn-lg">
-                        <i class="bi bi-cart-x"></i> Xóa giỏ hàng
-                    </button>
-                }
-
-                <a href="@Url.Action("ThanhToan", "GioHang")" class="btn btn-success btn-lg">
-                    <i class="bi bi-credit-card"></i> Thanh Toán
+        <div class="col-md-6 text-right">
+            @if (Session["UserID"] != null)
+            {
+                @Html.ActionLink("Thanh toán →", "ThanhToan", "Orders", null,
+                    new { @class = "btn btn-success btn-lg" })
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")" class="btn btn-warning btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập để thanh toán
                 </a>
-            </div>
+            }
         </div>
+    </div>
+}
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <strong>Thành công!</strong> @TempData["SuccessMessage"]
     </div>
 }
