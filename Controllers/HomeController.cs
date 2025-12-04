@@ -23,9 +23,27 @@ namespace WebBanHoa.Controllers
             return View();
         }
 
-        public ActionResult Search(string TuKhoa)
+        public ActionResult Search(string TuKhoa, int page = 1)
         {
-            List<ProductDTO> lst = db.Products.Where(pd => pd.ProductName.Contains(TuKhoa)).Select(p => new ProductDTO
+            int numberOfRecordPerPage = 8;
+            int noOfRecordToSkip = (page - 1) * numberOfRecordPerPage;
+            var query = db.Products.AsQueryable();
+            query = query.Where(p => p.IsAvailable == 1);
+
+            if (!string.IsNullOrWhiteSpace(TuKhoa))
+            {
+                // Trim() để xoá khoảng trắng thừa
+                TuKhoa = TuKhoa.Trim();
+                query = query.Where(pd => pd.ProductName.Contains(TuKhoa));
+            }
+            int totalRecords = query.Count();
+            int noOfPages = (int)Math.Ceiling((double)totalRecords / numberOfRecordPerPage);
+            //Lấy toàn bộ sản phẩm
+            List<ProductDTO> lst = query
+                .OrderBy(p => p.ProductName)
+                .Skip(noOfRecordToSkip)
+                .Take(numberOfRecordPerPage)
+                .Where(pd => pd.IsAvailable == 1).Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
@@ -35,6 +53,14 @@ namespace WebBanHoa.Controllers
                 DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderByDescending(d => d.DiscountRate).FirstOrDefault().DiscountRate,
                 Description = p.Description,
             }).ToList();
+           
+            ViewBag.Keyword = TuKhoa;
+            ViewBag.Page = page;
+            ViewBag.NoOfPages = noOfPages;
+            if (lst.Count == 0 && page > 1 && totalRecords > 0)
+            {
+                return RedirectToAction("Search", new { TuKhoa = TuKhoa, page = 1 });
+            }
             return View(lst);
         }
 
