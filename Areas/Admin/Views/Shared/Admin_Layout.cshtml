@@ -58,7 +58,7 @@
                 <a class="nav-link @(currentController == "user" ? "active" : "")" href="@Url.Action("Index", "User")"><i class="fas fa-users me-2"></i> Quản lý khách hàng</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#promotions"><i class="fas fa-tags me-2"></i> Khuyến mãi</a>
+                <a class="nav-link @(currentController == "discount" ? "active" : "")" href="@Url.Action("Index", "Discount")"><i class="fas fa-tags me-2"></i> Khuyến mãi</a>
             </li>
             <li class="nav-item mt-auto">
                 <a class="nav-link" href="@Url.Action("Logout", "Account", new {area = ""})"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a>
