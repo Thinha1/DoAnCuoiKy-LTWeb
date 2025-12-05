@@ -1,7 +1,73 @@
-﻿@model  List<WebBanHoa.Models.ProductDTO>
+﻿@model List<WebBanHoa.Models.ProductDTO>
+@{
+    bool isLoggedIn = Session["UserID"] != null;
+}
 
 <link href="~/Content/css/card_product.css" rel="stylesheet" />
-    <h2 class="mb-4 mt-4 text-center">ĐANG GIẢM GIÁ</h2>
+
+<!-- BỔ SUNG CSS THÔNG BÁO (GIỮ NGUYÊN) -->
+<style>
+    .cart-notification {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 10000;
+        min-width: 300px;
+        background: #28a745;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        font-weight: bold;
+        display: none;
+        animation: fadeInOut 3s ease-in-out;
+    }
+
+    .login-required-notification {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 10000;
+        min-width: 300px;
+        background: #dc3545;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        font-weight: bold;
+        display: none;
+        animation: fadeInOut 3s ease-in-out;
+    }
+
+    @@keyframes fadeInOut {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        10% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        90% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+
+    /* FORM ẨN */
+    .hidden-cart-form {
+        display: none;
+    }
+</style>
+
+<h2 class="mb-4 mt-4 text-center">ĐANG GIẢM GIÁ</h2>
 <div class="row" style="margin-top: 10px">
 
     @foreach (var sp in Model)
@@ -26,7 +92,6 @@
                     <div class="product-info text-center">
                         <h5 class="product-name">@sp.ProductName</h5>
                         @{
-
                             decimal? salePrice;
                             var discount = sp.DiscountRate;
                             if (discount != null)
@@ -44,14 +109,73 @@
                                     <span class="price-sale" style="text-decoration: none">@String.Format("{0:N0}", sp.Price) VNĐ</span>
                                 </div>
                             }
-
                         }
 
-                        <a href="#" class="btn btn-order">ĐẶT HÀNG</a>
+                        <!-- NÚT THÊM VÀO GIỎ - SỬA THÀNH FORM -->
+                        @if (isLoggedIn)
+                        {
+                            <form method="post" action="@Url.Action("ThemVaoGioHang", "Cart")"
+                                  style="display: inline;">
+                                <input type="hidden" name="id" value="@sp.ProductID" />
+                                <input type="hidden" name="soLuong" value="1" />
+                                <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery" />
+                                <button type="submit" class="btn btn-order add-to-cart-list"
+                                        data-product-id="@sp.ProductID"
+                                        data-product-name="@sp.ProductName">
+                                    Thêm vào giỏ
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })"
+                               class="btn btn-order add-to-cart-list"
+                               data-product-id="@sp.ProductID"
+                               data-product-name="@sp.ProductName">
+                                Thêm vào giỏ
+                            </a>
+                        }
                     </div>
 
                 </div>
-                </a>
+            </a>
         </div>
     }
 </div>
+
+<!-- HIỂN THỊ THÔNG BÁO TỪ SERVER (KHÔNG CẦN SCRIPT) -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="cart-notification" class="cart-notification" style="display: block;">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <strong>Lỗi!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<!-- SỬA FORM ẨN THÀNH GET METHOD -->
+<form id="globalCartForm" method="get" action="@Url.Action("ThemVaoGioHang", "Cart")"
+      class="hidden-cart-form">
+    <input type="hidden" name="id" id="formProductId" />
+    <input type="hidden" name="soLuong" id="formQuantity" value="1" />
+    <input type="hidden" name="returnUrl" id="formReturnUrl" value="@Request.Url.PathAndQuery" />
+</form>
+
+<!-- CHỈ GIỮ LẠI PHẦN SCRIPT ĐỂ XỬ LÝ AUTO HIDE -->
+<script>
+    // Tự động ẩn thông báo sau 3 giây
+    setTimeout(function () {
+        var notification = document.getElementById('cart-notification');
+        if (notification) {
+            notification.style.display = 'none';
+        }
+    }, 3000);
+</script>

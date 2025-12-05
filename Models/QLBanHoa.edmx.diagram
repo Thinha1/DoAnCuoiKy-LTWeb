@@ -12,7 +12,7 @@
         <EntityTypeShape EntityType="QLBANHOAModel.Product" Width="1.5" PointX="3" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="QLBANHOAModel.Role" Width="1.5" PointX="1.5" PointY="10.875" IsExpanded="true" />
         <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCart" Width="1.5" PointX="6" PointY="11.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCartItem" Width="1.5" PointX="8.25" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCartItem" Width="1.5" PointX="8.375" PointY="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="QLBANHOAModel.Theme" Width="1.5" PointX="0.75" PointY="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="QLBANHOAModel.User" Width="1.5" PointX="3.75" PointY="10" IsExpanded="true" />
         <AssociationConnector Association="QLBANHOAModel.FK_Category_Parent" ManuallyRouted="false" />

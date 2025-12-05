@@ -35,5 +35,6 @@ namespace WebBanHoa.Models
         public virtual DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
         public virtual DbSet<Theme> Themes { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public object OrderDetail { get; internal set; }
     }
 }

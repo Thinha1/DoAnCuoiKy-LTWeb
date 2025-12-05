@@ -1,0 +1,65 @@
+﻿
+@model WebBanHoa.Models.Order
+
+@{
+    ViewBag.Title = "Đặt Hàng Thành Công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-success shadow">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                    </div>
+
+                    <h1 class="text-success mb-3">ĐẶT HÀNG THÀNH CÔNG!</h1>
+                    <p class="fs-5 text-muted mb-4">Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi</p>
+
+                    <!-- Thông tin đơn hàng -->
+                    <div class="bg-light p-4 rounded mb-4">
+                        <h4 class="mb-3">Thông tin đơn hàng</h4>
+                        <div class="row text-start">
+                            <div class="col-md-6">
+                                <p><strong>Mã đơn hàng:</strong> <span class="text-danger">@Model.OrderID</span></p>
+                                <p><strong>Ngày đặt:</strong> @(Model.OrderDate?.ToString("dd/MM/yyyy HH:mm"))</p>
+                                <p><strong>Trạng thái:</strong> <span class="badge bg-info">@Model.Status</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Tổng tiền:</strong>
+                                    <span class="text-danger fw-bold fs-5">
+                                        @String.Format("{0:N0}", ViewBag.TotalAmount) VNĐ
+                                    </span>
+                                </p>
+                                <p><strong>Phương thức thanh toán:</strong> @Model.UserPaymentMethod</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hướng dẫn -->
+                    <div class="alert alert-info text-start">
+                        <h5><i class="bi bi-info-circle me-2"></i>Hướng dẫn tiếp theo:</h5>
+                        <ul class="mb-0">
+                            <li>Đơn hàng của bạn đã được tiếp nhận và đang chờ xác nhận</li>
+                            <li>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất</li>
+                            <li>Bạn có thể theo dõi đơn hàng trong mục "Đơn hàng của tôi"</li>
+                        </ul>
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div class="d-grid gap-3 d-md-flex justify-content-center mt-5">
+                        <a href="@Url.Action("Index", "Orders")" class="btn btn-primary btn-lg">
+                            <i class="bi bi-list-check"></i> Xem đơn hàng của tôi
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-shop"></i> Tiếp tục mua sắm
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
