@@ -103,17 +103,48 @@ namespace WebBanHoa.Controllers
 
         public ActionResult Details(string productID)
         {
-            ProductDTO product = db.Products.Where(p => p.ProductID == productID).Select(p => new ProductDTO
+            if (string.IsNullOrEmpty(productID))
             {
-                ProductID = p.ProductID,
-                ProductName = p.ProductName,
-                CategoryID = p.CategoryID,
-                ThemeID = p.ThemeID,
-                Price = p.Price,
-                Image = p.Image,
-                Description = p.Description,
-                DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderBy(d => d.DiscountRate).FirstOrDefault().DiscountRate
-            }).FirstOrDefault();
+                TempData["ErrorMessage"] = "Mã sản phẩm không hợp lệ";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ProductDTO product = db.Products
+                .Where(p => p.ProductID == productID)
+                .Select(p => new
+                {
+                    p.ProductID,
+                    p.ProductName,
+                    p.CategoryID,
+                    p.ThemeID,
+                    p.Price,
+                    p.Image,
+                    p.Description,
+                    Discount = p.Discounts
+                        .Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now)
+                        .OrderBy(d => d.DiscountRate)
+                        .FirstOrDefault()
+                })
+                .AsEnumerable()  // Chuyển sang client-side evaluation
+                .Select(x => new ProductDTO
+                {
+                    ProductID = x.ProductID,
+                    ProductName = x.ProductName,
+                    CategoryID = x.CategoryID,
+                    ThemeID = x.ThemeID,
+                    Price = x.Price,
+                    Image = x.Image,
+                    Description = x.Description,
+                    DiscountRate = x.Discount != null ? x.Discount.DiscountRate : 0
+                })
+                .FirstOrDefault();
+
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy sản phẩm với mã: " + productID;
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(product);
         }
 
