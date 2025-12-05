@@ -1,5 +1,4 @@
-﻿@model QLBANHOA.Models.GioHang
-
+﻿@model WebBanHoa.Models.CartDTO
 
 @{
     ViewBag.Title = "Giỏ Hàng";
@@ -8,7 +7,7 @@
 
 <h2>Giỏ Hàng Của Bạn</h2>
 
-@if (Model == null || Model.Items.Count == 0)
+@if (Model == null || !Model.Items.Any())
 {
     <div class="alert alert-info">
         <p>Giỏ hàng của bạn đang trống</p>
@@ -30,39 +29,47 @@ else
         <tbody>
             @foreach (var item in Model.Items)
             {
+                // Tính toán giá trị
+                decimal giaGoc = item.Price;
+                decimal discountRate = item.DiscountRate;
+                decimal giaSauGiam = giaGoc - (giaGoc * discountRate / 100);
+                int itemQuantity = item.Quantity ?? 0;
+                decimal thanhTien = giaSauGiam * itemQuantity;
+                decimal tienGiam = giaGoc * itemQuantity - thanhTien;
+
                 <tr>
                     <td>
                         <div class="d-flex align-items-center">
-                            @if (!string.IsNullOrEmpty(item.SanPham.Image))
+                            @if (!string.IsNullOrEmpty(item.Image))
                             {
-                                <img src="@Url.Content("~/Content/Images/" + item.SanPham.Image)"
-                                     alt="@item.SanPham.ProductName"
+                                <img src="@Url.Content("~/Content/Images/" + item.Image)"
+                                     alt="@item.ProductName"
                                      style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;" />
                             }
                             <div>
-                                <h6 class="mb-1">@item.SanPham.ProductName</h6>
-                                <small class="text-muted">Mã: @item.SanPham.ProductID</small>
+                                <h6 class="mb-1">@item.ProductName</h6>
+                                <small class="text-muted">Mã: @item.ProductID</small>
                                 <br />
-                                <small class="text-muted">Tồn kho: @item.SanPham.Quantity</small>
+                                <!-- Không hiển thị số lượng tồn kho nếu không có trong DTO -->
                             </div>
                         </div>
                     </td>
                     <td>
-                        @if (item.TyLeGiamGia > 0)
+                        @if (discountRate > 0)
                         {
                             <div>
-                                <del class="text-muted small">@String.Format("{0:N0}", item.GiaGoc) VNĐ</del>
+                                <del class="text-muted small">@String.Format("{0:N0}", giaGoc) VNĐ</del>
                                 <br />
                                 <span class="text-danger font-weight-bold">
-                                    @String.Format("{0:N0}", item.GiaSauGiam) VNĐ
+                                    @String.Format("{0:N0}", giaSauGiam) VNĐ
                                 </span>
                                 <br />
-                                <span class="badge badge-success">-@item.TyLeGiamGia%</span>
+                                <span class="badge badge-success">-@discountRate%</span>
                             </div>
                         }
                         else
                         {
-                            <span class="font-weight-bold">@String.Format("{0:N0}", item.GiaGoc) VNĐ</span>
+                            <span class="font-weight-bold">@String.Format("{0:N0}", giaGoc) VNĐ</span>
                         }
                     </td>
                     <td>
@@ -71,49 +78,45 @@ else
                             <div class="input-group input-group-sm" style="width: 180px;">
                                 <input type="number"
                                        name="soLuong"
-                                       value="@item.SoLuong"
+                                       value="@itemQuantity"
                                        min="1"
-                                       max="@item.SanPham.Quantity"
                                        class="form-control text-center"
                                        aria-label="Số lượng">
 
-                                <input type="hidden" name="id" value="@item.SanPham.ProductID" />
+                                <input type="hidden" name="id" value="@item.ProductID" />
 
                                 <button type="submit" class="btn btn-outline-primary">
                                     <i class="fas fa-redo"></i> Cập nhật
                                 </button>
                             </div>
 
-                            <small class="text-muted d-block mt-1">
-                                Còn lại: @item.SanPham.Quantity sản phẩm
-                            </small>
+                            <!-- Không hiển thị số lượng tồn kho vì không có trong DTO -->
                         }
                     </td>
                     <td class="font-weight-bold text-danger">
-                        @String.Format("{0:N0}", item.ThanhTien) VNĐ
-                        @if (item.TyLeGiamGia > 0)
+                        @String.Format("{0:N0}", thanhTien) VNĐ
+                        @if (discountRate > 0)
                         {
                             <br />
-                            <small class="text-success">Tiết kiệm: @String.Format("{0:N0}", item.TienGiam) VNĐ</small>
+                            <small class="text-success">Tiết kiệm: @String.Format("{0:N0}", tienGiam) VNĐ</small>
                         }
                     </td>
                     <td>
                         @using (Html.BeginForm("XoaKhoiGioHang", "Cart", FormMethod.Post))
                         {
-                           
-                            <input type="hidden" name="id" value="@item.SanPham.ProductID" />
+                            <input type="hidden" name="id" value="@item.ProductID" />
 
                             <div class="border rounded p-2 bg-light" style="max-width: 200px;">
                                 <p class="small mb-2">
                                     <i class="fas fa-exclamation-circle text-danger"></i>
-                                    Xóa <strong>@item.SanPham.ProductName</strong>?
+                                    Xóa <strong>@item.ProductName</strong>?
                                 </p>
 
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="checkbox"
-                                           id="agree_@item.SanPham.ProductID"
+                                           id="agree_@item.ProductID"
                                            name="agree" required>
-                                    <label class="form-check-label small" for="agree_@item.SanPham.ProductID">
+                                    <label class="form-check-label small" for="agree_@item.ProductID">
                                         Đồng ý xóa sản phẩm này
                                     </label>
                                 </div>
@@ -122,7 +125,6 @@ else
                                     <button type="submit" class="btn btn-danger btn-sm flex-fill">
                                         <i class="fas fa-check"></i> Xóa
                                     </button>
-                                  
                                 </div>
                             </div>
                         }
@@ -134,16 +136,41 @@ else
             <tr>
                 <td colspan="2" class="text-right">
                     <h5 class="mb-0">Tổng cộng:</h5>
-                    @if (Model.TongTienGiam > 0)
+                    @{
+                        // Tính tổng tiết kiệm
+                        decimal tongTienGiam = Model.Items.Sum(item =>
+                        {
+                            decimal giaGoc = item.Price;
+                            decimal discountRate = item.DiscountRate;
+                            int quantity = item.Quantity ?? 0;
+                            decimal giaSauGiam = giaGoc - (giaGoc * discountRate / 100);
+                            return (giaGoc * quantity) - (giaSauGiam * quantity);
+                        });
+                    }
+                    @if (tongTienGiam > 0)
                     {
-                        <p class="text-success mb-0">Tiết kiệm được: @String.Format("{0:N0}", Model.TongTienGiam) VNĐ</p>
+                        <p class="text-success mb-0">Tiết kiệm được: @String.Format("{0:N0}", tongTienGiam) VNĐ</p>
                     }
                 </td>
                 <td>
-                    <h5 class="mb-0">@Model.TongSoLuong sản phẩm</h5>
+                    @{
+                        int tongSoLuong = Model.Items.Sum(item => item.Quantity ?? 0);
+                    }
+                    <h5 class="mb-0">@tongSoLuong sản phẩm</h5>
                 </td>
                 <td colspan="2">
-                    <h4 class="text-danger mb-0">@String.Format("{0:N0}", Model.TongTien) VNĐ</h4>
+                    @{
+                        // Tính tổng tiền
+                        decimal tongTien = Model.Items.Sum(item =>
+                        {
+                            decimal giaGoc = item.Price;
+                            decimal discountRate = item.DiscountRate;
+                            int quantity = item.Quantity ?? 0;
+                            decimal giaSauGiam = giaGoc - (giaGoc * discountRate / 100);
+                            return giaSauGiam * quantity;
+                        });
+                    }
+                    <h4 class="text-danger mb-0">@String.Format("{0:N0}", tongTien) VNĐ</h4>
                 </td>
             </tr>
         </tfoot>
@@ -153,6 +180,15 @@ else
         <div class="col-md-6">
             @Html.ActionLink("← Tiếp tục mua hàng", "Index", "Home", null,
                 new { @class = "btn btn-outline-primary" })
+
+            <!-- Thêm nút xóa toàn bộ giỏ hàng -->
+            @using (Html.BeginForm("XoaToanBoGioHang", "Cart", FormMethod.Post, new { @style = "display: inline;" }))
+            {
+                <button type="submit" class="btn btn-outline-danger ml-2"
+                        onclick="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')">
+                    <i class="fas fa-trash"></i> Xóa toàn bộ
+                </button>
+            }
         </div>
         <div class="col-md-6 text-right">
             @if (Session["UserID"] != null)
@@ -170,10 +206,22 @@ else
     </div>
 }
 
-
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
         <strong>Thành công!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <strong>Lỗi!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 }

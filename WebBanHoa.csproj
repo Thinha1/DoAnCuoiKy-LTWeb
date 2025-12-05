@@ -155,13 +155,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CartDTO.cs" />
+    <Compile Include="Models\CartItemDTO.cs" />
     <Compile Include="Models\Category.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Discount.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\GioHang.cs" />
     <Compile Include="Models\IDGenerator.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\Order.cs">
