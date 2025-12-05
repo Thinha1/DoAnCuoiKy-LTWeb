@@ -115,25 +115,8 @@ namespace QLBANHOA.Controllers
         [HttpPost]
         public ActionResult XoaKhoiGioHang(string id)
         {
-            if (Session["UserID"] == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            string user = Session["UserID"].ToString();
-
-            var gioHang = db.ShoppingCarts.FirstOrDefault(sc => sc.UserID == user);
-            var itemInCart = db.ShoppingCartItems.FirstOrDefault(
-                        i => i.ShoppingCartID == gioHang.ShoppingCartID && i.ProductID == id);
-            if (itemInCart != null)
-            {
-                db.ShoppingCartItems.Remove(itemInCart);
-            }
-            else
-            {
-                //Chưa có -> Tạo mới Item
-                TempData["Không tồn tại sản phẩm trong giỏ hàng"]
-            }
+            var gioHang = LayGioHang();
+            gioHang.XoaSanPham(id);
             TempData["SuccessMessage"] = "Đã xóa sản phẩm khỏi giỏ hàng";
             return RedirectToAction("Index");
         }
