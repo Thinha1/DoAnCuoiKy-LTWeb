@@ -144,6 +144,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashBoardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\DiscountController.cs" />
     <Compile Include="Areas\Admin\Controllers\OrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Models\Discount.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DiscountDTO.cs" />
     <Compile Include="Models\GioHang.cs" />
     <Compile Include="Models\IDGenerator.cs" />
     <Compile Include="Models\LoginModel.cs" />
@@ -306,6 +308,9 @@
     <Content Include="Scripts\bootstrap.esm.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Areas\Admin\Views\Discount\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Discount\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Discount\Edit.cshtml" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
