@@ -1,10 +1,29 @@
-﻿@model QLBANHOA.Models.GioHang
+﻿@model WebBanHoa.Models.CartDTO
 
 @{
     ViewBag.Title = "Thanh Toán";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var userID = Session["UserID"] as string;
-    var userName = Session["UserName"] as string;
+    var userName = ViewBag.UserName as string;
+    var userAddress = ViewBag.UserAddress as string;
+    var userEmail = ViewBag.UserEmail as string;
+
+    
+    decimal totalAmount = 0;
+    int totalQuantity = 0;
+
+    if (Model != null && Model.Items != null)
+    {
+        foreach (var item in Model.Items)
+        {
+            decimal price = item.Price;
+            decimal discountRate = item.DiscountRate;
+            int quantity = item.Quantity ?? 0;
+            decimal discountedPrice = price - (price * discountRate / 100);
+            totalAmount += discountedPrice * quantity;
+            totalQuantity += quantity;
+        }
+    }
 }
 
 <style>
@@ -50,18 +69,26 @@
         max-width: 200px;
         height: auto;
     }
+
+    .product-img-mini {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-right: 10px;
+    }
 </style>
 
 <div class="container py-5">
     <h1 class="text-center mb-4">THANH TOÁN ĐƠN HÀNG</h1>
 
-    @if (Model == null || Model.Items.Count == 0)
+    @if (Model == null || !Model.Items.Any())
     {
         <div class="alert alert-info text-center py-4">
-            <i class="bi bi-cart-x fs-1"></i>
+            <i class="fas fa-cart-plus fa-2x"></i>
             <h4 class="mt-3">Giỏ hàng của bạn đang trống</h4>
             <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">
-                <i class="bi bi-shop"></i> Mua sắm ngay
+                <i class="fas fa-store"></i> Mua sắm ngay
             </a>
         </div>
     }
@@ -73,18 +100,21 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4">
                         <h3 class="card-title text-danger mb-4">
-                            <i class="bi bi-geo-alt-fill me-2"></i>Thông tin giao hàng
+                            <i class="fas fa-map-marker-alt me-2"></i>Thông tin giao hàng
                         </h3>
 
                         @using (Html.BeginForm("ThanhToan", "Orders", FormMethod.Post, new { id = "checkoutForm", @class = "needs-validation" }))
                         {
-                            
+                            @Html.AntiForgeryToken()
 
                             <!-- Thông tin khách hàng -->
-                            <div class="alert alert-info mb-4">
-                                <i class="bi bi-person-circle me-2"></i>
-                                <strong>Khách hàng:</strong> @userName
-                            </div>
+                            if (!string.IsNullOrEmpty(userName))
+                            {
+                                <div class="alert alert-info mb-4">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    <strong>Khách hàng:</strong> @userName
+                                </div>
+                            }
 
                             <div class="row g-3">
                                 <!-- Họ và tên (bắt buộc) -->
@@ -125,7 +155,7 @@
                                               rows="3"
                                               required
                                               minlength="10"
-                                              placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+                                              placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố">@userAddress</textarea>
                                     <div class="invalid-feedback">Vui lòng nhập địa chỉ chi tiết (ít nhất 10 ký tự)</div>
                                 </div>
 
@@ -134,6 +164,7 @@
                                     <label class="form-label">Email</label>
                                     <input type="email" class="form-control"
                                            name="Email"
+                                           value="@userEmail"
                                            placeholder="example@gmail.com">
                                     <div class="invalid-feedback">Vui lòng nhập email hợp lệ</div>
                                 </div>
@@ -149,7 +180,7 @@
 
                             <!-- Phương thức giao hàng -->
                             <h5 class="mt-5 mb-3 fw-bold">
-                                <i class="bi bi-truck me-2"></i>Phương thức giao hàng
+                                <i class="fas fa-truck me-2"></i>Phương thức giao hàng
                             </h5>
 
                             <div class="mb-3">
@@ -169,7 +200,7 @@
 
                             <!-- Phương thức thanh toán -->
                             <h5 class="mt-5 mb-3 fw-bold">
-                                <i class="bi bi-credit-card me-2"></i>Phương thức thanh toán
+                                <i class="fas fa-credit-card me-2"></i>Phương thức thanh toán
                             </h5>
 
                             <div class="mb-4">
@@ -179,7 +210,7 @@
                                            type="radio"
                                            name="PaymentMethod"
                                            id="cod"
-                                           value="COD"
+                                           value="Thanh toán khi nhận hàng"
                                            checked>
                                     <label class="form-check-label" for="cod">
                                         <span class="fw-bold">Thanh toán khi nhận hàng (COD)</span><br>
@@ -203,23 +234,23 @@
                                 <!-- Thông tin chuyển khoản (ẩn khi chọn COD) -->
                                 <div id="bankingInfo" class="banking-info">
                                     <h6 class="text-success mb-3">
-                                        <i class="bi bi-bank me-2"></i>Thông tin chuyển khoản
+                                        <i class="fas fa-university me-2"></i>Thông tin chuyển khoản
                                     </h6>
 
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="alert alert-success mb-3">
-                                                <strong><i class="bi bi-building"></i> Ngân hàng:</strong><br>
+                                                <strong><i class="fas fa-building"></i> Ngân hàng:</strong><br>
                                                 <span class="fw-bold">Vietcombank</span>
                                             </div>
 
                                             <div class="alert alert-success mb-3">
-                                                <strong><i class="bi bi-credit-card"></i> Số tài khoản:</strong><br>
+                                                <strong><i class="fas fa-credit-card"></i> Số tài khoản:</strong><br>
                                                 <span class="fw-bold fs-5">0123456789</span>
                                             </div>
 
                                             <div class="alert alert-success">
-                                                <strong><i class="bi bi-person"></i> Chủ tài khoản:</strong><br>
+                                                <strong><i class="fas fa-user"></i> Chủ tài khoản:</strong><br>
                                                 <span class="fw-bold">CÔNG TY TNHH HOA TƯƠI ABC</span>
                                             </div>
                                         </div>
@@ -235,11 +266,14 @@
                                         </div>
                                     </div>
 
-                                    <div class="alert alert-warning mt-3">
-                                        <i class="bi bi-exclamation-triangle"></i>
-                                        <strong>Lưu ý:</strong> Vui lòng ghi nội dung:
-                                        <code>@userID-@DateTime.Now.ToString("ddMMyyyyHHmm")</code>
-                                    </div>
+                                    @if (!string.IsNullOrEmpty(userID))
+                                    {
+                                        <div class="alert alert-warning mt-3">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <strong>Lưu ý:</strong> Vui lòng ghi nội dung:
+                                            <code>@userID-@DateTime.Now.ToString("ddMMyyyyHHmm")</code>
+                                        </div>
+                                    }
                                 </div>
                             </div>
 
@@ -259,7 +293,7 @@
                             <!-- Nút đặt hàng -->
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-danger btn-lg py-3">
-                                    <i class="bi bi-check-circle"></i> ĐẶT HÀNG NGAY
+                                    <i class="fas fa-check-circle"></i> ĐẶT HÀNG NGAY
                                 </button>
                             </div>
                         }
@@ -272,30 +306,45 @@
                 <div class="card shadow-sm border-0 sticky-card">
                     <div class="card-body p-4">
                         <h3 class="card-title text-danger mb-4">
-                            <i class="bi bi-receipt me-2"></i>Tóm tắt đơn hàng
+                            <i class="fas fa-receipt me-2"></i>Tóm tắt đơn hàng
                         </h3>
 
                         <!-- Danh sách sản phẩm -->
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-3">Sản phẩm (@Model.TongSoLuong)</h6>
+                            <h6 class="fw-bold mb-3">Sản phẩm (@totalQuantity)</h6>
 
                             @foreach (var item in Model.Items)
                             {
+                                decimal price = item.Price;
+                                decimal discountRate = item.DiscountRate;
+                                int quantity = item.Quantity ?? 0;
+                                decimal discountedPrice = price - (price * discountRate / 100);
+                                decimal itemTotal = discountedPrice * quantity;
+                                decimal originalTotal = price * quantity;
+
                                 <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                                    <div style="max-width: 60%;">
-                                        <h6 class="mb-1">@item.SanPham.ProductName</h6>
-                                        <small class="text-muted">Số lượng: @item.SoLuong</small>
-                                        @if (item.TyLeGiamGia > 0)
+                                    <div class="d-flex align-items-center" style="max-width: 60%;">
+                                        @if (!string.IsNullOrEmpty(item.Image))
                                         {
-                                            <span class="badge bg-danger ms-2">-@item.TyLeGiamGia%</span>
+                                            <img src="@Url.Content("~/Content/Images/" + item.Image)"
+                                                 class="product-img-mini"
+                                                 alt="@item.ProductName">
                                         }
+                                        <div>
+                                            <h6 class="mb-1">@item.ProductName</h6>
+                                            <small class="text-muted">Số lượng: @quantity</small>
+                                            @if (discountRate > 0)
+                                            {
+                                                <span class="badge bg-danger ms-2">-@discountRate%</span>
+                                            }
+                                        </div>
                                     </div>
                                     <div class="text-end">
-                                        <div class="fw-bold">@String.Format("{0:N0}", item.ThanhTien) VNĐ</div>
-                                        @if (item.TyLeGiamGia > 0)
+                                        <div class="fw-bold">@String.Format("{0:N0}", itemTotal) VNĐ</div>
+                                        @if (discountRate > 0)
                                         {
                                             <small class="text-muted text-decoration-line-through d-block">
-                                                @String.Format("{0:N0}", item.GiaGoc * item.SoLuong) VNĐ
+                                                @String.Format("{0:N0}", originalTotal) VNĐ
                                             </small>
                                         }
                                     </div>
@@ -305,9 +354,21 @@
 
                         <!-- Tính toán tổng tiền -->
                         <div class="border-top pt-3">
+                            @{
+                                // Tính tổng tiền gốc và tổng tiết kiệm
+                                decimal subTotal = Model.Items.Sum(item => item.Price * (item.Quantity ?? 0));
+                                decimal totalDiscount = Model.Items.Sum(item =>
+                                {
+                                    decimal price = item.Price;
+                                    decimal discountRate = item.DiscountRate;
+                                    int quantity = item.Quantity ?? 0;
+                                    return (price * quantity) - ((price - (price * discountRate / 100)) * quantity);
+                                });
+                            }
+
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tạm tính:</span>
-                                <span>@String.Format("{0:N0}", Model.TongTien) VNĐ</span>
+                                <span>@String.Format("{0:N0}", subTotal) VNĐ</span>
                             </div>
 
                             <div class="d-flex justify-content-between mb-2">
@@ -315,22 +376,22 @@
                                 <span class="text-success">MIỄN PHÍ</span>
                             </div>
 
-                            @if (Model.TongTienGiam > 0)
+                            @if (totalDiscount > 0)
                             {
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Giảm giá:</span>
-                                    <span class="text-danger">-@String.Format("{0:N0}", Model.TongTienGiam) VNĐ</span>
+                                    <span class="text-danger">-@String.Format("{0:N0}", totalDiscount) VNĐ</span>
                                 </div>
                             }
 
                             <div class="d-flex justify-content-between mt-3 pt-3 border-top fw-bold fs-5">
                                 <span>Tổng thanh toán:</span>
-                                <span class="text-danger">@String.Format("{0:N0}", Model.TongTien) VNĐ</span>
+                                <span class="text-danger">@String.Format("{0:N0}", totalAmount) VNĐ</span>
                             </div>
 
                             <div class="text-center mt-4">
                                 <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary">
-                                    <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                                    <i class="fas fa-arrow-left"></i> Quay lại giỏ hàng
                                 </a>
                             </div>
                         </div>
@@ -374,7 +435,7 @@
 {
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <i class="fas fa-exclamation-triangle me-2"></i>
             @TempData["ErrorMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -385,7 +446,7 @@
 <script>
     // Hiển thị thông tin chuyển khoản khi chọn phương thức
     document.querySelectorAll('.payment-method').forEach(radio => {
-        radio.addEventListener('change', function() {
+        radio.addEventListener('change', function () {
             const bankingInfo = document.getElementById('bankingInfo');
             if (this.value === 'Chuyển khoản') {
                 bankingInfo.classList.add('show');
@@ -396,7 +457,7 @@
     });
 
     // Validation form
-    document.getElementById('checkoutForm').addEventListener('submit', function(event) {
+    document.getElementById('checkoutForm').addEventListener('submit', function (event) {
         if (!this.checkValidity()) {
             event.preventDefault();
             event.stopPropagation();
@@ -416,7 +477,7 @@
 
     // Real-time validation
     document.querySelectorAll('input[required], textarea[required]').forEach(input => {
-        input.addEventListener('blur', function() {
+        input.addEventListener('blur', function () {
             if (this.checkValidity()) {
                 this.classList.remove('is-invalid');
                 this.classList.add('is-valid');
@@ -428,7 +489,7 @@
     });
 
     // Kiểm tra số điện thoại
-    document.querySelector('input[name="Phone"]').addEventListener('input', function() {
+    document.querySelector('input[name="Phone"]').addEventListener('input', function () {
         const phonePattern = /(09|03|07|08|05)[0-9]{8}/;
         if (phonePattern.test(this.value)) {
             this.setCustomValidity('');
