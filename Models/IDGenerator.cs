@@ -89,5 +89,24 @@ namespace WebBanHoa.Models
             return "OD001";
         }
 
+        public static string GenerateDiscountID()
+        {
+            var lastDiscount = db.Discounts.OrderByDescending(o => o.DiscountID).FirstOrDefault();
+
+            if (lastDiscount == null) return "GG001";
+
+            string lastID = lastDiscount.DiscountID;
+            if (lastID.StartsWith("GG") && lastID.Length >= 3)
+            {
+                string numberPart = lastID.Substring(2);
+                if (int.TryParse(numberPart, out int lastNumber))
+                {
+                    return $"GG{(lastNumber + 1):D3}";
+                }
+            }
+
+            return "GG001";
+        }
+
     }
 }

@@ -1,0 +1,130 @@
+﻿@model WebBanHoa.Models.DiscountDTO
+
+@{
+    ViewBag.Title = "Cập nhật giảm giá";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+}
+
+@* Import CSS *@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container-fluid px-4">
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h2 class="mt-4">Cập Nhật Mã Giảm Giá</h2>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    @* --- CARD --- *@
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <i class="fas fa-edit me-1 text-secondary"></i>
+            Chỉnh sửa thông tin chương trình
+        </div>
+
+        <div class="card-body">
+            @using (Html.BeginForm("Edit", "Discount", FormMethod.Post, new { id = "editDiscountForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @* Giữ ID để submit *@
+                @Html.HiddenFor(model => model.DiscountID)
+
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                        @* --- HÀNG 1: ID, Sản phẩm, Tên --- *@
+                        <div class="row mb-3">
+                            @* Mã ID (Readonly) *@
+                            <div class="col-md-2">
+                                @Html.LabelFor(model => model.DiscountID, "Mã ID", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.EditorFor(model => model.DiscountID, new { htmlAttributes = new { @class = "form-control bg-light", @readonly = "readonly" } })
+                            </div>
+
+                            @* Sản phẩm *@
+                            <div class="col-md-5">
+                                @Html.LabelFor(model => model.ProductID, "Sản phẩm áp dụng", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.DropDownListFor(model => model.ProductID, (SelectList)ViewBag.ProductList, "-- Chọn sản phẩm --", new { @class = "form-select", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.ProductID, "", new { @class = "text-danger" })
+                            </div>
+
+                            @* Tên chương trình *@
+                            <div class="col-md-5">
+                                @Html.LabelFor(model => model.DiscountName, "Tên chương trình", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.EditorFor(model => model.DiscountName, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                                @Html.ValidationMessageFor(model => model.DiscountName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        @* --- HÀNG 2: Ngày & Mức giảm --- *@
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.StartDate, "Ngày bắt đầu", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @* QUAN TRỌNG: Format yyyy-MM-dd để hiện lên input date *@
+                                @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.EndDate, "Ngày kết thúc", htmlAttributes: new { @class = "form-label fw-bold" })
+                                @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                                <small id="dateError" class="text-danger d-none mt-1"><i class="fas fa-exclamation-circle me-1"></i>Ngày kết thúc phải lớn hơn ngày bắt đầu!</small>
+                            </div>
+
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.DiscountRate, "Mức giảm", htmlAttributes: new { @class = "form-label fw-bold" })
+                                <div class="input-group">
+                                    @Html.EditorFor(model => model.DiscountRate, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "1", @max = "99", @required = "required" } })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.DiscountRate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* --- FOOTER --- *@
+                <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                    <a href="@Url.Action("Index")" class="btn btn-light border me-2">Hủy bỏ</a>
+                    @* Dùng nút màu xanh dương hoặc xanh lá để đồng bộ *@
+                    <button type="submit" class="btn btn-success px-4 fw-bold">
+                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+    <script>
+        $(document).ready(function () {
+            // Script kiểm tra logic ngày tháng
+            $('#editDiscountForm').submit(function (e) {
+                var startDateStr = $('#StartDate').val();
+                var endDateStr = $('#EndDate').val();
+
+                if (startDateStr && endDateStr) {
+                    var startDate = new Date(startDateStr);
+                    var endDate = new Date(endDateStr);
+
+                    if (endDate < startDate) {
+                        e.preventDefault();
+                        $('#dateError').removeClass('d-none');
+                        $('#EndDate').addClass('is-invalid');
+                        $('#EndDate').focus();
+                    } else {
+                        $('#dateError').addClass('d-none');
+                        $('#EndDate').removeClass('is-invalid');
+                    }
+                }
+            });
+
+            $('#EndDate, #StartDate').change(function() {
+                $('#dateError').addClass('d-none');
+                $('#EndDate').removeClass('is-invalid');
+            });
+        });
+    </script>

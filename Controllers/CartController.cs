@@ -1,5 +1,7 @@
 ﻿using WebBanHoa.Models;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -143,73 +145,57 @@ namespace WebBanHoa.Controllers
             }
         }
 
-        // Thêm sản phẩm vào giỏ hàng (lưu database)
-        public ActionResult ThemVaoGioHang(string id, int soLuong = 1)
+
+        // Thêm sản phẩm vào giỏ hàng
+        public ActionResult ThemVaoGioHang(string id, int soLuong)
         {
-            try
+            var sanPham = db.Products.Find(id);
+            if (Session["UserID"] == null)
             {
-                string userId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(userId))
-                {
-                    TempData["ErrorMessage"] = "Vui lòng đăng nhập";
-                    return RedirectToAction("Login", "Account");
-                }
-
-                var product = db.Products.Find(id);
-                if (product == null)
-                {
-                    TempData["ErrorMessage"] = "Sản phẩm không tồn tại";
-                    return RedirectToAction("Index", "Cart");
-                }
-
-                // Kiểm tra số lượng tồn 
-                int productQuantity = product.Quantity ?? 0;
-                if (productQuantity < soLuong)
-                {
-                    TempData["ErrorMessage"] = $"Sản phẩm '{product.ProductName}' chỉ còn {productQuantity} sản phẩm";
-                    return RedirectToAction("Index", "Cart");
-                }
-
-                // 1. Tìm hoặc tạo giỏ hàng
-                var shoppingCart = GetOrCreateShoppingCart(userId);
-
-                // 2. Kiểm tra sản phẩm đã có trong giỏ chưa
-                var existingItem = db.ShoppingCartItems
-                    .FirstOrDefault(ci => ci.ShoppingCartID == shoppingCart.ShoppingCartID
-                                       && ci.ProductID == id);
-
-                if (existingItem != null)
-                {
-                    // Cập nhật số lượng nếu đã có
-                    int existingQty = existingItem.Quantity ?? 0;
-                    existingItem.Quantity = existingQty + soLuong;
-                }
-                else
-                {
-                    // Thêm mới vào database
-                    var newItem = new ShoppingCartItem
-                    {
-                        ShoppingCartID = shoppingCart.ShoppingCartID,
-                        ProductID = id,
-                        Quantity = soLuong
-                    };
-                    db.ShoppingCartItems.Add(newItem);
-                }
-
-                // 3. Lưu xuống database
-                db.SaveChanges();
-
-                TempData["SuccessMessage"] = $"Đã thêm '{product.ProductName}' vào giỏ hàng";
-                return RedirectToAction("Index");
+                return RedirectToAction("Login", "Account");
             }
-            catch (Exception ex)
+
+            string user = Session["UserID"].ToString();
+
+            if (sanPham == null)
             {
-                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
-                return RedirectToAction("Index", "Cart");
+                TempData["ErrorMessage"] = "Sản phẩm không tồn tại";
+                return RedirectToAction("Index", "Home");
             }
+
+            // Kiểm tra số lượng tồn
+            if (sanPham.Quantity < soLuong)
+            {
+                TempData["ErrorMessage"] = $"Sản phẩm '{sanPham.ProductName}' chỉ còn {sanPham.Quantity} sản phẩm";
+                return RedirectToAction("Details", "Home", new { productID = id });
+            }
+
+            var gioHang = db.ShoppingCarts.FirstOrDefault(sc => sc.UserID == user);
+
+            var itemInCart = db.ShoppingCartItems.FirstOrDefault(
+                        i => i.ShoppingCartID == gioHang.ShoppingCartID && i.ProductID == id);
+            if (itemInCart != null)
+            {
+                // Đã có -> Cộng dồn số lượng
+                itemInCart.Quantity += soLuong;
+            }
+            else
+            {
+                //Chưa có -> Tạo mới Item
+                var newItem = new ShoppingCartItem();
+                newItem.ShoppingCartID = gioHang.ShoppingCartID;
+                newItem.ProductID = id;
+                newItem.Quantity = soLuong;
+
+                db.ShoppingCartItems.Add(newItem);
+            }
+            db.SaveChanges();
+
+            TempData["SuccessMessage"] = $"Đã thêm '{sanPham.ProductName}' vào giỏ hàng";
+            return RedirectToAction("Details", "Home", new { productID = id });
         }
 
-        // Xóa sản phẩm khỏi giỏ hàng (lưu database)
+        // Xóa sản phẩm khỏi giỏ hàng
         [HttpPost]
         public ActionResult XoaKhoiGioHang(string id)
         {
@@ -363,10 +349,10 @@ namespace WebBanHoa.Controllers
             }
         }
 
-       
 
-        // Lấy UserID hiện tại từ Session
-        private string GetCurrentUserId()
+
+        // Phương thức lấy discount rate
+        private decimal LayTyLeGiamGia(string productId)
         {
             return Session["UserID"]?.ToString();
         }

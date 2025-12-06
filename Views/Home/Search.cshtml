@@ -104,38 +104,6 @@
 </style>
 <h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ThemeName </h2>
 
-@*<div class="d-flex flex-column flex-md-row justify-content-between align-items-center sort-bar mb-4">
-    <div class="mb-2 mb-md-0">
-        <i class="bi bi-grid-fill fs-5"></i>
-    </div>*@
-
-    @*<div class="d-flex align-items-center">
-        @using (@Html.BeginForm("SPTheoChuDe", "Home",
-            FormMethod.Get,
-            new { @class = "d-flex align-items-center" }
-        ))
-        {
-            @Html.Hidden("themeID", Model.FirstOrDefault().ThemeID)
-            <label for="sort-by" class="form-label mb-0 me-2 text-nowrap">Sắp xếp theo</label>
-            <select class="form-select form-select-sm me-3" id="sort-by" name="sort">
-                <option selected value="0">Mặc định</option>
-                <option value="1">Tên (A-Z)</option>
-                <option value="2">Tên (Z-A)</option>
-                <option value="3">Giá tăng dần</option>
-                <option value="4">Giá giảm dần</option>
-            </select>
-
-            <label for="show-qty" class="form-label mb-0 me-2 text-nowrap">Số Lượng</label>
-            <select class="form-select form-select-sm" id="show-qty" name="size">
-                <option selected value="12">12</option>
-                <option value="24">24</option>
-                <option value="36">36</option>
-            </select>
-            <button type="submit" class="btn btn-primary">Lọc</button>
-        }
-    </div>*@
-@*</div>*@
-
 
 <div class="row g-4">
 
@@ -170,7 +138,7 @@
             </a>
         </div>
     }
-    @*<nav aria-label="Page navigation example">
+    <nav aria-label="Pagination-area">
         <ul class="pagination">
             @{
                 int prevPage = ViewBag.Page - 1;
@@ -185,23 +153,23 @@
                 }
             }
 
-            <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = prevPage})">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = prevPage})">Previous</a></li>
             @for (int i = 0; i < ViewBag.NoOfPages; i++)
             {
                 int pageNumber = i + 1;
                 if (pageNumber == ViewBag.Page)
                 {
-                    <li class="page-item"><a class="page-link active" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = pageNumber})">@(i + 1) </a></li>
+                    <li class="page-item"><a class="page-link active" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = pageNumber})">@(i + 1) </a></li>
                 }
                 else
                 {
-                    <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = pageNumber})">@(i + 1) </a></li>
+                    <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = pageNumber})">@(i + 1) </a></li>
                 }
 
             }
-            <li class="page-item"><a class="page-link" href="@Url.Action("SPTheoChuDe", "Home", new { themeID = Model.FirstOrDefault().ThemeID, page = nextPage})">Next</a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = nextPage})">Next</a></li>
         </ul>
-    </nav>*@
+    </nav>
 </div>
 
 
