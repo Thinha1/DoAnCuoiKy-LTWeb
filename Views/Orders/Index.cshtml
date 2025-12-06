@@ -1,105 +1,252 @@
-﻿
-@model List<WebBanHoa.Models.Order>
+﻿@model List<WebBanHoa.Models.OrderDTO>
 
 @{
     ViewBag.Title = "Đơn Hàng Của Tôi";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    .order-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }
+
+        .order-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+    .order-id {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .order-date {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+
+    .order-total {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #e74c3c;
+    }
+
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    .info-card {
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+
+    .empty-state {
+        padding: 60px 20px;
+    }
+</style>
+
 <div class="container py-5">
-    <h1 class="mb-4">ĐƠN HÀNG CỦA TÔI</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="fas fa-shopping-bag me-2"></i>ĐƠN HÀNG CỦA TÔI
+        </h1>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">
+            <i class="fas fa-store"></i> Tiếp tục mua sắm
+        </a>
+    </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info text-center py-5">
-            <i class="bi bi-inbox fs-1"></i>
-            <h4 class="mt-3">Bạn chưa có đơn hàng nào</h4>
-            <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">
-                <i class="bi bi-shop"></i> Mua sắm ngay
-            </a>
+        <div class="text-center py-5">
+            <div class="empty-state">
+                <i class="fas fa-inbox fa-4x text-muted mb-4"></i>
+                <h3 class="text-muted">Bạn chưa có đơn hàng nào</h3>
+                <p class="text-muted mb-4">Hãy bắt đầu mua sắm và tạo đơn hàng đầu tiên của bạn</p>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-lg">
+                    <i class="fas fa-shopping-cart"></i> Mua sắm ngay
+                </a>
+            </div>
         </div>
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Mã đơn</th>
-                        <th>Ngày đặt</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái</th>
-                        <th>Thanh toán</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in Model)
-                    {
-                        <tr>
-                            <td>
-                                <strong>@order.OrderID</strong>
-                            </td>
-                            <td>
-                                @(order.OrderDate?.ToString("dd/MM/yyyy HH:mm"))
-                            </td>
-                            <td class="fw-bold text-danger">
-                                @String.Format("{0:N0}", ViewData[$"Total_{order.OrderID}"]) VNĐ
-                            </td>
-                            <td>
-                                @if (order.Status == "Chờ xác nhận")
-                                {
-                                    <span class="badge bg-warning">@order.Status</span>
-                                }
-                                else if (order.Status == "Đã giao")
-                                {
-                                    <span class="badge bg-success">@order.Status</span>
-                                }
-                                else if (order.Status == "Đang giao")
-                                {
-                                    <span class="badge bg-primary">@order.Status</span>
-                                }
-                                else if (order.Status == "Đã hủy")
-                                {
-                                    <span class="badge bg-secondary">@order.Status</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-info">@order.Status</span>
-                                }
-                            </td>
-                            <td>@order.UserPaymentMethod</td>
-                            <td>
+        <div class="row">
+            @foreach (var order in Model)
+            {
+                // Tạo biến cleanOrderId để xử lý khoảng trắng
+                var cleanOrderId = order.OrderID?.Replace(" ", "") ?? "";
+                var modalId = "cancelModal-" + cleanOrderId;
+
+                <div class="col-md-12 mb-3">
+                    <div class="order-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <div class="order-id">#@order.OrderID</div>
+                                <div class="order-date mt-1">
+                                    <i class="far fa-calendar-alt me-1"></i>
+                                    @order.OrderDate.ToString("dd/MM/yyyy")  <!-- Gọi trực tiếp -->
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="mb-1">
+                                    <i class="fas fa-user me-1"></i>
+                                    <strong>Khách hàng:</strong>
+                                </div>
+                                <div>@order.CustomerName</div>
+                            </div>
+
+                            <div class="col-md-2 text-center">
+                                <div class="order-total">
+                                    @String.Format("{0:N0}", order.TotalAmount)đ
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div>
+                                    @if (order.Status == "Chờ xác nhận")
+                                    {
+                                        <span class="badge status-badge bg-warning">
+                                            <i class="fas fa-clock me-1"></i>@order.Status
+                                        </span>
+                                    }
+                                    else if (order.Status == "Đã giao")
+                                    {
+                                        <span class="badge status-badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>@order.Status
+                                        </span>
+                                    }
+                                    else if (order.Status == "Đang giao")
+                                    {
+                                        <span class="badge status-badge bg-primary">
+                                            <i class="fas fa-truck me-1"></i>@order.Status
+                                        </span>
+                                    }
+                                    else if (order.Status == "Đã hủy")
+                                    {
+                                        <span class="badge status-badge bg-secondary">
+                                            <i class="fas fa-times-circle me-1"></i>@order.Status
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge status-badge bg-info">@order.Status</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 text-end">
                                 <div class="btn-group" role="group">
-                                    <a href="@Url.Action("Details", "Orders", new { id = order.OrderID.Trim() })"
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye"></i> Chi tiết
+                                    <a href="@Url.Action("Details", "Orders", new { id = cleanOrderId })"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye"></i> Chi tiết
                                     </a>
 
                                     @if (order.Status == "Chờ xác nhận")
                                     {
-                                        using (Html.BeginForm("HuyDon", "Orders", new { id = order.OrderID.Trim() }, FormMethod.Post, new { @class = "d-inline" }))
-                                        {
-                                            
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
-                                                <i class="bi bi-x-circle"></i> Hủy
-                                            </button>
-                                        }
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#@modalId">
+                                            <i class="fas fa-times"></i> Hủy
+                                        </button>
                                     }
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal hủy đơn hàng (cho từng order) -->
+                    @if (order.Status == "Chờ xác nhận")
+                    {
+                        <div class="modal fade" id="@modalId" tabindex="-1"
+                             aria-labelledby="modalLabel-@cleanOrderId" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title" id="modalLabel-@cleanOrderId">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận hủy đơn hàng
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white"
+                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="text-center mb-4">
+                                            <i class="fas fa-times-circle text-danger" style="font-size: 3rem;"></i>
+                                            <h5 class="mt-3">Bạn có chắc muốn hủy đơn hàng này?</h5>
+                                        </div>
+
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>Lưu ý:</strong> Hành động này không thể hoàn tác
+                                        </div>
+
+                                        <div class="info-card">
+                                            <p><strong>Mã đơn:</strong> @order.OrderID</p>
+                                            <p><strong>Khách hàng:</strong> @order.CustomerName</p>
+                                            <p><strong>Tổng tiền:</strong> @String.Format("{0:N0}", order.TotalAmount)đ</p>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Quay lại
+                                        </button>
+
+                                        <!-- Form hủy đơn -->
+                                        @using (Html.BeginForm("HuyDon", "Orders",
+                                               new { id = cleanOrderId },
+                                               FormMethod.Post,
+                                               new { @class = "d-inline", id = "huyDonForm-" + cleanOrderId }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-check-circle"></i> Xác nhận hủy
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     }
-                </tbody>
-            </table>
+                </div>
+            }
         </div>
 
-        <div class="mt-4">
-            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
-            </a>
+        <!-- Thống kê -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <h5 class="text-muted">Tổng đơn hàng</h5>
+                                <h3 class="text-primary">@Model.Count</h3>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <h5 class="text-muted">Đang xử lý</h5>
+                                <h3 class="text-warning">@Model.Count(o => o.Status == "Chờ xác nhận")</h3>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <h5 class="text-muted">Đã giao</h5>
+                                <h3 class="text-success">@Model.Count(o => o.Status == "Đã giao")</h3>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <h5 class="text-muted">Tổng tiền đã mua</h5>
+                                <h3 class="text-danger">@String.Format("{0:N0}", Model.Sum(o => o.TotalAmount))đ</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 </div>
@@ -109,7 +256,7 @@
 {
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
+            <i class="fas fa-check-circle me-2"></i>
             @TempData["SuccessMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -120,9 +267,44 @@
 {
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <i class="fas fa-exclamation-triangle me-2"></i>
             @TempData["ErrorMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     </div>
 }
+
+<!-- Script debug (tùy chọn) -->
+<script>
+    // Debug modal functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Đơn hàng page loaded');
+
+        // Kiểm tra các modal buttons
+        var modalButtons = document.querySelectorAll('[data-bs-toggle="modal"]');
+        console.log('Tìm thấy ' + modalButtons.length + ' nút modal');
+
+        modalButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var target = this.getAttribute('data-bs-target');
+                console.log('Click modal button, target:', target);
+
+                // Kiểm tra element có tồn tại không
+                var modalElement = document.querySelector(target);
+                if (!modalElement) {
+                    console.error('Modal không tìm thấy:', target);
+
+                    // Thử tìm với ID đã clean
+                    var cleanTarget = target.replace(/\s/g, '');
+                    console.log('Thử tìm với ID đã clean:', cleanTarget);
+                } else {
+                    console.log('Modal tìm thấy thành công');
+                }
+            });
+        });
+    });
+
+    // Xử lý form submit với confirmation
+    
+        
+</script>

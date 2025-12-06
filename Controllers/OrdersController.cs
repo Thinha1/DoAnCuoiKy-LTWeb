@@ -1,5 +1,7 @@
-﻿using QLBANHOA.Models;
+﻿
 using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using WebBanHoa.Models;
@@ -9,116 +11,213 @@ namespace WebBanHoa.Controllers
     public class OrdersController : Controller
     {
         private QLBANHOAEntities db = new QLBANHOAEntities();
-        private const string GioHangSession = "Cart";
 
-        // GET: Hiển thị trang thanh toán (GET)
+        // GET: Hiển thị trang thanh toán
         public ActionResult ThanhToan()
         {
-            // Kiểm tra đăng nhập
             if (Session["UserID"] == null)
             {
                 TempData["ErrorMessage"] = "Vui lòng đăng nhập để thanh toán";
                 return RedirectToAction("Login", "Account");
             }
 
-            var gioHang = LayGioHang();
-            if (gioHang == null || gioHang.Items.Count == 0)
+            string userId = Session["UserID"].ToString();
+
+            // Lấy giỏ hàng từ database
+            var shoppingCart = db.ShoppingCarts
+                .FirstOrDefault(c => c.UserID == userId);
+
+            if (shoppingCart == null)
             {
                 TempData["ErrorMessage"] = "Giỏ hàng trống";
                 return RedirectToAction("Index", "Cart");
             }
 
-            return View(gioHang);
+            // Lấy items từ database
+            var cartItems = db.ShoppingCartItems
+                .Where(ci => ci.ShoppingCartID == shoppingCart.ShoppingCartID)
+                .ToList();
+
+            if (cartItems.Count == 0)
+            {
+                TempData["ErrorMessage"] = "Giỏ hàng trống";
+                return RedirectToAction("Index", "Cart");
+            }
+
+            // Tạo CartDTO để hiển thị
+            var cartDTO = new CartDTO
+            {
+                ShoppingCartID = shoppingCart.ShoppingCartID,
+                UserID = userId,
+                Items = new List<CartItemDTO>()
+            };
+
+            decimal totalAmount = 0;
+
+            foreach (var item in cartItems)
+            {
+                var product = db.Products.Find(item.ProductID);
+                if (product != null)
+                {
+                    var discountRate = GetCurrentDiscountRate(product.ProductID);
+                    decimal price = (decimal)product.Price;
+                    decimal discountedPrice = price - (price * discountRate / 100);
+
+                   
+                    int itemQuantity = item.Quantity ?? 0;
+
+                    cartDTO.Items.Add(new CartItemDTO
+                    {
+                        ProductID = product.ProductID,
+                        ProductName = product.ProductName,
+                        Price = price,
+                        DiscountRate = discountRate,
+                        Quantity = item.Quantity, 
+                        Image = product.Image
+                    });
+
+                    totalAmount += discountedPrice * itemQuantity;
+                }
+            }
+
+            ViewBag.TotalAmount = totalAmount;
+
+            // Lấy thông tin user từ bảng Users để hiển thị
+            var user = db.Users.Find(userId);
+            if (user != null)
+            {
+                ViewBag.UserName = user.Name;
+                ViewBag.UserEmail = user.Email;
+                ViewBag.UserAddress = user.Address;
+            }
+
+            return View(cartDTO);
         }
 
-        // POST: Xử lý thanh toán (POST)
+        // POST: Xử lý thanh toán (chỉ lấy các trường CÓ trong database)
         [HttpPost]
-        public ActionResult ThanhToan(
-            string CustomerName,
-            string Phone,
-            string Address,
-            string Email,
-            string Note,
-            string DeliveryMethod,
-            string PaymentMethod)
+        public ActionResult ThanhToan(string Address, string PaymentMethod)
         {
             try
             {
-                // Kiểm tra đăng nhập
                 if (Session["UserID"] == null)
                 {
                     TempData["ErrorMessage"] = "Vui lòng đăng nhập";
                     return RedirectToAction("Login", "Account");
                 }
 
-                var gioHang = LayGioHang();
-                if (gioHang.Items.Count == 0)
+                string userId = Session["UserID"].ToString();
+
+                // 1. Lấy giỏ hàng từ database
+                var shoppingCart = db.ShoppingCarts
+                    .FirstOrDefault(c => c.UserID == userId);
+
+                if (shoppingCart == null)
                 {
                     TempData["ErrorMessage"] = "Giỏ hàng trống";
                     return RedirectToAction("Index", "Cart");
                 }
 
-                // 1. Tạo mã đơn hàng mới
-                string orderId = "OD" + (db.Orders.Count() + 1).ToString("D4");
+                // 2. Lấy items từ database
+                var cartItems = db.ShoppingCartItems
+                    .Where(ci => ci.ShoppingCartID == shoppingCart.ShoppingCartID)
+                    .ToList();
 
-                // 2. Tạo đơn hàng mới
+                if (cartItems.Count == 0)
+                {
+                    TempData["ErrorMessage"] = "Giỏ hàng trống";
+                    return RedirectToAction("Index", "Cart");
+                }
+
+                // 3. Kiểm tra số lượng tồn kho
+                foreach (var item in cartItems)
+                {
+                    var product = db.Products.Find(item.ProductID);
+                    if (product == null)
+                    {
+                        TempData["ErrorMessage"] = $"Sản phẩm không tồn tại";
+                        return RedirectToAction("ThanhToan");
+                    }
+
+                    int productQuantity = product.Quantity ?? 0;
+                    int itemQuantity = item.Quantity ?? 0;
+
+                    if (productQuantity < itemQuantity)
+                    {
+                        TempData["ErrorMessage"] = $"Sản phẩm '{product.ProductName}' chỉ còn {productQuantity} sản phẩm";
+                        return RedirectToAction("ThanhToan");
+                    }
+                }
+
+                // 4. Tạo mã đơn hàng mới
+                string orderId = GenerateOrderID();
+
+                // 5. Tạo đơn hàng mới
                 var order = new Order
                 {
                     OrderID = orderId,
-                    UserID = Session["UserID"].ToString(),
+                    UserID = userId,
                     OrderDate = DateTime.Now,
-                    Address = Address,
+                    Address = Address,                    
                     Status = "Chờ xác nhận",
-                    UserPaymentMethod = PaymentMethod,
+                    UserPaymentMethod = PaymentMethod,    
                     CreatedAt = DateTime.Now,
-                    CreatedBy = Session["UserID"].ToString()
+                    CreatedBy = userId
+                    
                 };
 
                 db.Orders.Add(order);
 
-                // 3. Thêm chi tiết đơn hàng và cập nhật số lượng
-                foreach (var item in gioHang.Items)
+                // 6. Thêm chi tiết đơn hàng và cập nhật số lượng
+                decimal totalOrderAmount = 0;
+
+                foreach (var item in cartItems)
                 {
-                    // Lấy giá sản phẩm (có tính discount)
-                    var discountRate = LayTyLeGiamGia(item.SanPham.ProductID);
-                    decimal giaBan = item.GiaSauGiam;
+                    var product = db.Products.Find(item.ProductID);
+                    var discountRate = GetCurrentDiscountRate(item.ProductID);
+
+                    decimal unitPrice = (decimal)product.Price;
+                    decimal discountedPrice = unitPrice - (unitPrice * discountRate / 100);
+
+                    int itemQuantity = item.Quantity ?? 0;
 
                     // Tạo chi tiết đơn hàng
                     var orderDetail = new OrderDetail
                     {
                         OrderID = orderId,
-                        ProductID = item.SanPham.ProductID,
-                        Quantity = item.SoLuong,
-                        UnitPrice = giaBan
+                        ProductID = item.ProductID,
+                        Quantity = item.Quantity,
+                        UnitPrice = discountedPrice
                     };
 
+                    db.OrderDetails.Add(orderDetail);
+
                     // Cập nhật số lượng tồn kho
-                    var product = db.Products.Find(item.SanPham.ProductID);
-                    if (product != null)
+                    if (product.Quantity.HasValue)
                     {
-                        if (product.Quantity < item.SoLuong)
-                        {
-                            TempData["ErrorMessage"] = $"Sản phẩm '{product.ProductName}' chỉ còn {product.Quantity} sản phẩm";
-                            return RedirectToAction("ThanhToan");
-                        }
-                        product.Quantity -= item.SoLuong;
+                        product.Quantity = product.Quantity.Value - itemQuantity;
+                    }
+                    else
+                    {
+                        product.Quantity = -itemQuantity;
                     }
 
-                    db.OrderDetails.Add(orderDetail);
+                    totalOrderAmount += itemQuantity * discountedPrice;
                 }
 
-                // 4. Lưu tất cả thay đổi
+                // 7. Xóa giỏ hàng sau khi thanh toán
+                db.ShoppingCartItems.RemoveRange(cartItems);
+                db.ShoppingCarts.Remove(shoppingCart);
+
+                // 8. Lưu tất cả thay đổi vào database
                 db.SaveChanges();
 
-                // 5. Xóa giỏ hàng
-                Session.Remove(GioHangSession);
-
-                // 6. Chuyển đến trang thành công
+                // 9. Chuyển đến trang thành công
                 return RedirectToAction("ThanhCong", new { id = orderId });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Lỗi khi đặt hàng: " + ex.Message;
+                TempData["ErrorMessage"] = $"Lỗi khi đặt hàng: {ex.Message}";
                 return RedirectToAction("ThanhToan");
             }
         }
@@ -139,14 +238,58 @@ namespace WebBanHoa.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Tính tổng tiền từ OrderDetails
-            var totalAmount = db.OrderDetails
+            if (Session["UserID"]?.ToString() != order.UserID)
+            {
+                TempData["ErrorMessage"] = "Bạn không có quyền xem đơn hàng này";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Lấy thông tin user để hiển thị tên, địa chỉ
+            var user = db.Users.Find(order.UserID);
+
+            // Lấy chi tiết đơn hàng
+            var orderDetails = db.OrderDetails
                 .Where(od => od.OrderID == id)
-                .Sum(od => od.Quantity * od.UnitPrice);
+                .Include("Product")
+                .ToList();
 
-            ViewBag.TotalAmount = totalAmount; // Truyền qua ViewBag
+            // Tính tổng tiền
+            decimal totalAmount = 0;
+            foreach (var od in orderDetails)
+            {
+                int quantity = od.Quantity ?? 0;
+                decimal unitPrice = od.UnitPrice ?? 0;
+                totalAmount += quantity * unitPrice;
+            }
 
-            return View(order);
+            // Tạo OrderDTO
+            var orderDTO = new OrderDTO
+            {
+                OrderID = order.OrderID,
+                CustomerName = user?.Name,       
+                Address = order.Address,
+                UserPaymentMethod = order.UserPaymentMethod,
+                OrderDate = order.OrderDate ?? DateTime.Now,
+                TotalAmount = totalAmount,
+                Status = order.Status
+            };
+
+            // Tạo danh sách OrderDetailsDTO
+            var orderDetailsDTOs = orderDetails.Select(od => new OrderDetailsDTO
+            {
+                OrderID = od.OrderID,
+                ProductID = od.ProductID,
+                ProductName = od.Product?.ProductName,
+                Image = od.Product?.Image,
+                Quantity = od.Quantity,
+                UnitPrice = od.UnitPrice
+            }).ToList();
+
+            ViewBag.OrderDetails = orderDetailsDTOs;
+            ViewBag.TotalAmount = totalAmount;
+            ViewBag.User = user; 
+
+            return View(orderDTO);
         }
 
         // GET: Danh sách đơn hàng của user
@@ -159,28 +302,43 @@ namespace WebBanHoa.Controllers
             }
 
             string userId = Session["UserID"].ToString();
+
             var orders = db.Orders
                 .Where(o => o.UserID == userId)
                 .OrderByDescending(o => o.OrderDate)
                 .ToList();
 
-            // Tính tổng tiền cho mỗi order
+            var orderDTOs = new List<OrderDTO>();
+
             foreach (var order in orders)
             {
-                order.OrderDetails = db.OrderDetails
-                    .Where(od => od.OrderID == order.OrderID)
-                    .ToList();
+                decimal totalAmount = 0;
+                var orderDetails = db.OrderDetails.Where(od => od.OrderID == order.OrderID).ToList();
+                foreach (var od in orderDetails)
+                {
+                    int quantity = od.Quantity ?? 0;
+                    decimal unitPrice = od.UnitPrice ?? 0;
+                    totalAmount += quantity * unitPrice;
+                }
 
-                // Tính tổng và lưu tạm vào ViewBag
-                ViewData[$"Total_{order.OrderID}"] = order.OrderDetails
-                    .Sum(od => od.Quantity * od.UnitPrice);
+                // Lấy thông tin user để hiển thị tên
+                var user = db.Users.Find(order.UserID);
+
+                orderDTOs.Add(new OrderDTO
+                {
+                    OrderID = order.OrderID,
+                    CustomerName = user?.Name,       
+                    Address = order.Address,
+                    UserPaymentMethod = order.UserPaymentMethod,
+                    OrderDate = order.OrderDate ?? DateTime.Now,
+                    TotalAmount = totalAmount,
+                    Status = order.Status
+                });
             }
 
-            return View(orders);
+            return View(orderDTOs);
         }
-
         // GET: Chi tiết đơn hàng
-       
         public ActionResult Details(string id)
         {
             if (Session["UserID"] == null)
@@ -188,36 +346,91 @@ namespace WebBanHoa.Controllers
                 TempData["ErrorMessage"] = "Vui lòng đăng nhập";
                 return RedirectToAction("Login", "Account");
             }
-
-           
-            id = (id ?? "").Trim();
-
             if (string.IsNullOrEmpty(id))
             {
                 TempData["ErrorMessage"] = "Không tìm thấy đơn hàng";
                 return RedirectToAction("Index");
             }
 
+            id = id.Replace(" ", "").Trim();
+
+            System.Diagnostics.Debug.WriteLine($"ID sau khi xử lý: '{id}'");
+
             string userId = Session["UserID"].ToString();
 
-            // TRIM trong query
             var order = db.Orders
                 .Include("OrderDetails.Product")
-                .FirstOrDefault(o => (o.OrderID ?? "").Trim() == id && o.UserID == userId);
+                .FirstOrDefault(o => o.OrderID == id && o.UserID == userId);
 
             if (order == null)
             {
+                
+                var orderFromDb = db.Orders
+                    .Include("OrderDetails.Product")
+                    .Where(o => o.UserID == userId)
+                    .ToList()
+                    .FirstOrDefault(o => o.OrderID.Replace(" ", "") == id);
+
+                if (orderFromDb != null)
+                {
+                    
+                    return RedirectToAction("Details", new { id = orderFromDb.OrderID });
+                }
+
                 TempData["ErrorMessage"] = "Không tìm thấy đơn hàng";
                 return RedirectToAction("Index");
             }
 
-            // Tính tổng tiền
-            ViewBag.TotalAmount = order.OrderDetails?.Sum(od => od.Quantity * od.UnitPrice) ?? 0;
+            // Lấy thông tin user
+            var user = db.Users.Find(order.UserID);
 
-            return View(order);
+            // Tính tổng tiền
+            decimal totalAmount = 0;
+            if (order.OrderDetails != null)
+            {
+                foreach (var od in order.OrderDetails)
+                {
+                    int quantity = od.Quantity ?? 0;
+                    decimal unitPrice = od.UnitPrice ?? 0;
+                    totalAmount += quantity * unitPrice;
+                }
+            }
+
+            // Tạo OrderDTO chính
+            var orderDTO = new OrderDTO
+            {
+                OrderID = order.OrderID,
+                CustomerName = user?.Name,       
+                Address = order.Address,
+                UserPaymentMethod = order.UserPaymentMethod,
+                OrderDate = order.OrderDate ?? DateTime.Now,
+                TotalAmount = totalAmount,
+                Status = order.Status
+            };
+
+            // Tạo danh sách OrderDetailsDTO cho chi tiết sản phẩm
+            var orderDetailsDTOs = new List<OrderDetailsDTO>();
+            if (order.OrderDetails != null)
+            {
+                orderDetailsDTOs = order.OrderDetails.Select(od => new OrderDetailsDTO
+                {
+                    OrderID = od.OrderID,
+                    ProductID = od.ProductID,
+                    ProductName = od.Product?.ProductName,
+                    Image = od.Product?.Image,
+                    Quantity = od.Quantity,
+                    UnitPrice = od.UnitPrice
+                }).ToList();
+            }
+
+            ViewBag.OrderDetails = orderDetailsDTOs;
+            ViewBag.TotalAmount = totalAmount;
+            ViewBag.User = user; 
+
+            return View(orderDTO);
         }
 
-        // GET: Hủy đơn hàng
+        // POST: Hủy đơn hàng
         [HttpPost]
         public ActionResult HuyDon(string id)
         {
@@ -243,7 +456,6 @@ namespace WebBanHoa.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Chỉ cho phép hủy nếu đơn hàng chưa được xác nhận
             if (order.Status == "Chờ xác nhận")
             {
                 order.Status = "Đã hủy";
@@ -255,9 +467,10 @@ namespace WebBanHoa.Controllers
                 foreach (var detail in orderDetails)
                 {
                     var product = db.Products.Find(detail.ProductID);
-                    if (product != null)
+                    if (product != null && detail.Quantity.HasValue)
                     {
-                        product.Quantity += detail.Quantity;
+                        int currentQty = product.Quantity ?? 0;
+                        product.Quantity = currentQty + detail.Quantity.Value;
                     }
                 }
 
@@ -271,19 +484,9 @@ namespace WebBanHoa.Controllers
 
             return RedirectToAction("Index");
         }
-        // Phương thức hỗ trợ
-        private GioHang LayGioHang()
-        {
-            var gioHang = Session[GioHangSession] as GioHang;
-            if (gioHang == null)
-            {
-                gioHang = new GioHang();
-                Session[GioHangSession] = gioHang;
-            }
-            return gioHang;
-        }
 
-        private decimal LayTyLeGiamGia(string productId)
+    
+        private decimal GetCurrentDiscountRate(string productId)
         {
             var now = DateTime.Now;
             var discount = db.Discounts
@@ -295,5 +498,22 @@ namespace WebBanHoa.Controllers
                 ? (decimal)discount.DiscountRate.Value
                 : 0;
         }
+
+        private string GenerateOrderID()
+        {
+            var lastOrder = db.Orders
+                .OrderByDescending(o => o.OrderID)
+                .FirstOrDefault();
+
+            if (lastOrder == null)
+            {
+                return "OD001";
+            }
+
+            var number = int.Parse(lastOrder.OrderID.Substring(2)) + 1;
+            return $"OD{number:D3}";
+        }
+
+        
     }
 }
