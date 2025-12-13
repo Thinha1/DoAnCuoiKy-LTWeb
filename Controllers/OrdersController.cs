@@ -458,7 +458,7 @@ namespace WebBanHoa.Controllers
 
             if (order.Status == "Chờ xác nhận")
             {
-                order.Status = "Đã hủy";
+                order.Status = "Đã huỷ";
                 order.UpdatedAt = DateTime.Now;
                 order.UpdatedBy = userId;
 
@@ -485,7 +485,7 @@ namespace WebBanHoa.Controllers
             return RedirectToAction("Index");
         }
 
-    
+
         private decimal GetCurrentDiscountRate(string productId)
         {
             var now = DateTime.Now;

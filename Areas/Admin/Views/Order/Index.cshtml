@@ -5,151 +5,265 @@
 }
 
 <style>
-    /* Style bổ sung cho bảng */
+    /* Card bao quanh bảng để tạo độ nổi */
+    .table-container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        overflow: hidden; /* Để bo góc hoạt động */
+        padding: 0;
+    }
+
+    /* Header bảng: Màu nền nhẹ, chữ đậm dễ đọc */
     .admin-table thead th {
-        background-color: #f8f9fa;
-        color: #6c757d;
-        font-weight: 600;
+        background-color: #f1f5f9; /* Màu xám xanh nhẹ */
+        color: #475569;
+        font-weight: 700;
         font-size: 0.85rem;
         text-transform: uppercase;
-        border-bottom: 2px solid #dee2e6;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 15px 10px;
+        white-space: nowrap;
     }
 
-    .admin-table tbody tr:hover {
-        background-color: #fdfdfd;
+    .admin-table tbody tr {
+        transition: all 0.2s;
     }
 
-    /* Badge cho phương thức thanh toán */
-    .badge-payment-cod {
-        background-color: #6c757d; /* Màu xám cho COD */
-        color: white;
+        .admin-table tbody tr:hover {
+            background-color: #f8fafc;
+            transform: translateY(-1px); /* Hiệu ứng nổi nhẹ khi di chuột */
+        }
+
+    .admin-table td {
+        padding: 12px 10px;
+        vertical-align: middle;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f1f5f9;
     }
 
-    .badge-payment-banking {
-        background-color: #0d6efd; /* Màu xanh dương cho CK */
-        color: white;
+    /* Style cho Mã đơn hàng */
+    .order-id {
+        color: #2563eb;
+        font-weight: 700;
+        font-family: monospace;
+        font-size: 1rem;
     }
 
-    .badge-payment-momo {
-        background-color: #d63384; /* Màu hồng cho Momo */
-        color: white;
+    /* Style chung cho các Badge (Thanh toán & Trạng thái) */
+    .custom-badge {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
 
+    /* Màu sắc phương thức thanh toán */
+    .payment-cod {
+        background-color: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #dbeafe;
+    }
+    /* Xanh dương nhạt */
+    .payment-banking {
+        background-color: #f0fdf4;
+        color: #15803d;
+        border: 1px solid #dcfce7;
+    }
+    /* Xanh lá nhạt */
+    .payment-momo {
+        background-color: #fdf2f8;
+        color: #be185d;
+        border: 1px solid #fce7f3;
+    }
+    /* Hồng nhạt */
+
+    /* Màu sắc trạng thái đơn hàng (Dạng Pill bo tròn) */
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 50px; /* Bo tròn hoàn toàn */
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .status-success {
+        background-color: #d1fae5;
+        color: #047857;
+    }
+    /* Đã giao */
+    .status-info {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+    /* Đang giao/Mới */
+    .status-danger {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+    /* Đã hủy */
+    .status-default {
+        background-color: #f3f4f6;
+        color: #4b5563;
+    }
+    /* Khác */
+
+    /* Form tìm kiếm */
     .search-form .form-control {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
+        border-radius: 20px 0 0 20px;
+        border: 1px solid #ced4da;
+        padding-left: 20px;
     }
 
     .search-form .btn {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
+        border-radius: 0 20px 20px 0;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Quản lý đơn hàng</h2>
-    @using (Html.BeginForm("Index", "Order", FormMethod.Get, new { @class = "d-flex search-form me-3" }))
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h2 class="mb-0 text-primary fw-bold"><i class="fas fa-boxes me-2"></i>Quản lý đơn hàng</h2>
+        <small class="text-muted">Xem và quản lý tất cả các đơn đặt hàng từ khách</small>
+    </div>
+
+    @using (Html.BeginForm("Index", "Order", FormMethod.Get, new { @class = "d-flex search-form" }))
     {
-        <div class="input-group">
-            <input type="text" name="TuKhoa" class="form-control"
-                   placeholder="Nhập mã đơn hàng hoặc tên khách..."
+        <div class="input-group shadow-sm">
+            <input type="text" name="TuKhoa" class="form-control border-end-0"
+                   placeholder="Tìm mã đơn, tên khách..."
                    value="@ViewBag.CurrentFilter">
-            <button class="btn btn-outline-secondary" type="submit">
+            <button class="btn btn-white border border-start-0 text-secondary bg-white hover-primary" type="submit">
                 <i class="fas fa-search"></i>
             </button>
         </div>
     }
 </div>
-<p class="text-danger">@TempData["Error"]</p>
-<p class="text-success">@TempData["Success"]</p>
-<div class="table-responsive">
-    <table class="table table-hover align-middle admin-table mb-0">
-        <thead>
-            <tr>
-                <th style="width: 8%;">Mã ĐH</th>
-                <th style="width: 15%;">Tên khách hàng</th>
-                <th style="width: 12%;">Ngày đặt</th>
-                <th style="width: 20%;">Địa chỉ giao hàng</th>
-                <th style="width: 12%;">Thanh toán</th>
-                <th style="width: 13%;">Trạng thái</th>
-                <th class="text-center" style="width: 20%;">Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var od in Model)
+
+@* Thông báo lỗi/thành công *@
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger shadow-sm border-0 border-start border-4 border-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success shadow-sm border-0 border-start border-4 border-success">@TempData["Success"]</div>
+}
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table align-middle admin-table mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Mã ĐH</th>
+                    <th style="width: 15%;">Khách hàng</th>
+                    <th style="width: 12%;">Ngày đặt</th>
+                    <th style="width: 20%;">Địa chỉ</th>
+                    <th style="width: 15%;">Thanh toán</th>
+                    <th style="width: 13%;">Trạng thái</th>
+                    <th class="text-center" style="width: 15%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var od in Model)
+                    {
+                        <tr>
+                            <td><span class="order-id">#@od.OrderID</span></td>
+                            <td class="fw-bold text-dark">@od.CustomerName</td>
+                            <td class="text-secondary">@od.OrderDate.ToString("dd/MM/yyyy")<br><small>@od.OrderDate.ToString("HH:mm")</small></td>
+                            <td>
+                                <div class="d-flex align-items-center" title="@od.Address">
+                                    <i class="fas fa-map-marker-alt text-danger me-2 opacity-50"></i>
+                                    <span class="text-truncate" style="max-width: 180px;">@od.Address</span>
+                                </div>
+                            </td>
+
+                            <td class="text-nowrap">
+                                @if (!string.IsNullOrEmpty(od.UserPaymentMethod))
+                                {
+                                    string badgeStyle = "payment-cod"; // Mặc định
+                                    string icon = "fas fa-money-bill-wave";
+
+                                    if (od.UserPaymentMethod.Contains("Chuyển khoản") || od.UserPaymentMethod.Contains("Banking"))
+                                    {
+                                        badgeStyle = "payment-banking";
+                                        icon = "fas fa-university";
+                                    }
+
+                                    <span class="custom-badge @badgeStyle">
+                                        <i class="@icon"></i> @od.UserPaymentMethod
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">---</span>
+                                }
+                            </td>
+
+                            <td>
+                                @{
+                                    string statusStyle = "status-default";
+                                    string statusIcon = "fas fa-circle";
+
+                                    if (od.Status == "Đã giao")
+                                    {
+                                        statusStyle = "status-success";
+                                        statusIcon = "fas fa-check-circle";
+                                    }
+                                    else if (od.Status == "Đang giao")
+                                    {
+                                        statusStyle = "status-info";
+                                        statusIcon = "fas fa-truck";
+                                    }
+                                    else if (od.Status == "Đã huỷ")
+                                    {
+                                        statusStyle = "status-danger";
+                                        statusIcon = "fas fa-times-circle";
+                                    }
+                                }
+                                <span class="status-badge @statusStyle">
+                                    <i class="@statusIcon me-1 small"></i> @od.Status
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm" role="group">
+                                    <a href="@Url.Action("Details", "Order", new { orderID = od.OrderID, area = "Admin" })"
+                                       class="btn btn-sm btn-light text-info" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Order", new { orderID = od.OrderID, area = "Admin" })"
+                                       class="btn btn-sm btn-light text-primary" title="Cập nhật">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("CancelOrder", "Order", new { orderID = od.OrderID, area = "Admin" })"
+                                       class="btn btn-sm btn-light text-danger delete-btn" title="Hủy đơn">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td><strong>#@od.OrderID</strong></td>
-                        <td>@od.CustomerName</td>
-                        <td>@od.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td>
-                            <span class="text-truncate d-inline-block" style="max-width: 200px;" title="@od.Address">
-                                @od.Address
-                            </span>
-                        </td>
-
-                        <td>
-                            @if (!string.IsNullOrEmpty(od.UserPaymentMethod))
-                            {
-                                // Xử lý hiển thị badge tùy theo loại thanh toán
-                                string badgeClass = "badge bg-secondary";
-                                string icon = "fas fa-money-bill-wave";
-
-                                if (od.UserPaymentMethod.Contains("Chuyển khoản"))
-                                {
-                                    badgeClass = "badge bg-primary"; // Màu xanh
-                                    icon = "fas fa-university";
-                                }
-
-                                <span class="@badgeClass p-2 rounded">
-                                    <i class="@icon me-1"></i> @od.UserPaymentMethod
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="text-muted small">---</span>
-                            }
-                        </td>
-
-                        <td>
-                            @{
-                                string statusClass = "text-secondary";
-                                if (od.Status == "Đã giao") { statusClass = "text-success fw-bold"; }
-                                else if (od.Status == "Đang giao") { statusClass = "text-info fw-bold"; }
-                                else if (od.Status == "Đã huỷ") { statusClass = "text-danger"; }
-                            }
-                            <span class="@statusClass">@od.Status</span>
-                        </td>
-
-                        <td class="text-center">
-                            <a href="@Url.Action("Details", "Order", new { orderID = od.OrderID, area = "Admin" })"
-                               class="btn btn-sm btn-outline-info" title="Xem chi tiết">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="@Url.Action("Edit", "Order", new { orderID = od.OrderID, area = "Admin" })"
-                               class="btn btn-sm btn-outline-primary ms-1" title="Cập nhật">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="@Url.Action("CancelOrder", "Order", new { orderID = od.OrderID, area = "Admin" })"
-                               class="btn btn-sm btn-outline-danger ms-1 delete-btn" title="Xóa/Hủy">
-                                <i class="fas fa-times"></i>
-                            </a>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-box-open fa-3x mb-3 opacity-25"></i>
+                                <p>Không tìm thấy đơn hàng nào phù hợp.</p>
+                            </div>
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">Không có đơn hàng nào được tìm thấy.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section Script{
@@ -157,21 +271,28 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Logic SweetAlert cho nút Xóa/Hủy
+            // Hiệu ứng hover cho nút tìm kiếm
+            $('.btn-white').hover(
+                function () { $(this).addClass('bg-light'); },
+                function () { $(this).removeClass('bg-light'); }
+            );
+
+            // Logic SweetAlert giữ nguyên
             $('.delete-btn').on('click', function (e) {
                 e.preventDefault();
                 var self = $(this);
                 var deleteUrl = self.attr('href');
 
                 Swal.fire({
-                    title: 'Bạn có chắc chắn muốn HỦY đơn hàng này?',
-                    text: "Đơn hàng này sẽ bị hủy và không thể khôi phục!",
+                    title: 'Xác nhận hủy đơn?',
+                    text: "Bạn không thể hoàn tác hành động này!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc3545',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Hủy đơn hàng',
-                    cancelButtonText: 'Đóng'
+                    confirmButtonText: 'Đồng ý hủy',
+                    cancelButtonText: 'Quay lại',
+                    reverseButtons: true // Đảo vị trí nút cho thuận tay
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.location.href = deleteUrl;

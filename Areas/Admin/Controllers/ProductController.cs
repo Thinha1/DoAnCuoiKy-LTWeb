@@ -30,7 +30,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderByDescending(d => d.DiscountRate).FirstOrDefault().DiscountRate,
                 Description = p.Description,
                 IsAvailable = p.IsAvailable,
-            }).ToList();
+            }).OrderBy(pd => pd.ProductName).ToList();
 
             if (!string.IsNullOrWhiteSpace(TuKhoa))
             {
@@ -84,7 +84,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                     p.Image = "no-image.jpg";
                 }
                 p.CreatedAt = DateTime.Now;
-                p.CreatedBy = Session["UserName"].ToString();
+                p.CreatedBy = Session["UserID"].ToString();
                 db.Products.Add(p);
                 db.SaveChanges();
 
@@ -153,7 +153,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                     p.Image = productFileName;
                 }
                 p.UpdatedAt = DateTime.Now;
-                p.UpdatedBy = Session["UserName"].ToString();
+                p.UpdatedBy = Session["UserID"].ToString();
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -171,6 +171,8 @@ namespace WebBanHoa.Areas.Admin.Controllers
             if (p != null)
             {
                 p.IsAvailable = 0;
+                p.UpdatedAt = DateTime.Now;
+                p.UpdatedBy = Session["UserID"].ToString();
                 CancelOrder(productID);
                 db.SaveChanges();
             }
@@ -184,6 +186,8 @@ namespace WebBanHoa.Areas.Admin.Controllers
             if (p != null)
             {
                 p.IsAvailable = 1;
+                p.UpdatedAt = DateTime.Now;
+                p.UpdatedBy = Session["UserID"].ToString();
                 db.SaveChanges();
             }
             TempData["Success"] = "Mở khoá sản phẩm thành công!";

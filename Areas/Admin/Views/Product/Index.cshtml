@@ -3,172 +3,303 @@
     ViewBag.Title = "Quản lý sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
 }
-<style>
-    /* 1. Tinh chỉnh ảnh thumbnail */
-    .product-thumbnail {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-    }
 
-    /* 2. Style cho bảng */
-    .table.align-middle td,
-    .table.align-middle th {
-        vertical-align: middle;
+<style>
+    /* --- 1. COPY STYLE TỪ TRANG ORDER ĐỂ ĐỒNG BỘ --- */
+    .table-container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        overflow: hidden;
+        padding: 0;
     }
 
     .admin-table thead th {
-        background-color: #f8f9fa;
-        color: #6c757d;
-        font-weight: 600;
+        background-color: #f1f5f9; /* Màu nền header giống Order */
+        color: #475569;
+        font-weight: 700;
         font-size: 0.85rem;
         text-transform: uppercase;
-        border-bottom: 2px solid #dee2e6;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 15px 10px;
+        white-space: nowrap;
     }
 
-    .admin-table tbody tr:hover {
-        background-color: #fdfdfd;
+    .admin-table tbody tr {
+        transition: all 0.2s;
     }
 
-    /* --- LOGIC HIỂN THỊ KHI NGỪNG KINH DOANH --- */
+        .admin-table tbody tr:hover {
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+    .admin-table td {
+        padding: 12px 10px;
+        vertical-align: middle;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Form tìm kiếm bo tròn */
+    .search-form .form-control {
+        border-radius: 20px 0 0 20px;
+        border: 1px solid #ced4da;
+        padding-left: 20px;
+    }
+
+    .search-form .btn {
+        border-radius: 0 20px 20px 0;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* --- 2. STYLE RIÊNG CHO SẢN PHẨM --- */
+
+    /* Ảnh đại diện sản phẩm */
+    .product-thumbnail {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 8px; /* Bo góc mềm mại hơn */
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Tên sản phẩm */
+    .product-name {
+        font-weight: 600;
+        color: #334155;
+        display: block;
+    }
+
+    /* Giá tiền */
+    .product-price {
+        font-weight: 700;
+        color: #0d9488; /* Màu xanh teal sang trọng */
+        font-family: monospace;
+        font-size: 0.95rem;
+    }
+
+    /* Badge trạng thái (Style Pill) */
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .status-active {
+        background-color: #dcfce7;
+        color: #166534; /* Xanh lá */
+    }
+
+    .status-disabled {
+        background-color: #f3f4f6;
+        color: #6b7280; /* Xám */
+    }
+
+    /* --- 3. LOGIC KHI NGỪNG KINH DOANH --- */
     .row-disabled {
-        background-color: #f2f2f2 !important; /* Nền xám */
-        color: #999 !important; /* Chữ nhạt */
+        background-color: #f9fafb !important;
     }
 
         .row-disabled td {
-            text-decoration: line-through; /* Gạch ngang chữ */
+            opacity: 0.6;
         }
 
-        /* Không gạch ngang hình ảnh và nút thao tác */
-        .row-disabled .no-strike {
-            text-decoration: none !important;
+        /* Ngoại trừ cột thao tác và hình ảnh thì không làm mờ quá nhiều */
+        .row-disabled .no-dim {
+            opacity: 1 !important;
         }
 
-        /* Ảnh của sản phẩm ngừng kinh doanh sẽ bị xám */
+        .row-disabled .product-name {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
         .row-disabled .product-thumbnail {
             filter: grayscale(100%);
-            opacity: 0.6;
         }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Quản lý hoa</h2>
-    <a class="btn btn-primary" href="@Url.Action("Create", "Product")">
-        <i class="fas fa-plus me-2"></i>Thêm sản phẩm
-    </a>
-    @using (Html.BeginForm("Index", "Product", FormMethod.Get, new { @class = "d-flex search-form me-3" }))
-    {
-        <div class="input-group">
-            <input type="text" name="TuKhoa" class="form-control"
-                   placeholder="Nhập tên sản phẩm..."
-                   value="@ViewBag.CurrentFilter">
-            <button class="btn btn-outline-secondary" type="submit">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    }
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h2 class="mb-0 text-primary fw-bold"><i class="fas fa-seedling me-2"></i>Quản lý hoa</h2>
+        <small class="text-muted">Danh sách sản phẩm đang kinh doanh tại cửa hàng</small>
+    </div>
+
+    <div class="d-flex gap-2">
+        @* Nút thêm mới *@
+        <a href="@Url.Action("Create", "Product")" class="btn btn-primary shadow-sm rounded-pill px-3">
+            <i class="fas fa-plus me-1"></i> Thêm sản phẩm
+        </a>
+
+        @* Form tìm kiếm *@
+        @using (Html.BeginForm("Index", "Product", FormMethod.Get, new { @class = "d-flex search-form" }))
+        {
+            <div class="input-group shadow-sm">
+                <input type="text" name="TuKhoa" class="form-control border-end-0"
+                       placeholder="Tìm tên hoa, chủ đề..."
+                       value="@ViewBag.CurrentFilter">
+                <button class="btn btn-white border border-start-0 text-secondary bg-white hover-primary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        }
+    </div>
 </div>
 
-@TempData["Error"]
-@TempData["Success"]
+@* Thông báo *@
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success shadow-sm border-0 border-start border-4 border-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger shadow-sm border-0 border-start border-4 border-danger">@TempData["Error"]</div>
+}
 
-<div class="table-responsive">
-    <table class="table table-hover align-middle admin-table mb-0">
-        <thead>
-            <tr>
-                <th style="width: 20%;">Tên sản phẩm</th>
-                <th style="width: 15%;">Loại hoa</th>
-                <th style="width: 15%;">Chủ đề</th>
-                <th style="width: 10%;">Giá</th>
-                <th style="width: 10%;">Số lượng</th>
-                <th style="width: 10%;">Hình ảnh</th>
-                <th style="width: 10%;">Trạng thái</th>
-                <th class="text-center" style="width: 150px;">Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var sp in Model)
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table align-middle admin-table mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 8%;">Hình ảnh</th>
+                    <th style="width: 25%;">Tên sản phẩm</th>
+                    <th style="width: 15%;">Loại / Chủ đề</th>
+                    <th style="width: 15%;">Giá bán</th>
+                    <th style="width: 10%;">Tồn kho</th>
+                    <th style="width: 12%;">Trạng thái</th>
+                    <th class="text-center" style="width: 15%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
                 {
-                    // Logic kiểm tra: Nếu IsAvailable == 1 là active, ngược lại là disabled
-                    bool isActive = sp.IsAvailable == 1;
-                    string rowClass = isActive ? "" : "row-disabled";
+                    foreach (var sp in Model)
+                    {
+                        // Logic kiểm tra trạng thái
+                        bool isActive = sp.IsAvailable == 1;
+                        string rowClass = isActive ? "" : "row-disabled";
 
-                    <tr class="@rowClass">
-                        <td><strong>@sp.ProductName</strong></td>
-                        <td>@sp.CategoryName</td>
-                        <td>@sp.ThemeName</td>
-                        <td>@String.Format("{0:N0}", sp.Price) ₫</td>
-                        <td>@sp.Quantity</td>
+                        <tr class="@rowClass">
+                            @* 1. Hình ảnh *@
+                            <td class="no-dim">
+                                <img src="@Url.Content("~/Content/Images/" + sp.Image)"
+                                     alt="@sp.ProductName"
+                                     class="product-thumbnail"
+                                     onerror="this.src='/Content/Images/no-image.png'" />
+                            </td>
 
-                        <td class="no-strike">
-                            <img src="@Url.Content("~/Content/Images/" + sp.Image)"
-                                 alt="@sp.ProductName"
-                                 class="product-thumbnail" />
-                        </td>
+                            @* 2. Tên sản phẩm *@
+                            <td>
+                                <span class="product-name">@sp.ProductName</span>
+                            </td>
 
-                        <td class="no-strike">
-                            @if (isActive)
-                            {
-                                <span class="badge bg-success" style="font-weight: 500;">Đang bán</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary" style="font-weight: 500;">Ngừng bán</span>
-                            }
-                        </td>
+                            @* 3. Phân loại *@
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="text-dark fw-bold" style="font-size: 0.85rem;">@sp.CategoryName</span>
+                                    <span class="text-muted small">@sp.ThemeName</span>
+                                </div>
+                            </td>
 
-                        <td class="text-center no-strike">
-                            <a href="@Url.Action("Edit", "Product", new { productID = sp.ProductID, area = "Admin" })"
-                               class="btn btn-sm btn-outline-primary" title="Sửa">
-                                <i class="fas fa-pencil-alt"></i>
-                            </a>
+                            @* 4. Giá *@
+                            <td>
+                                <span class="product-price">@String.Format("{0:N0}", sp.Price) ₫</span>
+                            </td>
 
-                            <a href="@Url.Action("Details", "Home", new { productID = sp.ProductID, area = "" })"
-                               class="btn btn-sm btn-outline-info"
-                               title="Xem chi tiết" target="_blank">
-                                <i class="fas fa-eye"></i>
-                            </a>
+                            @* 5. Số lượng *@
+                            <td>
+                                @if (sp.Quantity > 0)
+                                {
+                                    <span class="fw-bold text-dark">@sp.Quantity</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Hết hàng</span>
+                                }
+                            </td>
 
-                            @if (isActive)
-                            {
-                                <a href="@Url.Action("DisableProduct", "Product", new { productID = sp.ProductID, area = "Admin" })"
-                                   class="btn btn-sm btn-outline-danger ms-1 confirm-action"
-                                   data-type="lock"
-                                   data-name="@sp.ProductName"
-                                   title="Ngừng kinh doanh">
-                                    <i class="fas fa-lock"></i>
+                            @* 6. Trạng thái *@
+                            <td class="no-dim">
+                                @if (isActive)
+                                {
+                                    <span class="status-badge status-active">
+                                        <i class="fas fa-check-circle"></i> Đang bán
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge status-disabled">
+                                        <i class="fas fa-lock"></i> Ngừng bán
+                                    </span>
+                                }
+                            </td>
+
+                            @* 7. Thao tác *@
+                            <td class="text-center no-dim">
+                                <div class="btn-group shadow-sm" role="group">
+                                    @* Nút Xem *@
+                                    <a href="@Url.Action("Details", "Home", new { productID = sp.ProductID, area = "" })"
+                                       class="btn btn-sm btn-light text-info"
+                                       title="Xem ngoài trang chủ" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    @* Nút Sửa *@
+                                    <a href="@Url.Action("Edit", "Product", new { productID = sp.ProductID, area = "Admin" })"
+                                       class="btn btn-sm btn-light text-primary" title="Cập nhật">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    @* Nút Khóa / Mở Khóa *@
+                                    @if (isActive)
+                                    {
+                                        <a href="@Url.Action("DisableProduct", "Product", new { productID = sp.ProductID, area = "Admin" })"
+                                           class="btn btn-sm btn-light text-danger confirm-action"
+                                           data-type="lock"
+                                           data-name="@sp.ProductName"
+                                           title="Ngừng kinh doanh">
+                                            <i class="fas fa-lock"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("EnableProduct", "Product", new { productID = sp.ProductID, area = "Admin" })"
+                                           class="btn btn-sm btn-light text-success confirm-action"
+                                           data-type="unlock"
+                                           data-name="@sp.ProductName"
+                                           title="Mở bán lại">
+                                            <i class="fas fa-unlock"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-leaf fa-3x mb-3 opacity-25"></i>
+                                <p>Không tìm thấy sản phẩm nào.</p>
+                                <a href="@Url.Action("Create", "Product")" class="btn btn-sm btn-outline-primary mt-2">
+                                    Thêm sản phẩm mới
                                 </a>
-                            }
-                            else
-                            {
-                                <a href="@Url.Action("EnableProduct", "Product", new { productID = sp.ProductID, area = "Admin" })"
-                                   class="btn btn-sm btn-outline-success ms-1 confirm-action"
-                                   data-type="unlock"
-                                   data-name="@sp.ProductName"
-                                   title="Mở bán lại">
-                                    <i class="fas fa-unlock"></i>
-                                </a>
-                            }
+                            </div>
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="8" class="text-center py-4 text-muted">Không tìm thấy sản phẩm nào.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section Script{
@@ -176,37 +307,41 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Bắt sự kiện click vào bất kỳ nút nào có class 'confirm-action'
+            // Hiệu ứng hover cho nút tìm kiếm
+            $('.btn-white').hover(
+                function () { $(this).addClass('bg-light'); },
+                function () { $(this).removeClass('bg-light'); }
+            );
+
+            // Xử lý SweetAlert cho nút Khóa/Mở khóa
             $('.confirm-action').on('click', function (e) {
                 e.preventDefault();
                 var self = $(this);
                 var url = self.attr('href');
-                var name = self.data('name'); // Lấy tên sản phẩm
-                var type = self.data('type'); // Lấy loại hành động (lock/unlock)
+                var name = self.data('name');
+                var type = self.data('type');
 
-                // Cấu hình mặc định
+                // Cấu hình nội dung thông báo
                 var title = "";
                 var text = "";
                 var icon = "";
                 var confirmBtnColor = "";
                 var confirmBtnText = "";
 
-                // Tùy chỉnh nội dung dựa trên hành động
                 if (type === 'lock') {
                     title = 'Ngừng kinh doanh?';
                     text = "Sản phẩm \"" + name + "\" sẽ bị ẩn khỏi trang chủ!";
                     icon = 'warning';
-                    confirmBtnColor = '#dc3545'; // Màu đỏ
+                    confirmBtnColor = '#dc3545'; // Đỏ
                     confirmBtnText = 'Vâng, khóa ngay';
                 } else {
                     title = 'Mở bán lại?';
-                    text = "Sản phẩm \"" + name + "\" sẽ hiển thị lại cho khách hàng.";
+                    text = "Sản phẩm \"" + name + "\" sẽ hiển thị lại cho khách mua.";
                     icon = 'question';
-                    confirmBtnColor = '#198754'; // Màu xanh lá
+                    confirmBtnColor = '#10b981'; // Xanh ngọc
                     confirmBtnText = 'Đồng ý mở lại';
                 }
 
-                // Hiển thị SweetAlert
                 Swal.fire({
                     title: title,
                     text: text,
@@ -218,9 +353,10 @@
                     cancelButtonText: 'Hủy bỏ',
                     reverseButtons: true
                 }).then((result) => {
-                    window.location.href = url;
-                }
-                );
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
             });
         });
     </script>

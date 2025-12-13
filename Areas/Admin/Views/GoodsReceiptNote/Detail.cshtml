@@ -1,0 +1,145 @@
+﻿@model List<WebBanHoa.Models.GoodsReceiptNoteDetailDTO>
+@{
+    ViewBag.Title = "Chi tiết phiếu nhập";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+
+    // Tính tổng tiền cả phiếu ngay tại View
+    decimal grandTotal = Model != null ? Model.Sum(x => x.Quantity * x.UnitPrice) : 0;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h2 class="mb-2 text-primary fw-bold">
+            <i class="fas fa-info-circle me-2"></i>Chi tiết Phiếu Nhập
+        </h2>
+
+        <a href="@Url.Action("Index")" class="btn btn-light text-secondary shadow-sm fw-bold">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div>
+        <button class="btn btn-outline-secondary btn-sm shadow-sm" onclick="window.print()">
+            <i class="fas fa-print me-1"></i> In phiếu
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <label class="text-muted small text-uppercase fw-bold">Mã phiếu</label>
+                        <div class="fw-bold text-primary">#@ViewBag.ReceiptID</div>
+                    </div>
+
+                    <div class="col-md-4 col-6">
+                        <label class="text-muted small text-uppercase fw-bold">Nhà cung cấp</label>
+                        <div class="fw-bold text-dark">@ViewBag.SupplierName</div>
+                    </div>
+
+                    <div class="col-md-3 col-6">
+                        <label class="text-muted small text-uppercase fw-bold">Ngày nhập</label>
+                        <div class="text-dark">
+                            @(ViewBag.ReceiptDate != null ? ((DateTime)ViewBag.ReceiptDate).ToString("dd/MM/yyyy") : "---")
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-6 text-end">
+                        <label class="text-muted small text-uppercase fw-bold">Tổng giá trị</label>
+                        <div class="fs-5 fw-bold text-success">@grandTotal.ToString("N0") đ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="mb-0 fw-bold text-secondary">Danh sách sản phẩm nhập</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 table-hover">
+                    <thead class="bg-light text-secondary">
+                        <tr>
+                            <th class="text-center" style="width: 5%">STT</th>
+                            <th style="width: 10%" class="text-center">Hình ảnh</th>
+                            <th style="width: 35%">Tên sản phẩm</th>
+                            <th class="text-end" style="width: 15%">Đơn giá nhập</th>
+                            <th class="text-center" style="width: 15%">Số lượng</th>
+                            <th class="text-end" style="width: 20%">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int stt = 1;
+                            foreach (var item in Model)
+                            {
+                                decimal rowTotal = item.Quantity * item.UnitPrice;
+                                <tr>
+                                    <td class="text-center text-muted">@(stt++)</td>
+
+                                    <td class="text-center">
+                                        @if (!string.IsNullOrEmpty(item.Image))
+                                        {
+                                            <img src="@Url.Content("~/Content/Images/" + item.Image)" alt="Product"
+                                                 class="rounded border"
+                                                 style="width: 45px; height: 45px; object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center mx-auto text-muted"
+                                                 style="width: 45px; height: 45px;">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <div class="fw-bold text-dark">@item.ProductName</div>
+                                        <small class="text-muted">Mã SP: @item.ProductID</small>
+                                    </td>
+
+                                    <td class="text-end font-monospace text-secondary">
+                                        @item.UnitPrice.ToString("N0")
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                                            @item.Quantity
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end fw-bold text-dark font-monospace">
+                                        @rowTotal.ToString("N0") đ
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr class="bg-light fw-bold">
+                                <td colspan="5" class="text-end text-uppercase text-secondary pe-4">
+                                    Tổng cộng:
+                                </td>
+                                <td class="text-end text-success fs-5">
+                                    @grandTotal.ToString("N0") đ
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    Không có dữ liệu chi tiết cho phiếu nhập này.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

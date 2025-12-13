@@ -1,0 +1,182 @@
+﻿@model List<WebBanHoa.Models.GoodsReceiptNoteDTO>
+
+@{
+    ViewBag.Title = "Danh sách phiếu nhập kho";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+}
+<style>
+    /* Ép tất cả các ô trong bảng admin-table phải căn giữa dọc */
+    .admin-table td {
+        vertical-align: middle !important;
+    }
+
+        /* Xóa khoảng trắng thừa của các thẻ div/p bên trong ô để không bị đẩy xuống */
+        .admin-table td div,
+        .admin-table td p {
+            margin-bottom: 0;
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h2 class="mb-0 text-primary fw-bold">
+            <i class="fas fa-file-invoice-dollar me-2"></i>Quản lý Nhập Kho
+        </h2>
+        <small class="text-muted">Lịch sử nhập hàng từ nhà cung cấp</small>
+    </div>
+
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="@Url.Action("Create")" class="btn btn-primary shadow-sm rounded-pill px-3">
+                <i class="fas fa-plus me-1"></i> Tạo phiếu nhập
+            </a>
+            @using (Html.BeginForm("Index", "GoodsReceiptNote", FormMethod.Get, new { @class = "d-flex search-form" }))
+            {
+                <div class="input-group shadow-sm">
+                    <input type="text" name="tuKhoa" class="form-control border-end-0"
+                           placeholder="Tìm mã hoặc tên..."
+                           value="@ViewBag.CurrentFilter">
+                    <button class="btn btn-white border border-start-0 text-secondary bg-white hover-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success shadow-sm border-0 border-start border-4 border-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger shadow-sm border-0 border-start border-4 border-danger">@TempData["Error"]</div>
+}
+
+<div class="table-container bg-white rounded-3 shadow-sm overflow-hidden">
+    <div class="table-responsive">
+        <table class="table align-middle admin-table mb-0 table-hover">
+            <thead class="bg-light">
+                <tr>
+                    <th class="text-center py-3" style="width: 5%;">STT</th>
+                    <th style="width: 15%;">Mã phiếu</th>
+                    <th style="width: 25%;">Nhà cung cấp</th>
+                    <th class="text-center" style="width: 15%;">Ngày nhập</th>
+                    <th class="text-end" style="width: 20%;">Tổng tiền</th>
+                    <th class="text-center" style="width: 20%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int i = 1;
+                    foreach (var item in Model)
+                    {
+                        // --- LOGIC KIỂM TRA ĐÃ XÓA ---
+                        bool isDeleted = (item.IsDeleted == 1);
+
+                        // Nếu đã xóa: Thêm class làm mờ (text-muted) và nền xám (table-active)
+                        string rowClass = isDeleted ? "table-active text-muted fst-italic" : "";
+
+                        // Nếu đã xóa: Gạch ngang chữ
+                        string textDecor = isDeleted ? "text-decoration-line-through" : "";
+
+                        <tr class="@rowClass align-middle">
+                            <td class="text-center text-muted">@(i++)</td>
+
+                            <td>
+                                <span class="badge @(isDeleted ? "bg-secondary" : "bg-light text-dark border border-secondary border-opacity-25") font-monospace @textDecor">
+                                    #@item.GoodsReceiptNoteID
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold @(isDeleted ? "text-secondary" : "text-dark") @textDecor">@item.SupplierName</div>
+                                <small class="text-muted" style="font-size: 0.75rem">
+                                    ID: @item.SupplierID
+                                </small>
+                            </td>
+
+                            <td class="text-center">
+                                <span class="@(isDeleted ? "" : "text-secondary") @textDecor">
+                                    <i class="far fa-calendar-alt me-1"></i>
+                                    @item.ReceiptDate.ToString("dd/MM/yyyy")
+                                </span>
+                            </td>
+
+                            <td class="text-end">
+                                <div class="fw-bold @(isDeleted ? "text-secondary" : "text-success") @textDecor">
+                                    @string.Format("{0:N0} đ", item.TotalPrice)
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <a href="@Url.Action("Detail", new { noteID = item.GoodsReceiptNoteID })"
+                                       class="btn btn-sm btn-light text-info" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    @if (!isDeleted)
+                                    {
+                                        <a href="@Url.Action("Delete", new { noteID = item.GoodsReceiptNoteID })"
+                                           class="btn btn-sm btn-light text-danger delete-btn" title="Hủy phiếu">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-light text-secondary" disabled title="Đã hủy">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-box-open fa-3x mb-3 opacity-25"></i>
+                                <p>Chưa có phiếu nhập hàng nào.</p>
+                                <a href="@Url.Action("Create")" class="btn btn-sm btn-outline-primary">
+                                    Nhập đơn hàng đầu tiên
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        // Chỉ gán sự kiện click cho các nút có class .delete-btn (tức là chưa bị xóa)
+        $('.delete-btn').on('click', function (e) {
+            e.preventDefault();
+            var deleteUrl = $(this).attr('href');
+
+            Swal.fire({
+                title: 'Hủy phiếu nhập này?',
+                text: "Hành động này sẽ trừ ngược lại số lượng tồn kho! Bạn có chắc chắn?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Đồng ý hủy',
+                cancelButtonText: 'Quay lại'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = deleteUrl;
+                }
+            });
+        });
+    });
+</script>

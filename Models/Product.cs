@@ -18,6 +18,7 @@ namespace WebBanHoa.Models
         public Product()
         {
             this.Discounts = new HashSet<Discount>();
+            this.GoodsReceiptNoteDetails = new HashSet<GoodsReceiptNoteDetail>();
             this.OrderDetails = new HashSet<OrderDetail>();
             this.ShoppingCartItems = new HashSet<ShoppingCartItem>();
         }
@@ -39,6 +40,8 @@ namespace WebBanHoa.Models
         public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Discount> Discounts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GoodsReceiptNoteDetail> GoodsReceiptNoteDetails { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual Theme Theme { get; set; }

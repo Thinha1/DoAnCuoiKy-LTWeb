@@ -145,14 +145,17 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashBoardController.cs" />
     <Compile Include="Areas\Admin\Controllers\DiscountController.cs" />
+    <Compile Include="Areas\Admin\Controllers\GoodsReceiptNoteController.cs" />
     <Compile Include="Areas\Admin\Controllers\OrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
+    <Compile Include="Areas\Admin\Controllers\SupplierController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Security\CheckAuthorize.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -165,7 +168,14 @@
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DiscountDTO.cs" />
-    <Compile Include="Models\GioHang.cs" />
+    <Compile Include="Models\GoodsReceiptNote.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GoodsReceiptNoteDetail.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GoodsReceiptNoteDetailDTO.cs" />
+    <Compile Include="Models\GoodsReceiptNoteDTO.cs" />
     <Compile Include="Models\IDGenerator.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\Order.cs">
@@ -177,6 +187,7 @@
     <Compile Include="Models\OrderDetailsDTO.cs" />
     <Compile Include="Models\OrderDTO.cs" />
     <Compile Include="Models\PasswordHelper.cs" />
+    <Compile Include="Models\Payment\VnPayLibrary.cs" />
     <Compile Include="Models\Product.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
@@ -205,6 +216,12 @@
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ShoppingCartItem.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Supplier.cs">
+      <DependentUpon>QLBanHoa.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>QLBanHoa.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Theme.cs">
@@ -313,6 +330,19 @@
     <Content Include="Areas\Admin\Views\Discount\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Discount\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Discount\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Supplier\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Supplier\Create.cshtml" />
+    <EntityDeploy Include="Models\QLBanHoa.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>QLBanHoa.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\QLBanHoa.edmx.diagram">
+      <DependentUpon>QLBanHoa.edmx</DependentUpon>
+    </Content>
+    <Content Include="Areas\Admin\Views\Supplier\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\GoodsReceiptNote\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\GoodsReceiptNote\Detail.cshtml" />
+    <Content Include="Areas\Admin\Views\GoodsReceiptNote\Create.cshtml" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
@@ -343,10 +373,12 @@
     <Content Include="Views\Orders\ThanhCong.cshtml" />
     <Content Include="Views\Orders\Index.cshtml" />
     <Content Include="Views\Orders\Details.cshtml" />
+    <Content Include="Views\Payment\PaymentCallback.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Utils\VnPayPayment\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -371,13 +403,6 @@
     <Content Include="Areas\Admin\Views\Product\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Product\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Index.cshtml" />
-    <EntityDeploy Include="Models\QLBanHoa.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>QLBanHoa.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\QLBanHoa.edmx.diagram">
-      <DependentUpon>QLBanHoa.edmx</DependentUpon>
-    </Content>
     <Content Include="Areas\Admin\Views\Order\Details.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\Index.cshtml" />
