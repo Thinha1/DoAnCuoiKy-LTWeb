@@ -9,34 +9,41 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-      .sidebar {
-        height: 100vh;
-        background-color: #343a40;
-        color: white;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 250px;
-      }
-      .sidebar .nav-link {
-        color: white;
-        padding: 1rem;
-      }
-      .sidebar .nav-link:hover {
-        background-color: #495057;
-      }
-      .sidebar .nav-link.active {
-        background-color: #0d6efd;
-      }
-      .main-content {
-        margin-left: 250px;
-        padding: 20px;
-      }
-      .card {
-        margin-bottom: 20px;
-      }
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+        }
+
+            .sidebar .nav-link {
+                color: white;
+                padding: 1rem;
+            }
+
+                .sidebar .nav-link:hover {
+                    background-color: #495057;
+                }
+
+                .sidebar .nav-link.active {
+                    background-color: #0d6efd;
+                }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <body>
     @{
         // Lấy tên controller hiện tại và chuyển sang chữ thường
@@ -46,22 +53,49 @@
         <h3 class="text-center mb-4">FlowerShop Admin</h3>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link @(currentController == "dashboard" ? "active" : "")" href="@Url.Action("Index", "Dashboard")"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
+                <a class="nav-link @(currentController == "dashboard" ? "active" : "")" href="@Url.Action("Index", "Dashboard")">
+                    <i class="fas fa-chart-line me-2"></i> Dashboard
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link @(currentController == "product" ? "active" : "")" href="@Url.Action("Index", "Product")">
+                    <i class="fas fa-seedling me-2"></i> Quản lý hoa
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link @(currentController == "supplier" ? "active" : "")" href="@Url.Action("Index", "Supplier")">
+                    <i class="fas fa-truck me-2"></i> Nhà cung cấp
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link @(currentController == "goodsreceiptnote" ? "active" : "")" href="@Url.Action("Index", "GoodsReceiptNote")">
+                    <i class="fas fa-file-import me-2"></i> Quản lý phiếu nhập
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link @(currentController == "order" ? "active" : "")" href="@Url.Action("Index", "Order")">
+                    <i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(currentController == "product" ? "active" : "")" href="@Url.Action("Index", "Product")"><i class="fas fa-seedling me-2"></i> Quản lý hoa</a>
+                <a class="nav-link @(currentController == "user" ? "active" : "")" href="@Url.Action("Index", "User")">
+                    <i class="fas fa-users me-2"></i> Quản lý khách hàng
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(currentController == "order" ? "active" : "")" href="@Url.Action("Index", "Order")"><i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng</a>
+                <a class="nav-link @(currentController == "discount" ? "active" : "")" href="@Url.Action("Index", "Discount")">
+                    <i class="fas fa-tags me-2"></i> Khuyến mãi
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link @(currentController == "user" ? "active" : "")" href="@Url.Action("Index", "User")"><i class="fas fa-users me-2"></i> Quản lý khách hàng</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @(currentController == "discount" ? "active" : "")" href="@Url.Action("Index", "Discount")"><i class="fas fa-tags me-2"></i> Khuyến mãi</a>
-            </li>
+
             <li class="nav-item mt-auto">
-                <a class="nav-link" href="@Url.Action("Logout", "Account", new {area = ""})"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a>
+                <a class="nav-link" href="@Url.Action("Logout", "Account", new {area = ""})">
+                    <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                </a>
             </li>
         </ul>
     </div>

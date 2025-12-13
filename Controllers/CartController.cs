@@ -352,7 +352,13 @@ namespace WebBanHoa.Controllers
 
 
         // Phương thức lấy discount rate
-        private decimal LayTyLeGiamGia(string productId)
+        //private decimal LayTyLeGiamGia(string productId)
+        //{
+        //    return Session["UserID"]?.ToString();
+        //}
+
+        // Phương thức lấy user id
+        private string GetCurrentUserId()
         {
             return Session["UserID"]?.ToString();
         }

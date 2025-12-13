@@ -48,7 +48,7 @@ namespace WebBanHoa.Models
             }
 
             // Fallback nếu format không đúng
-            return "SC001";
+            return "GH001";
         }
 
         public static string GenerateProductID()
@@ -106,6 +106,44 @@ namespace WebBanHoa.Models
             }
 
             return "GG001";
+        }
+
+        public static string GenerateSupplierID()
+        {
+            var lastSupplier = db.Suppliers.OrderByDescending(s => s.SupplierID).FirstOrDefault();
+
+            if (lastSupplier == null) return "NCC001";
+
+            string lastID = lastSupplier.SupplierID;
+            if (lastID.StartsWith("NCC") && lastID.Length >= 4)
+            {
+                string numberPart = lastID.Substring(3);
+                if (int.TryParse(numberPart, out int lastNumber))
+                {
+                    return $"NCC{(lastNumber + 1):D3}";
+                }
+            }
+
+            return "NCC001";
+        }
+
+        public static string GenerateGoodsReceiptNoteID()
+        {
+            var lastNote = db.GoodsReceiptNotes.OrderByDescending(g => g.GoodsReceiptNoteID).FirstOrDefault();
+
+            if (lastNote == null) return "PH001";
+
+            string lastID = lastNote.GoodsReceiptNoteID;
+            if (lastID.StartsWith("PH") && lastID.Length >= 3)
+            {
+                string numberPart = lastID.Substring(2);
+                if (int.TryParse(numberPart, out int lastNumber))
+                {
+                    return $"PH{(lastNumber + 1):D3}";
+                }
+            }
+
+            return "PH001";
         }
 
     }

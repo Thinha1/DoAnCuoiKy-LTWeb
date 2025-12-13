@@ -28,6 +28,29 @@
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="30" />
         </EntityType>
+        <EntityType Name="GoodsReceiptNote">
+          <Key>
+            <PropertyRef Name="GoodsReceiptNoteID" />
+          </Key>
+          <Property Name="GoodsReceiptNoteID" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="SupplierID" Type="nchar" MaxLength="10" />
+          <Property Name="ReceiptDate" Type="datetime" />
+          <Property Name="IsDeleted" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="30" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="GoodsReceiptNoteDetail">
+          <Key>
+            <PropertyRef Name="ProductID" />
+            <PropertyRef Name="GoodsReceiptNoteID" />
+          </Key>
+          <Property Name="ProductID" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="GoodsReceiptNoteID" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="UnitPrice" Type="money" />
+          <Property Name="Quantity" Type="int" />
+        </EntityType>
         <EntityType Name="OrderDetail">
           <Key>
             <PropertyRef Name="OrderID" />
@@ -98,6 +121,31 @@
           <Property Name="ProductID" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="Quantity" Type="int" />
         </EntityType>
+        <EntityType Name="Supplier">
+          <Key>
+            <PropertyRef Name="SupplierID" />
+          </Key>
+          <Property Name="SupplierID" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="250" />
+          <Property Name="Phone" Type="varchar" MaxLength="20" />
+          <Property Name="Email" Type="varchar" MaxLength="100" />
+          <Property Name="IsDeleted" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="30" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
         <EntityType Name="Theme">
           <Key>
             <PropertyRef Name="ThemeID" />
@@ -144,6 +192,42 @@
               <PropertyRef Name="ProductID" />
             </Principal>
             <Dependent Role="Discount">
+              <PropertyRef Name="ProductID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GoodsReceiptNote_Supplier">
+          <End Role="Supplier" Type="Self.Supplier" Multiplicity="0..1" />
+          <End Role="GoodsReceiptNote" Type="Self.GoodsReceiptNote" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Supplier">
+              <PropertyRef Name="SupplierID" />
+            </Principal>
+            <Dependent Role="GoodsReceiptNote">
+              <PropertyRef Name="SupplierID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID">
+          <End Role="GoodsReceiptNote" Type="Self.GoodsReceiptNote" Multiplicity="1" />
+          <End Role="GoodsReceiptNoteDetail" Type="Self.GoodsReceiptNoteDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GoodsReceiptNote">
+              <PropertyRef Name="GoodsReceiptNoteID" />
+            </Principal>
+            <Dependent Role="GoodsReceiptNoteDetail">
+              <PropertyRef Name="GoodsReceiptNoteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GoodsReceiptNoteDetail_ProductID">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="GoodsReceiptNoteDetail" Type="Self.GoodsReceiptNoteDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="ProductID" />
+            </Principal>
+            <Dependent Role="GoodsReceiptNoteDetail">
               <PropertyRef Name="ProductID" />
             </Dependent>
           </ReferentialConstraint>
@@ -271,12 +355,16 @@
         <EntityContainer Name="QLBANHOAModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Discount" EntityType="Self.Discount" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GoodsReceiptNote" EntityType="Self.GoodsReceiptNote" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GoodsReceiptNoteDetail" EntityType="Self.GoodsReceiptNoteDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetail" EntityType="Self.OrderDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ShoppingCart" EntityType="Self.ShoppingCart" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ShoppingCartItem" EntityType="Self.ShoppingCartItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Supplier" EntityType="Self.Supplier" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Theme" EntityType="Self.Theme" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Category_Parent" Association="Self.FK_Category_Parent">
@@ -286,6 +374,18 @@
           <AssociationSet Name="FK_Discount_Product" Association="Self.FK_Discount_Product">
             <End Role="Product" EntitySet="Product" />
             <End Role="Discount" EntitySet="Discount" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GoodsReceiptNote_Supplier" Association="Self.FK_GoodsReceiptNote_Supplier">
+            <End Role="Supplier" EntitySet="Supplier" />
+            <End Role="GoodsReceiptNote" EntitySet="GoodsReceiptNote" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID" Association="Self.FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID">
+            <End Role="GoodsReceiptNote" EntitySet="GoodsReceiptNote" />
+            <End Role="GoodsReceiptNoteDetail" EntitySet="GoodsReceiptNoteDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GoodsReceiptNoteDetail_ProductID" Association="Self.FK_GoodsReceiptNoteDetail_ProductID">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="GoodsReceiptNoteDetail" EntitySet="GoodsReceiptNoteDetail" />
           </AssociationSet>
           <AssociationSet Name="FK_OrderDetail_OrderID" Association="Self.FK_OrderDetail_OrderID">
             <End Role="Orders" EntitySet="Orders" />
@@ -360,6 +460,33 @@
           <Property Name="UpdatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Product" Relationship="Self.FK_Discount_Product" FromRole="Discount" ToRole="Product" />
         </EntityType>
+        <EntityType Name="GoodsReceiptNote">
+          <Key>
+            <PropertyRef Name="GoodsReceiptNoteID" />
+          </Key>
+          <Property Name="GoodsReceiptNoteID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="SupplierID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="ReceiptDate" Type="DateTime" Precision="3" />
+          <Property Name="IsDeleted" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Supplier" Relationship="Self.FK_GoodsReceiptNote_Supplier" FromRole="GoodsReceiptNote" ToRole="Supplier" />
+          <NavigationProperty Name="GoodsReceiptNoteDetails" Relationship="Self.FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID" FromRole="GoodsReceiptNote" ToRole="GoodsReceiptNoteDetail" />
+        </EntityType>
+        <EntityType Name="GoodsReceiptNoteDetail">
+          <Key>
+            <PropertyRef Name="ProductID" />
+            <PropertyRef Name="GoodsReceiptNoteID" />
+          </Key>
+          <Property Name="ProductID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="GoodsReceiptNoteID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Quantity" Type="Int32" />
+          <NavigationProperty Name="GoodsReceiptNote" Relationship="Self.FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID" FromRole="GoodsReceiptNoteDetail" ToRole="GoodsReceiptNote" />
+          <NavigationProperty Name="Product" Relationship="Self.FK_GoodsReceiptNoteDetail_ProductID" FromRole="GoodsReceiptNoteDetail" ToRole="Product" />
+        </EntityType>
         <EntityType Name="OrderDetail">
           <Key>
             <PropertyRef Name="OrderID" />
@@ -408,6 +535,7 @@
           <Property Name="IsAvailable" Type="Int32" />
           <NavigationProperty Name="Category" Relationship="Self.FK_Product_Category" FromRole="Product" ToRole="Category" />
           <NavigationProperty Name="Discounts" Relationship="Self.FK_Discount_Product" FromRole="Product" ToRole="Discount" />
+          <NavigationProperty Name="GoodsReceiptNoteDetails" Relationship="Self.FK_GoodsReceiptNoteDetail_ProductID" FromRole="Product" ToRole="GoodsReceiptNoteDetail" />
           <NavigationProperty Name="OrderDetails" Relationship="Self.FK_OrderDetail_ProductID" FromRole="Product" ToRole="OrderDetail" />
           <NavigationProperty Name="Theme" Relationship="Self.FK_Product_Theme" FromRole="Product" ToRole="Theme" />
           <NavigationProperty Name="ShoppingCartItems" Relationship="Self.FK_ShoppingCartItem_ProductID" FromRole="Product" ToRole="ShoppingCartItem" />
@@ -443,6 +571,32 @@
           <Property Name="Quantity" Type="Int32" />
           <NavigationProperty Name="Product" Relationship="Self.FK_ShoppingCartItem_ProductID" FromRole="ShoppingCartItem" ToRole="Product" />
           <NavigationProperty Name="ShoppingCart" Relationship="Self.FK_ShoppingCartItem_ShoppingCartID" FromRole="ShoppingCartItem" ToRole="ShoppingCart" />
+        </EntityType>
+        <EntityType Name="Supplier">
+          <Key>
+            <PropertyRef Name="SupplierID" />
+          </Key>
+          <Property Name="SupplierID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IsDeleted" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="GoodsReceiptNotes" Relationship="Self.FK_GoodsReceiptNote_Supplier" FromRole="Supplier" ToRole="GoodsReceiptNote" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <EntityType Name="Theme">
           <Key>
@@ -508,6 +662,42 @@
               <PropertyRef Name="ProductID" />
             </Principal>
             <Dependent Role="Discount">
+              <PropertyRef Name="ProductID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GoodsReceiptNote_Supplier">
+          <End Role="Supplier" Type="Self.Supplier" Multiplicity="0..1" />
+          <End Role="GoodsReceiptNote" Type="Self.GoodsReceiptNote" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Supplier">
+              <PropertyRef Name="SupplierID" />
+            </Principal>
+            <Dependent Role="GoodsReceiptNote">
+              <PropertyRef Name="SupplierID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID">
+          <End Role="GoodsReceiptNote" Type="Self.GoodsReceiptNote" Multiplicity="1" />
+          <End Role="GoodsReceiptNoteDetail" Type="Self.GoodsReceiptNoteDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GoodsReceiptNote">
+              <PropertyRef Name="GoodsReceiptNoteID" />
+            </Principal>
+            <Dependent Role="GoodsReceiptNoteDetail">
+              <PropertyRef Name="GoodsReceiptNoteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GoodsReceiptNoteDetail_ProductID">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="GoodsReceiptNoteDetail" Type="Self.GoodsReceiptNoteDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="ProductID" />
+            </Principal>
+            <Dependent Role="GoodsReceiptNoteDetail">
               <PropertyRef Name="ProductID" />
             </Dependent>
           </ReferentialConstraint>
@@ -623,12 +813,16 @@
         <EntityContainer Name="QLBANHOAEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Categories" EntityType="Self.Category" />
           <EntitySet Name="Discounts" EntityType="Self.Discount" />
+          <EntitySet Name="GoodsReceiptNotes" EntityType="Self.GoodsReceiptNote" />
+          <EntitySet Name="GoodsReceiptNoteDetails" EntityType="Self.GoodsReceiptNoteDetail" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetail" />
           <EntitySet Name="Orders" EntityType="Self.Order" />
           <EntitySet Name="Products" EntityType="Self.Product" />
           <EntitySet Name="Roles" EntityType="Self.Role" />
           <EntitySet Name="ShoppingCarts" EntityType="Self.ShoppingCart" />
           <EntitySet Name="ShoppingCartItems" EntityType="Self.ShoppingCartItem" />
+          <EntitySet Name="Suppliers" EntityType="Self.Supplier" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
           <EntitySet Name="Themes" EntityType="Self.Theme" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <AssociationSet Name="FK_Category_Parent" Association="Self.FK_Category_Parent">
@@ -642,6 +836,18 @@
           <AssociationSet Name="FK_Discount_Product" Association="Self.FK_Discount_Product">
             <End Role="Product" EntitySet="Products" />
             <End Role="Discount" EntitySet="Discounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GoodsReceiptNote_Supplier" Association="Self.FK_GoodsReceiptNote_Supplier">
+            <End Role="Supplier" EntitySet="Suppliers" />
+            <End Role="GoodsReceiptNote" EntitySet="GoodsReceiptNotes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID" Association="Self.FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID">
+            <End Role="GoodsReceiptNote" EntitySet="GoodsReceiptNotes" />
+            <End Role="GoodsReceiptNoteDetail" EntitySet="GoodsReceiptNoteDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GoodsReceiptNoteDetail_ProductID" Association="Self.FK_GoodsReceiptNoteDetail_ProductID">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="GoodsReceiptNoteDetail" EntitySet="GoodsReceiptNoteDetails" />
           </AssociationSet>
           <AssociationSet Name="FK_OrderDetail_OrderID" Association="Self.FK_OrderDetail_OrderID">
             <End Role="Orders" EntitySet="Orders" />
@@ -708,6 +914,30 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GoodsReceiptNotes">
+            <EntityTypeMapping TypeName="QLBANHOAModel.GoodsReceiptNote">
+              <MappingFragment StoreEntitySet="GoodsReceiptNote">
+                <ScalarProperty Name="GoodsReceiptNoteID" ColumnName="GoodsReceiptNoteID" />
+                <ScalarProperty Name="SupplierID" ColumnName="SupplierID" />
+                <ScalarProperty Name="ReceiptDate" ColumnName="ReceiptDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GoodsReceiptNoteDetails">
+            <EntityTypeMapping TypeName="QLBANHOAModel.GoodsReceiptNoteDetail">
+              <MappingFragment StoreEntitySet="GoodsReceiptNoteDetail">
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="GoodsReceiptNoteID" ColumnName="GoodsReceiptNoteID" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -782,6 +1012,33 @@
                 <ScalarProperty Name="ShoppingCartID" ColumnName="ShoppingCartID" />
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Suppliers">
+            <EntityTypeMapping TypeName="QLBANHOAModel.Supplier">
+              <MappingFragment StoreEntitySet="Supplier">
+                <ScalarProperty Name="SupplierID" ColumnName="SupplierID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="QLBANHOAModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

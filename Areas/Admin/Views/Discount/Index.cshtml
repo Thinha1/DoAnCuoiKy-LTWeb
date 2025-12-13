@@ -1,165 +1,144 @@
-﻿@model IEnumerable<WebBanHoa.Models.DiscountDTO>
+﻿@model List<WebBanHoa.Models.DiscountDTO>
 
 @{
     ViewBag.Title = "Quản lý mã giảm giá";
     Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
 }
 
-<style>
-    /* Style đồng bộ với trang Order */
-    .admin-table thead th {
-        background-color: #f8f9fa;
-        color: #6c757d;
-        font-weight: 600;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        border-bottom: 2px solid #dee2e6;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-
-    .admin-table tbody tr:hover {
-        background-color: #fdfdfd;
-    }
-
-    /* Style riêng cho badge giảm giá */
-    .badge-discount-high {
-        background-color: #dc3545; /* Đỏ cho giảm giá cao (>20%) */
-        color: white;
-    }
-
-    .badge-discount-normal {
-        background-color: #0d6efd; /* Xanh cho giảm giá thường */
-        color: white;
-    }
-
-    .search-form .form-control {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-    }
-
-    .search-form .btn {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-</style>
-
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
     <div>
-        <h2 class="mb-1">Quản lý Mã Giảm Giá</h2>
-        @* Nút thêm mới được làm đẹp *@
-        <a href="@Url.Action("Create")" class="btn btn-sm btn-success mt-2 shadow-sm">
-            <i class="fas fa-plus me-1"></i> Thêm mới giảm giá
+        <h2 class="mb-0 text-primary fw-bold">
+            <i class="fas fa-tags me-2"></i>Quản lý Giảm Giá
+        </h2>
+        <small class="text-muted">Danh sách chương trình khuyến mãi theo sản phẩm</small>
+    </div>
+
+    <div class="d-flex align-items-center">
+        @using (Html.BeginForm("Index", "Discount", FormMethod.Get, new { @class = "me-3" }))
+        {
+            <div class="input-group shadow-sm">
+                <input type="text" name="TuKhoa" class="form-control border-0"
+                       placeholder="Tìm tên SP..."
+                       value="@ViewBag.CurrentFilter"
+                       style="min-width: 200px;">
+                <button class="btn btn-white bg-white text-secondary border-0" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        }
+
+        <a href="@Url.Action("Create")" class="btn btn-primary shadow-sm rounded-pill px-3 fw-bold">
+            <i class="fas fa-plus me-1"></i> Thêm mới
         </a>
     </div>
-
-    @* Form tìm kiếm (Cần update Controller để hoạt động) *@
-    @using (Html.BeginForm("Index", "Discount", FormMethod.Get, new { @class = "d-flex search-form me-3" }))
-    {
-        <div class="input-group">
-            <input type="text" name="TuKhoa" class="form-control"
-                   placeholder="Tìm theo tên sản phẩm..."
-                   value="@ViewBag.CurrentFilter">
-            <button class="btn btn-outline-secondary" type="submit">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    }
 </div>
 
-@* Hiển thị thông báo *@
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-success shadow-sm border-0 border-start border-4 border-success">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger shadow-sm border-0 border-start border-4 border-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
     </div>
 }
 
-<div class="table-responsive bg-white shadow-sm rounded">
-    <table class="table table-hover align-middle admin-table mb-0">
-        <thead>
-            <tr>
-                <th style="width: 30%;">Tên Sản Phẩm</th>
-                <th style="width: 30%;">Tên Chương Trình</th>
-                <th style="width: 20%;" class="text-center">Mức Giảm Giá</th>
-                <th class="text-center" style="width: 20%;">Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var item in Model)
+<div class="table-container bg-white rounded-3 shadow-sm overflow-hidden">
+    <div class="table-responsive">
+        <table class="table align-middle admin-table mb-0 table-hover">
+            <thead class="bg-light">
+                <tr>
+                    <th class="text-center py-3" style="width: 5%;">STT</th>
+                    <th style="width: 35%;">Tên Sản Phẩm</th>
+                    <th style="width: 25%;">Tên Chương Trình</th>
+                    <th class="text-center" style="width: 15%;">Mức Giảm</th>
+                    <th class="text-center" style="width: 20%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int i = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center text-muted">@(i++)</td>
+
+                            <td>
+                                <div class="fw-bold text-dark">@item.ProductName</div>
+                                @* Nếu có Mã SP thì hiện thêm cho chuyên nghiệp *@
+                                @* <small class="text-muted">ID: @item.ProductID</small> *@
+                            </td>
+
+                            <td>
+                                <span class="text-secondary">@item.DiscountName</span>
+                            </td>
+
+                            <td class="text-center">
+                                @{
+                                    var percent = item.DiscountRate;
+                                    // Logic: >= 20% màu Đỏ (Danger), < 20% màu Xanh (Primary)
+                                    string badgeClass = percent >= 20 ? "bg-danger" : "bg-primary";
+                                }
+                                <span class="badge @badgeClass rounded-pill px-3 py-2 shadow-sm">
+                                    <i class="fas fa-percent me-1"></i> @percent.ToString("0")%
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <a href="@Url.Action("Edit", new { discountID = item.DiscountID })"
+                                       class="btn btn-sm btn-light text-primary" title="Cập nhật">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <a href="@Url.Action("Delete", new { discountID = item.DiscountID })"
+                                       class="btn btn-sm btn-light text-danger delete-btn" title="Xóa">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>
-                            <strong class="text-dark">@item.ProductName</strong>
-                        </td>
-                        <td>
-                            <span class="text-secondary">@item.DiscountName</span>
-                        </td>
-                        <td class="text-center">
-                            @{
-                                // Tính phần trăm
-                                var percent = item.DiscountRate;
-                                // Logic màu sắc: Giảm trên 20% màu đỏ, dưới thì màu xanh
-                                string badgeClass = percent >= 20 ? "badge-discount-high" : "badge-discount-normal";
-                            }
-                            <span class="badge @badgeClass p-2 rounded-pill">
-                                <i class="fas fa-tag me-1"></i> @percent.ToString("0")%
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <a href="@Url.Action("Edit", new { discountID = item.DiscountID })"
-                               class="btn btn-sm btn-outline-primary ms-1" title="Cập nhật">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="@Url.Action("Delete", new { discountID = item.DiscountID })"
-                               class="btn btn-sm btn-outline-danger ms-1 delete-btn" title="Xóa">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-tags fa-3x mb-3 opacity-25"></i>
+                                <p>Chưa có chương trình giảm giá nào.</p>
+                                <a href="@Url.Action("Create")" class="btn btn-sm btn-outline-primary">
+                                    Tạo khuyến mãi ngay
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4" class="text-center py-5 text-muted">
-                        <i class="fas fa-inbox fa-2x mb-3 d-block opacity-50"></i>
-                        Không có chương trình giảm giá nào được tìm thấy.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-@section Script{
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Xử lý SweetAlert2 cho nút xóa
             $('.delete-btn').on('click', function (e) {
                 e.preventDefault();
-                var self = $(this);
-                var deleteUrl = self.attr('href');
+                var deleteUrl = $(this).attr('href');
 
                 Swal.fire({
-                    title: 'Bạn có chắc chắn muốn XÓA?',
-                    text: "Mã giảm giá này sẽ bị xóa vĩnh viễn!",
+                    title: 'Xóa mã giảm giá này?',
+                    text: "Sản phẩm sẽ quay về giá gốc. Bạn có chắc chắn?",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc3545',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Vâng, xóa nó!',
+                    confirmButtonText: 'Đồng ý xóa',
                     cancelButtonText: 'Hủy bỏ'
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -169,4 +148,3 @@
             });
         });
     </script>
-}

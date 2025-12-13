@@ -4,20 +4,27 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="235512c262b3432e917d2ea61c176038" Name="Diagram1">
-        <EntityTypeShape EntityType="QLBANHOAModel.Category" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.Discount" Width="1.5" PointX="5.25" PointY="4.875" IsExpanded="true" />
+      <Diagram DiagramId="94703229a4504e9dbc002cbef2766125" Name="Diagram1">
+        <EntityTypeShape EntityType="QLBANHOAModel.Category" Width="1.5" PointX="0.75" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Discount" Width="1.5" PointX="5.25" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.GoodsReceiptNote" Width="1.5" PointX="6" PointY="19" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.GoodsReceiptNoteDetail" Width="1.5" PointX="8.25" PointY="8.375" IsExpanded="true" />
         <EntityTypeShape EntityType="QLBANHOAModel.OrderDetail" Width="1.5" PointX="8.25" PointY="5.375" IsExpanded="true" />
         <EntityTypeShape EntityType="QLBANHOAModel.Order" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.Product" Width="1.5" PointX="3" PointY="4.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.Role" Width="1.5" PointX="1.5" PointY="10.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCart" Width="1.5" PointX="6" PointY="11.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCartItem" Width="1.5" PointX="8.375" PointY="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.Theme" Width="1.5" PointX="0.75" PointY="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="QLBANHOAModel.User" Width="1.5" PointX="3.75" PointY="10" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Product" Width="1.5" PointX="3" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Role" Width="1.5" PointX="1.5" PointY="14.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCart" Width="1.5" PointX="6" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.ShoppingCartItem" Width="1.5" PointX="8.25" PointY="11.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Supplier" Width="1.5" PointX="3.75" PointY="18.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.sysdiagram" Width="1.5" PointX="2.75" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.Theme" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QLBANHOAModel.User" Width="1.5" PointX="3.75" PointY="13.25" IsExpanded="true" />
         <AssociationConnector Association="QLBANHOAModel.FK_Category_Parent" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_Product_Category" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_Discount_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_GoodsReceiptNote_Supplier" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_GoodsReceiptNoteDetail_GoodsReceiptNoteID" ManuallyRouted="false" />
+        <AssociationConnector Association="QLBANHOAModel.FK_GoodsReceiptNoteDetail_ProductID" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_OrderDetail_OrderID" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_OrderDetail_ProductID" ManuallyRouted="false" />
         <AssociationConnector Association="QLBANHOAModel.FK_Orders_UserID" ManuallyRouted="false" />

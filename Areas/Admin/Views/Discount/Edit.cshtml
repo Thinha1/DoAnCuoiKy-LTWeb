@@ -5,103 +5,97 @@
     Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
 }
 
-@* Import CSS *@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<div class="container-fluid px-4">
-    @* --- HEADER --- *@
-    <div class="d-flex justify-content-between align-items-center my-4">
-        <h2 class="mt-4">Cập Nhật Mã Giảm Giá</h2>
-        <a href="@Url.Action("Index")" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Quay lại
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h2 class="mb-0 text-primary fw-bold">
+            <i class="fas fa-edit me-2"></i>Cập nhật Mã Giảm Giá
+        </h2>
+        <small class="text-muted">Chỉnh sửa thông tin khuyến mãi cho sản phẩm</small>
+    </div>
+    <div>
+        <a href="@Url.Action("Index")" class="btn btn-light text-secondary fw-bold shadow-sm">
+            <i class="fas fa-times me-2"></i>Hủy bỏ
         </a>
     </div>
+</div>
 
-    @* --- CARD --- *@
-    <div class="card mb-4 shadow-sm border-0">
-        <div class="card-header bg-white py-3">
-            <i class="fas fa-edit me-1 text-secondary"></i>
-            Chỉnh sửa thông tin chương trình
-        </div>
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="mb-0 fw-bold text-secondary">Thông tin chương trình</h5>
+            </div>
 
-        <div class="card-body">
-            @using (Html.BeginForm("Edit", "Discount", FormMethod.Post, new { id = "editDiscountForm" }))
-            {
-                @Html.AntiForgeryToken()
+            <div class="card-body p-4">
+                @using (Html.BeginForm("Edit", "Discount", FormMethod.Post, new { id = "editDiscountForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.DiscountID)
 
-                @* Giữ ID để submit *@
-                @Html.HiddenFor(model => model.DiscountID)
+                    if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger shadow-sm">
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                        </div>
+                    }
 
-                <div class="row">
-                    <div class="col-md-12">
-                        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
-
-                        @* --- HÀNG 1: ID, Sản phẩm, Tên --- *@
-                        <div class="row mb-3">
-                            @* Mã ID (Readonly) *@
-                            <div class="col-md-2">
-                                @Html.LabelFor(model => model.DiscountID, "Mã ID", htmlAttributes: new { @class = "form-label fw-bold" })
-                                @Html.EditorFor(model => model.DiscountID, new { htmlAttributes = new { @class = "form-control bg-light", @readonly = "readonly" } })
-                            </div>
-
-                            @* Sản phẩm *@
-                            <div class="col-md-5">
-                                @Html.LabelFor(model => model.ProductID, "Sản phẩm áp dụng", htmlAttributes: new { @class = "form-label fw-bold" })
-                                @Html.DropDownListFor(model => model.ProductID, (SelectList)ViewBag.ProductList, "-- Chọn sản phẩm --", new { @class = "form-select", @required = "required" })
-                                @Html.ValidationMessageFor(model => model.ProductID, "", new { @class = "text-danger" })
-                            </div>
-
-                            @* Tên chương trình *@
-                            <div class="col-md-5">
-                                @Html.LabelFor(model => model.DiscountName, "Tên chương trình", htmlAttributes: new { @class = "form-label fw-bold" })
-                                @Html.EditorFor(model => model.DiscountName, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
-                                @Html.ValidationMessageFor(model => model.DiscountName, "", new { @class = "text-danger" })
-                            </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Sản phẩm áp dụng <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.ProductID, (SelectList)ViewBag.ProductList, "-- Chọn sản phẩm --", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(model => model.ProductID, "", new { @class = "text-danger small" })
                         </div>
 
-                        @* --- HÀNG 2: Ngày & Mức giảm --- *@
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                @Html.LabelFor(model => model.StartDate, "Ngày bắt đầu", htmlAttributes: new { @class = "form-label fw-bold" })
-                                @* QUAN TRỌNG: Format yyyy-MM-dd để hiện lên input date *@
-                                @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date", @required = "required" })
-                                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
-                            </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Tên chương trình <span class="text-danger">*</span></label>
+                            @Html.EditorFor(model => model.DiscountName, new { htmlAttributes = new { @class = "form-control", @placeholder = "VD: Sale 8/3..." } })
+                            @Html.ValidationMessageFor(model => model.DiscountName, "", new { @class = "text-danger small" })
+                        </div>
 
-                            <div class="col-md-4">
-                                @Html.LabelFor(model => model.EndDate, "Ngày kết thúc", htmlAttributes: new { @class = "form-label fw-bold" })
-                                @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date", @required = "required" })
-                                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
-                                <small id="dateError" class="text-danger d-none mt-1"><i class="fas fa-exclamation-circle me-1"></i>Ngày kết thúc phải lớn hơn ngày bắt đầu!</small>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted small">Mức giảm (%) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                @Html.EditorFor(model => model.DiscountRate, new { htmlAttributes = new { @class = "form-control fw-bold text-primary", @type = "number", @min = "1", @max = "100" } })
+                                <span class="input-group-text bg-light fw-bold text-muted">%</span>
                             </div>
+                            @Html.ValidationMessageFor(model => model.DiscountRate, "", new { @class = "text-danger small" })
+                        </div>
 
-                            <div class="col-md-4">
-                                @Html.LabelFor(model => model.DiscountRate, "Mức giảm", htmlAttributes: new { @class = "form-label fw-bold" })
-                                <div class="input-group">
-                                    @Html.EditorFor(model => model.DiscountRate, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "1", @max = "99", @required = "required" } })
-                                </div>
-                                @Html.ValidationMessageFor(model => model.DiscountRate, "", new { @class = "text-danger" })
-                            </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted small">Ngày bắt đầu</label>
+                            @Html.TextBoxFor(model => model.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date", @id = "StartDate" })
+                            @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted small">Ngày kết thúc</label>
+                            @Html.TextBoxFor(model => model.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date", @id = "EndDate" })
+                            @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger small" })
+
+                            <small id="dateError" class="text-danger d-none mt-1">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Ngày kết thúc phải lớn hơn ngày bắt đầu!
+                            </small>
                         </div>
                     </div>
-                </div>
 
-                @* --- FOOTER --- *@
-                <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                    <a href="@Url.Action("Index")" class="btn btn-light border me-2">Hủy bỏ</a>
-                    @* Dùng nút màu xanh dương hoặc xanh lá để đồng bộ *@
-                    <button type="submit" class="btn btn-success px-4 fw-bold">
-                        <i class="fas fa-save me-2"></i>Lưu thay đổi
-                    </button>
-                </div>
-            }
+                    <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                        <a href="@Url.Action("Index")" class="btn btn-light border me-2 fw-bold text-secondary">
+                            Hủy bỏ
+                        </a>
+                        <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm">
+                            <i class="fas fa-save me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
+
+@section Script {
     <script>
         $(document).ready(function () {
-            // Script kiểm tra logic ngày tháng
+            // Validate Ngày tháng Client-side
             $('#editDiscountForm').submit(function (e) {
                 var startDateStr = $('#StartDate').val();
                 var endDateStr = $('#EndDate').val();
@@ -110,21 +104,29 @@
                     var startDate = new Date(startDateStr);
                     var endDate = new Date(endDateStr);
 
+                    // Kiểm tra logic
                     if (endDate < startDate) {
-                        e.preventDefault();
+                        e.preventDefault(); // Chặn submit
+
+                        // Hiển thị lỗi
                         $('#dateError').removeClass('d-none');
                         $('#EndDate').addClass('is-invalid');
                         $('#EndDate').focus();
+
+                        // Rung nhẹ ô input để gây chú ý (Animation CSS optional)
                     } else {
+                        // Hợp lệ -> Cho qua
                         $('#dateError').addClass('d-none');
                         $('#EndDate').removeClass('is-invalid');
                     }
                 }
             });
 
-            $('#EndDate, #StartDate').change(function() {
+            // Tự động tắt lỗi khi người dùng chọn lại ngày
+            $('#EndDate, #StartDate').change(function () {
                 $('#dateError').addClass('d-none');
                 $('#EndDate').removeClass('is-invalid');
             });
         });
     </script>
+}

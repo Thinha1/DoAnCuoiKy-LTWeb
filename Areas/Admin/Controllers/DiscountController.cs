@@ -52,7 +52,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 d.StartDate = discount.StartDate;
                 d.EndDate = discount.EndDate;
                 d.CreatedAt = DateTime.Now;
-                d.CreatedBy = Session["UserEmail"].ToString();
+                d.CreatedBy = Session["UserID"].ToString();
                 db.Discounts.Add(d);
             }
             db.SaveChanges();
@@ -97,7 +97,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 discount.StartDate = dto.StartDate;
                 discount.EndDate = dto.EndDate;
                 discount.UpdatedAt = DateTime.Now;
-                discount.UpdatedBy = Session["UserEmail"].ToString();
+                discount.UpdatedBy = Session["UserID"].ToString();
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

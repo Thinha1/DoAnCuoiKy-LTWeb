@@ -1,0 +1,261 @@
+﻿@model IEnumerable<WebBanHoa.Models.Supplier>
+@{
+    ViewBag.Title = "Quản lý nhà cung cấp";
+    Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
+}
+
+<style>
+    /* --- GIỮ NGUYÊN CSS CŨ --- */
+    .table-container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        overflow: hidden;
+        padding: 0;
+    }
+
+    .admin-table thead th {
+        background-color: #f1f5f9;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 15px 10px;
+        white-space: nowrap;
+    }
+
+    .admin-table tbody tr {
+        transition: all 0.2s;
+    }
+
+        .admin-table tbody tr:hover {
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+    .admin-table td {
+        padding: 12px 10px;
+        vertical-align: middle;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Style Mã NCC nhỏ gọn hơn */
+    .supplier-id {
+        color: #0d9488;
+        font-weight: 600;
+        font-family: monospace;
+        font-size: 0.8rem;
+        background-color: #f0fdfa;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid #ccfbf1;
+        display: inline-block;
+        margin-top: 4px;
+    }
+
+    /* Form tìm kiếm */
+    .search-form .form-control {
+        border-radius: 20px 0 0 20px;
+        border: 1px solid #ced4da;
+        padding-left: 20px;
+    }
+
+    .row-deleted td {
+        text-decoration: line-through;
+        color: #999; /* Làm mờ chữ */
+        background-color: #fdf2f2; /* Nền đỏ nhạt cảnh báo */
+    }
+
+    /* Giữ cho các nút bấm không bị gạch ngang để còn thao tác */
+    .row-deleted .btn-group {
+        text-decoration: none !important;
+        opacity: 1;
+    }
+
+    .search-form .btn {
+        border-radius: 0 20px 20px 0;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h2 class="mb-0 text-primary fw-bold"><i class="fas fa-truck me-2"></i>Quản lý Nhà cung cấp</h2>
+        <small class="text-muted">Danh sách đối tác cung cấp hoa</small>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Create", "Supplier")" class="btn btn-primary shadow-sm rounded-pill px-3">
+            <i class="fas fa-plus me-1"></i> Thêm mới
+        </a>
+
+        @using (Html.BeginForm("Index", "Supplier", FormMethod.Get, new { @class = "d-flex search-form" }))
+        {
+            <div class="input-group shadow-sm">
+                <input type="text" name="tuKhoa" class="form-control border-end-0"
+                       placeholder="Tìm mã hoặc tên..."
+                       value="@ViewBag.CurrentFilter">
+                <button class="btn btn-white border border-start-0 text-secondary bg-white hover-primary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success shadow-sm border-0 border-start border-4 border-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger shadow-sm border-0 border-start border-4 border-danger">@TempData["Error"]</div>
+}
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table align-middle admin-table mb-0">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 5%;">STT</th>
+                    <th style="width: 25%;">Thông tin Nhà Cung Cấp</th>
+                    <th style="width: 20%;">Liên hệ</th>
+                    <th style="width: 35%;">Địa chỉ</th>
+                    <th class="text-center" style="width: 15%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int i = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr class="@(item.IsDeleted == 1 ? "row-deleted" : "")">
+                            <td class="text-center text-muted">@(i++)</td>
+
+                            @* Cột 1: Tên + Mã *@
+                            <td>
+                                <div class="fw-bold text-dark fs-6">@item.Name</div>
+                                <span class="supplier-id">@item.SupplierID</span>
+                                @if (item.CreatedAt.HasValue)
+                                {
+                                    <div class="text-muted mt-1" style="font-size: 0.7rem">
+                                        <i class="far fa-calendar-alt me-1"></i>@item.CreatedAt.Value.ToString("dd/MM/yyyy")
+                                    </div>
+                                }
+                            </td>
+
+                            @* Cột 2: Liên hệ (SĐT + Email) *@
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Phone))
+                                {
+                                    <div class="mb-1 text-nowrap">
+                                        <i class="fas fa-phone-alt text-success me-2 small" style="width:15px"></i>
+                                        <span class="fw-bold text-secondary" style="font-family:monospace">@item.Phone</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="mb-1 text-muted small"><i class="fas fa-phone-alt me-2" style="width:15px"></i>---</div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(item.Email))
+                                {
+                                    <div class="text-nowrap" title="@item.Email">
+                                        <i class="fas fa-envelope text-warning me-2 small" style="width:15px"></i>
+                                        <span class="small text-muted">
+                                            @* Cắt ngắn email nếu quá dài *@
+                                            @(item.Email.Length > 20 ? item.Email.Substring(0, 18) + "..." : item.Email)
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-muted small"><i class="fas fa-envelope me-2" style="width:15px"></i>---</div>
+                                }
+                            </td>
+
+                            @* Cột 3: Địa chỉ *@
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Address))
+                                {
+                                    <span class="text-secondary small">
+                                        <i class="fas fa-map-marker-alt text-danger me-1 opacity-50"></i>
+                                        @item.Address
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small fst-italic">Chưa cập nhật</span>
+                                }
+                            </td>
+
+                            @* Cột 4: Thao tác *@
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm" role="group">
+                                    <a href="@Url.Action("Edit", "Supplier", new { supplierId = item.SupplierID })"
+                                       class="btn btn-sm btn-light text-primary" title="Sửa thông tin">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <a href="@Url.Action("Delete", "Supplier", new { supplierId = item.SupplierID})"
+                                       class="btn btn-sm btn-light text-danger delete-btn" title="Xóa nhà cung cấp">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-truck-loading fa-3x mb-3 opacity-25"></i>
+                                <p>Chưa có dữ liệu nhà cung cấp nào.</p>
+                                <a href="@Url.Action("Create", "Supplier")" class="btn btn-sm btn-outline-primary mt-2">
+                                    Thêm nhà cung cấp đầu tiên
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $('.btn-white').hover(
+                function () { $(this).addClass('bg-light'); },
+                function () { $(this).removeClass('bg-light'); }
+            );
+
+            $('.delete-btn').on('click', function (e) {
+                e.preventDefault();
+                var self = $(this);
+                var deleteUrl = self.attr('href');
+
+                Swal.fire({
+                    title: 'Bạn có chắc chắn?',
+                    text: "Nhà cung cấp này sẽ bị xóa khỏi danh sách hiển thị!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Xóa ngay',
+                    cancelButtonText: 'Hủy bỏ'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    </script>

@@ -24,7 +24,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                     Address = o.Address,
                     Status = o.Status,
                     UserPaymentMethod = o.UserPaymentMethod,
-                }).ToList();
+                }).OrderBy(o => o.OrderDate).ToList();
             if (!string.IsNullOrWhiteSpace(TuKhoa))
             {
                 odLists = odLists.Where(od => od.OrderID.Contains(TuKhoa) || od.CustomerName.Contains(TuKhoa)).ToList();
@@ -73,11 +73,11 @@ namespace WebBanHoa.Areas.Admin.Controllers
                             {
                                 p.Quantity += o.Quantity;
                                 p.UpdatedAt = DateTime.Now;
-                                p.UpdatedBy = Session["UserEmail"].ToString();
+                                p.UpdatedBy = Session["UserID"].ToString();
                             }
                         }
                         order.UpdatedAt = DateTime.Now;
-                        order.UpdatedBy = Session["UserEmail"].ToString();
+                        order.UpdatedBy = Session["UserID"].ToString();
                     }
                     order.Status = "Đã huỷ";
                 }
@@ -99,7 +99,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                         //TRƯỜNG HỢP KHÁC
                         order.Status = dto.Status;
                         order.UpdatedAt = DateTime.Now;
-                        order.UpdatedBy = Session["UserEmail"].ToString();
+                        order.UpdatedBy = Session["UserID"].ToString();
                     }
                 }
             }
@@ -131,7 +131,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             if (od != null && od.Status != "Đã huỷ" && od.Status != "Đã giao")
             {
                 od.UpdatedAt = DateTime.Now;
-                od.UpdatedBy = Session["UserEmail"].ToString();
+                od.UpdatedBy = Session["UserID"].ToString();
                 List<OrderDetail> odList = db.OrderDetails.Where(order => order.OrderID == orderID).ToList();
                 //Hoàn hàng về kho
                 foreach (var o in odList)
@@ -142,7 +142,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                     {
                         p.Quantity += o.Quantity;
                         p.UpdatedAt = DateTime.Now;
-                        p.UpdatedBy = Session["UserEmail"].ToString();
+                        p.UpdatedBy = Session["UserID"].ToString();
                     }
                 }
                 od.Status = "Đã huỷ";
