@@ -124,22 +124,60 @@
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3 flex-wrap gap-3">
     <div>
         <h2 class="mb-0 text-primary fw-bold"><i class="fas fa-boxes me-2"></i>Quản lý đơn hàng</h2>
         <small class="text-muted">Xem và quản lý tất cả các đơn đặt hàng từ khách</small>
     </div>
 
-    @using (Html.BeginForm("Index", "Order", FormMethod.Get, new { @class = "d-flex search-form" }))
+    @* FORM TÌM KIẾM & LỌC *@
+    @using (Html.BeginForm("Index", "Order", FormMethod.Get, new { @class = "d-flex align-items-center gap-3 flex-wrap" }))
     {
-        <div class="input-group shadow-sm">
+        @* 1. TỪ NGÀY (150px) *@
+        <div class="input-group shadow-sm" style="width: 150px;">
+            <span class="input-group-text bg-white border-end-0 text-secondary px-2"><i class="far fa-calendar-alt small"></i></span>
+            <input type="date" name="tuNgay" class="form-control border-start-0 ps-1"
+                   value="@ViewBag.FromDate" title="Từ ngày" style="font-size: 0.9rem;">
+        </div>
+
+        @* 2. ĐẾN NGÀY (150px) *@
+        <div class="input-group shadow-sm" style="width: 150px;">
+            <span class="input-group-text bg-white border-end-0 text-secondary px-2"><i class="fas fa-arrow-right small"></i></span>
+            <input type="date" name="denNgay" class="form-control border-start-0 ps-1"
+                   value="@ViewBag.ToDate" title="Đến ngày" style="font-size: 0.9rem;">
+        </div>
+
+        @* 3. TRẠNG THÁI (220px - Vừa đủ đẹp) *@
+        <div class="input-group shadow-sm" style="width: 220px;">
+            <span class="input-group-text bg-white border-end-0 text-secondary"><i class="fas fa-filter"></i></span>
+            <select name="trangThai" class="form-select border-start-0 ps-0" style="margin-left: 10px">
+                <option value="">-- Trạng thái --</option>
+                <option value="Chờ xử lý" @(ViewBag.CurrentStatus == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+                <option value="Đang giao" @(ViewBag.CurrentStatus == "Đang giao" ? "selected" : "")>Đang giao</option>
+                <option value="Đã giao" @(ViewBag.CurrentStatus == "Đã giao" ? "selected" : "")>Đã giao</option>
+                <option value="Đã huỷ" @(ViewBag.CurrentStatus == "Đã huỷ" ? "selected" : "")>Đã huỷ</option>
+            </select>
+        </div>
+
+        @* 4. TÌM KIẾM (300px - Rộng rãi nhất) *@
+        <div class="input-group shadow-sm" style="width: 300px;">
             <input type="text" name="TuKhoa" class="form-control border-end-0"
-                   placeholder="Tìm mã đơn, tên khách..."
-                   value="@ViewBag.CurrentFilter">
-            <button class="btn btn-white border border-start-0 text-secondary bg-white hover-primary" type="submit">
+                   placeholder="Nhập mã đơn, tên khách..."
+                   value="@ViewBag.CurrentFilter"
+                   style="border-radius: 5px 0 0 5px;">
+            <button class="btn btn-white border border-start-0 text-secondary bg-white hover-primary" type="submit"
+                    style="border-radius: 0 5px 5px 0;">
                 <i class="fas fa-search"></i>
             </button>
         </div>
+
+        @* 5. NÚT RESET (Chỉ hiện khi có lọc) *@
+        if (ViewBag.CurrentFilter != null || ViewBag.CurrentStatus != null || ViewBag.FromDate != null || ViewBag.ToDate != null)
+        {
+            <a href="@Url.Action("Index")" class="btn btn-light shadow-sm text-secondary" title="Xóa bộ lọc">
+                <i class="fas fa-sync-alt"></i>
+            </a>
+        }
     }
 </div>
 

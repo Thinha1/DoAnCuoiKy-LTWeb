@@ -13,23 +13,60 @@ namespace WebBanHoa.Areas.Admin.Controllers
     {
         private QLBANHOAEntities db = new QLBANHOAEntities();
         // GET: Admin/Order
-        public ActionResult Index(string TuKhoa)
+        public ActionResult Index(string TuKhoa, string trangThai, DateTime? tuNgay, DateTime? denNgay)
         {
-            List<OrderDTO> odLists = db.Orders.Select(o =>
-                new OrderDTO
-                {
-                    OrderID = o.OrderID,
-                    OrderDate = o.OrderDate ?? DateTime.Now,
-                    CustomerName = o.User.Name,
-                    Address = o.Address,
-                    Status = o.Status,
-                    UserPaymentMethod = o.UserPaymentMethod,
-                }).OrderBy(o => o.OrderDate).ToList();
-            if (!string.IsNullOrWhiteSpace(TuKhoa))
+            var query = db.Orders.AsQueryable();
+
+            // 2. LỌC THEO TỪ KHÓA (Logic cũ)
+            if (!string.IsNullOrEmpty(TuKhoa))
             {
-                odLists = odLists.Where(od => od.OrderID.Contains(TuKhoa) || od.CustomerName.Contains(TuKhoa)).ToList();
+                TuKhoa = TuKhoa.Trim().ToLower();
+                query = query.Where(o => o.OrderID.ToString().Contains(TuKhoa) ||
+                                         o.User.Name.ToLower().Contains(TuKhoa));
             }
-            return View(odLists);
+
+            // 3. LỌC THEO TRẠNG THÁI 
+            if (!string.IsNullOrEmpty(trangThai))
+            {
+                query = query.Where(o => o.Status == trangThai);
+            }
+
+            // 4. LỌC THEO NGÀY 
+            if (tuNgay.HasValue)
+            {
+                // Lấy từ đầu ngày (00:00:00)
+                DateTime startDate = tuNgay.Value.Date;
+                query = query.Where(o => o.OrderDate >= startDate);
+            }
+
+            // 2. Lọc Đến ngày (End Date)
+            if (denNgay.HasValue)
+            {
+                // Quan trọng: Phải cộng thêm 1 ngày rồi dùng dấu nhỏ hơn (<)
+                DateTime endDate = denNgay.Value.Date.AddDays(1);
+                query = query.Where(o => o.OrderDate < endDate);
+            }
+
+            // 5. Sắp xếp (Mới nhất lên đầu)
+            query = query.OrderByDescending(o => o.OrderDate);
+
+            // 6. Lưu lại giá trị filter để hiển thị lại trên View
+            ViewBag.CurrentFilter = TuKhoa;
+            ViewBag.CurrentStatus = trangThai; // Để selected dropdown
+            ViewBag.FromDate = tuNgay?.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = denNgay?.ToString("yyyy-MM-dd");
+
+            // 7. Map sang DTO 
+            var result = query.Select(o => new OrderDTO
+            {
+                OrderID = o.OrderID,
+                OrderDate = (DateTime)o.OrderDate,
+                CustomerName = o.User.Name,
+                Address = o.Address,
+                Status = o.Status,
+                UserPaymentMethod = o.UserPaymentMethod,
+            }).ToList();
+            return View(result);
         }
 
         public ActionResult Edit(string orderID)
