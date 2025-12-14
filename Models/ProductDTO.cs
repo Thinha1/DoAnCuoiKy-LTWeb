@@ -31,5 +31,7 @@ namespace WebBanHoa.Models
 
         public Nullable<int> IsAvailable { get; set; }
         public Nullable<int> TotalSold { get; set; }
+
+        public Nullable<decimal> TotalRevenue { get; set; }
     }
 }
