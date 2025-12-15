@@ -1,4 +1,5 @@
 ﻿@model WebBanHoa.Models.CartDTO
+@using System.Web.Mvc;
 
 @{
     ViewBag.Title = "Thanh Toán";
@@ -112,7 +113,7 @@
                             <h5 class="mb-3 fw-bold"><i class="fas fa-credit-card me-2"></i>Phương thức thanh toán</h5>
 
                             <label class="payment-option-card" for="cod">
-                                <input class="form-check-input mt-0 me-3" type="radio" name="PaymentMethod" id="cod" value="COD" checked>
+                                <input class="form-check-input mt-0 me-3" type="radio" name="PaymentMethod" id="cod" value="Thanh toán khi nhận hàng (COD)" checked>
                                 <i class="fas fa-money-bill-wave fa-2x text-secondary me-3" style="width:40px"></i>
                                 <div>
                                     <div class="fw-bold">Thanh toán khi nhận hàng (COD)</div>
@@ -120,27 +121,9 @@
                                 </div>
                             </label>
 
-                            <label class="payment-option-card" for="vnpay">
-                                <input class="form-check-input mt-0 me-3" type="radio" name="PaymentMethod" id="vnpay" value="VNPay">
-                                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png" class="payment-logo" alt="VNPay">
-                                <div>
-                                    <div class="fw-bold">Ví VNPAY / Ngân hàng</div>
-                                    <small class="text-muted">Quét mã QR hoặc thẻ ATM nội địa</small>
-                                </div>
-                            </label>
-
-                            <label class="payment-option-card" for="momo">
-                                <input class="form-check-input mt-0 me-3" type="radio" name="PaymentMethod" id="momo" value="MoMo">
-                                <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" class="payment-logo" alt="MoMo">
-                                <div>
-                                    <div class="fw-bold">Ví MoMo</div>
-                                    <small class="text-muted">Thanh toán qua ứng dụng MoMo</small>
-                                </div>
-                            </label>
-
                             <label class="payment-option-card" for="vietqr">
-                                <input class="form-check-input mt-0 me-3" type="radio" name="PaymentMethod" id="vietqr" value="VietQR">
-                                <img src="https://api.vietqr.io/img/vietqr.png" class="payment-logo" style="background:#fff; border-radius:4px;" alt="VietQR">
+                                <input class="form-check-input mt-0 me-3" type="radio" name="PaymentMethod" id="vietqr" value="Chuyển khoản">
+                                <img src="@Url.Content("~/Content/Images/vietqr.jpg")" class="payment-logo" style="background:#fff; border-radius:4px;" alt="VietQR">
                                 <div>
                                     <div class="fw-bold">Chuyển khoản nhanh (VietQR)</div>
                                     <small class="text-muted">Quét mã QR mọi ngân hàng</small>
@@ -173,16 +156,24 @@
 </div>
 
 <script>
-    // Script để highlight lựa chọn đang được chọn
-    document.querySelectorAll('input[name="PaymentMethod"]').forEach(input => {
-        input.addEventListener('change', function () {
-            // Xóa class selected ở tất cả
-            document.querySelectorAll('.payment-option-card').forEach(card => card.classList.remove('selected'));
-            // Thêm class selected vào cái đang chọn
-            this.closest('.payment-option-card').classList.add('selected');
-        });
-    });
+    // Script đổi nội dung nút bấm
+    const btnSubmit = document.querySelector('button[type="submit"]');
+    const radioInputs = document.querySelectorAll('input[name="PaymentMethod"]');
 
-    // Trigger lần đầu
-    document.querySelector('input[name="PaymentMethod"]:checked')?.closest('.payment-option-card').classList.add('selected');
+    function updateButtonText() {
+        const selected = document.querySelector('input[name="PaymentMethod"]:checked').value;
+        if (selected === "VietQR") {
+            btnSubmit.innerHTML = '<i class="fas fa-qrcode me-2"></i> ĐẶT HÀNG & LẤY MÃ QR';
+            btnSubmit.classList.remove('btn-danger');
+            btnSubmit.classList.add('btn-primary'); // Đổi màu xanh cho thân thiện
+        } else {
+            btnSubmit.innerHTML = '<i class="fas fa-check-circle me-2"></i> HOÀN TẤT ĐẶT HÀNG';
+            btnSubmit.classList.remove('btn-primary');
+            btnSubmit.classList.add('btn-danger');
+        }
+    }
+
+    radioInputs.forEach(input => {
+        input.addEventListener('change', updateButtonText);
+    });
 </script>

@@ -29,8 +29,8 @@ namespace WebBanHoa.Areas.Admin.Controllers
                     ProductName = p.ProductName,
                     Image = p.Image,
                     Price = p.Price,
-                    TotalSold = p.OrderDetails.Sum(od => od.Quantity),
-                    TotalRevenue = p.OrderDetails.Sum(o => o.Quantity * o.UnitPrice)
+                    TotalSold = p.OrderDetails.Where(o => o.Order.Status != "Đã huỷ").Sum(od => od.Quantity),
+                    TotalRevenue = p.OrderDetails.Where(o => o.Order.Status != "Đã huỷ").Sum(o => o.Quantity * o.UnitPrice)
                 })
                 .ToList();
             ViewBag.Top5Products = top5Products;

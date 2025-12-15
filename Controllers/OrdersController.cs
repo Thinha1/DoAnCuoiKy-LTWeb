@@ -63,7 +63,7 @@ namespace WebBanHoa.Controllers
                     decimal price = (decimal)product.Price;
                     decimal discountedPrice = price - (price * discountRate / 100);
 
-                   
+
                     int itemQuantity = item.Quantity ?? 0;
 
                     cartDTO.Items.Add(new CartItemDTO
@@ -72,7 +72,7 @@ namespace WebBanHoa.Controllers
                         ProductName = product.ProductName,
                         Price = price,
                         DiscountRate = discountRate,
-                        Quantity = item.Quantity, 
+                        Quantity = item.Quantity,
                         Image = product.Image
                     });
 
@@ -94,7 +94,7 @@ namespace WebBanHoa.Controllers
             return View(cartDTO);
         }
 
-        // POST: Xử lý thanh toán (chỉ lấy các trường CÓ trong database)
+        // POST: Xử lý thanh toán
         [HttpPost]
         public ActionResult ThanhToan(string Address, string PaymentMethod)
         {
@@ -148,7 +148,6 @@ namespace WebBanHoa.Controllers
                         return RedirectToAction("ThanhToan");
                     }
                 }
-
                 // 4. Tạo mã đơn hàng mới
                 string orderId = GenerateOrderID();
 
@@ -158,12 +157,12 @@ namespace WebBanHoa.Controllers
                     OrderID = orderId,
                     UserID = userId,
                     OrderDate = DateTime.Now,
-                    Address = Address,                    
+                    Address = Address,
                     Status = "Chờ xác nhận",
-                    UserPaymentMethod = PaymentMethod,    
+                    UserPaymentMethod = PaymentMethod,
                     CreatedAt = DateTime.Now,
                     CreatedBy = userId
-                    
+
                 };
 
                 db.Orders.Add(order);
@@ -207,13 +206,17 @@ namespace WebBanHoa.Controllers
 
                 // 7. Xóa giỏ hàng sau khi thanh toán
                 db.ShoppingCartItems.RemoveRange(cartItems);
-                db.ShoppingCarts.Remove(shoppingCart);
 
                 // 8. Lưu tất cả thay đổi vào database
                 db.SaveChanges();
-
-                // 9. Chuyển đến trang thành công
-                return RedirectToAction("ThanhCong", new { id = orderId });
+                if (PaymentMethod.Contains("COD"))
+                {
+                    return RedirectToAction("ThanhCong", new { id = orderId });
+                }
+                else
+                {
+                    return RedirectToAction("XacThucThanhToan", new { orderID = order.OrderID });
+                }
             }
             catch (Exception ex)
             {
@@ -221,6 +224,46 @@ namespace WebBanHoa.Controllers
                 return RedirectToAction("ThanhToan");
             }
         }
+
+        public ActionResult XacThucThanhToan(string orderID)
+        {
+            var order = db.Orders.Find(orderID);
+            if (order == null) return HttpNotFound();
+
+            // Tính toán số tiền và nội dung
+            decimal amount = (decimal)order.OrderDetails.Sum(od => od.Quantity * od.UnitPrice); // Lấy tổng tiền
+            string content = "ThanhToan" + order.OrderID; // Nội dung: DH1005
+
+            string bank = "MB"; // Ngân hàng MB
+            string account = "0919114642"; // Số tài khoản của bạn
+
+            // Tạo link VietQR (dùng SePay hoặc VietQR API đều được)
+            // Format SePay: https://qr.sepay.vn/img?acc={Acc}&bank={Bank}&amount={Amount}&des={Content}
+            string qrCodeUrl = $"https://qr.sepay.vn/img?acc={account}&bank={bank}&amount={amount.ToString("0")}&des={content}";
+
+            ViewBag.QrCodeUrl = qrCodeUrl;
+            ViewBag.OrderId = orderID;
+            ViewBag.Amount = amount;
+            ViewBag.Content = content;
+
+            return View();
+        }
+
+        public JsonResult CheckOrderStatus(string orderId)
+        {
+            // Tìm đơn hàng trong DB
+            var order = db.Orders.FirstOrDefault(o => o.OrderID == orderId);
+
+            if (order != null)
+            {
+                // Trả về trạng thái hiện tại 
+                return Json(new { status = order.Status }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { status = "Error" }, JsonRequestBehavior.AllowGet);
+        }
+
+
 
         // GET: Hiển thị trang thanh toán thành công
         public ActionResult ThanhCong(string id)
@@ -266,7 +309,7 @@ namespace WebBanHoa.Controllers
             var orderDTO = new OrderDTO
             {
                 OrderID = order.OrderID,
-                CustomerName = user?.Name,       
+                CustomerName = user?.Name,
                 Address = order.Address,
                 UserPaymentMethod = order.UserPaymentMethod,
                 OrderDate = order.OrderDate ?? DateTime.Now,
@@ -287,7 +330,7 @@ namespace WebBanHoa.Controllers
 
             ViewBag.OrderDetails = orderDetailsDTOs;
             ViewBag.TotalAmount = totalAmount;
-            ViewBag.User = user; 
+            ViewBag.User = user;
 
             return View(orderDTO);
         }
@@ -327,7 +370,7 @@ namespace WebBanHoa.Controllers
                 orderDTOs.Add(new OrderDTO
                 {
                     OrderID = order.OrderID,
-                    CustomerName = user?.Name,       
+                    CustomerName = user?.Name,
                     Address = order.Address,
                     UserPaymentMethod = order.UserPaymentMethod,
                     OrderDate = order.OrderDate ?? DateTime.Now,
@@ -364,7 +407,7 @@ namespace WebBanHoa.Controllers
 
             if (order == null)
             {
-                
+
                 var orderFromDb = db.Orders
                     .Include("OrderDetails.Product")
                     .Where(o => o.UserID == userId)
@@ -373,7 +416,7 @@ namespace WebBanHoa.Controllers
 
                 if (orderFromDb != null)
                 {
-                    
+
                     return RedirectToAction("Details", new { id = orderFromDb.OrderID });
                 }
 
@@ -400,7 +443,7 @@ namespace WebBanHoa.Controllers
             var orderDTO = new OrderDTO
             {
                 OrderID = order.OrderID,
-                CustomerName = user?.Name,       
+                CustomerName = user?.Name,
                 Address = order.Address,
                 UserPaymentMethod = order.UserPaymentMethod,
                 OrderDate = order.OrderDate ?? DateTime.Now,
@@ -425,7 +468,7 @@ namespace WebBanHoa.Controllers
 
             ViewBag.OrderDetails = orderDetailsDTOs;
             ViewBag.TotalAmount = totalAmount;
-            ViewBag.User = user; 
+            ViewBag.User = user;
 
             return View(orderDTO);
         }
@@ -514,6 +557,6 @@ namespace WebBanHoa.Controllers
             return $"OD{number:D3}";
         }
 
-        
+
     }
 }

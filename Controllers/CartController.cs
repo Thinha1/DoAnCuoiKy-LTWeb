@@ -174,6 +174,7 @@ namespace WebBanHoa.Controllers
 
             var itemInCart = db.ShoppingCartItems.FirstOrDefault(
                         i => i.ShoppingCartID == gioHang.ShoppingCartID && i.ProductID == id);
+
             if (itemInCart != null)
             {
                 // Đã có -> Cộng dồn số lượng
