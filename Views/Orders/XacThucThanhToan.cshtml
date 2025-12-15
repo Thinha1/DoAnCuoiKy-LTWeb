@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "Thanh toán VietQR";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-qrcode me-2"></i>QUÉT MÃ THANH TOÁN</h4>
+                </div>
+                <div class="card-body text-center p-4">
+                    <p class="text-muted mb-3">
+                        Đơn hàng <b>#@ViewBag.OrderId</b> đã được tạo thành công.<br>
+                        Vui lòng quét mã bên dưới để hoàn tất thanh toán.
+                    </p>
+
+                    <div class="position-relative d-inline-block my-3">
+                        <img src="@ViewBag.QrCodeUrl" alt="QR Code" class="img-fluid border rounded shadow-sm" style="max-width: 280px;">
+                    </div>
+
+                    <div class="alert alert-warning mt-3 border-warning" role="alert">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        Nội dung chuyển khoản: <strong class="text-danger fs-5">@ViewBag.Content</strong>
+                        <br><small>(Vui lòng giữ nguyên nội dung này)</small>
+                    </div>
+
+                    <h3 class="text-primary fw-bold my-3">
+                        @string.Format("{0:N0}", ViewBag.Amount) đ
+                    </h3>
+
+                    <hr>
+
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("ThanhCong", "Orders")" class="btn btn-success btn-lg">
+                            <i class="fas fa-check me-2"></i> TÔI ĐÃ THANH TOÁN
+                        </a>
+
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-link text-secondary text-decoration-none">
+                            Để sau, quay về trang chủ
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-center small text-muted">
+                    Hệ thống sẽ tự động cập nhật trạng thái sau 1-3 phút.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        setInterval(function() {
+            // SỬA: Thêm dấu ngoặc đơn bao quanh @ViewBag.OrderId
+            var orderIdStr = '@ViewBag.OrderId';
+
+            console.log("Đang check đơn: " + orderIdStr); // Dòng này để debug xem code có chạy ko
+
+            $.get("/Orders/CheckOrderStatus", { orderId: orderIdStr }, function(data) {
+                console.log("Trạng thái: " + data.status); // Xem server trả về gì
+
+                if (data.status === "Đã thanh toán" || data.status === "PAID") {
+                    window.location.href = "/Orders/ThanhCong?id=" + orderIdStr;
+                }
+            });
+        }, 3000);
+    });
+</script>
