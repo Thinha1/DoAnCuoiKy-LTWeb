@@ -1,55 +1,97 @@
-﻿<style >
+﻿/* CSS cho Relevant Products - NO SEPARATORS */
 body {
-    background-color: #f8f9fa; /* Màu nền xám nhạt */
+    background-color: #f8f9fa;
 }
 
-/* Tùy chỉnh màu nút "Đặt Hàng" */
-.btn-custom-pink {
-    background-color: #e73685; /* Màu hồng/magenta giống trong hình */
-    color: #fff;
-    border: none;
-    font-weight: bold;
-}
-
-    .btn-custom-pink:hover {
-        background-color: #c92a70; /* Màu đậm hơn khi hover */
-        color: #fff;
-    }
-
-/* Đảm bảo tất cả hình ảnh có cùng chiều cao và không bị méo */
-.card-img-top {
-    width: 100%;
-    height: 300px; /* Bạn có thể điều chỉnh chiều cao này */
-    object-fit: cover; /* Cắt ảnh vừa vặn, không làm méo */
-}
-
-/* Tùy chỉnh card */
+/* Card không border */
 .product-card {
-    border: none;
-    border-radius: 0.5rem;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none !important;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    height: 380px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
     .product-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
     }
 
-/* Đảm bảo khối giá có chiều cao cố định để nút bấm được căn đều */
+/* Ảnh */
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Card body - không có đường kẻ */
+.card-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: none !important;
+}
+
+/* Tên sản phẩm */
+.product-title {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+    .product-title a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        line-height: 1.4;
+        height: 2.8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+        .product-title a:hover {
+            color: #e73685;
+        }
+
+/* Giá - không đường kẻ */
 .price-text {
-    min-height: 2.2rem; /* Đủ chỗ cho 2 dòng giá (nếu có sale) */
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
+    min-height: 40px;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: none !important;
 }
 
-.product-title a {
-    color: #333;
-    text-decoration: none;
-    font-weight: 700;
+/* Nút */
+.btn-custom-pink {
+    background: linear-gradient(to right, #e73685, #ff4d94);
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    padding: 12px 20px;
+    width: 100%;
+    margin-top: 5px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(231, 54, 133, 0.2);
+    transition: all 0.3s ease;
 }
 
-    .product-title a:hover {
-        color: #e73685;
+    .btn-custom-pink:hover {
+        background: linear-gradient(to right, #c92a70, #e73685);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(231, 54, 133, 0.3);
+        color: #fff;
     }
-
-</style >

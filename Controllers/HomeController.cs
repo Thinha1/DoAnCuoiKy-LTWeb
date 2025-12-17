@@ -151,7 +151,7 @@ namespace WebBanHoa.Controllers
                         .OrderBy(d => d.DiscountRate)
                         .FirstOrDefault()
                 })
-                .AsEnumerable()  // Chuyển sang client-side evaluation
+                .AsEnumerable()  
                 .Select(x => new ProductDTO
                 {
                     ProductID = x.ProductID,
@@ -274,6 +274,8 @@ namespace WebBanHoa.Controllers
             ViewBag.NoOfPages = noOfPages;
 
             ViewBag.CategoryName = db.Categories.FirstOrDefault(pt => pt.CategoryID == categoryID).CategoryName;
+            ViewBag.CurrentFilter = sort;
+            ViewBag.CurrentSize = size;
 
             return View(products);
         }
@@ -363,6 +365,8 @@ namespace WebBanHoa.Controllers
             ViewBag.NoOfPages = noOfPages;
 
             ViewBag.ThemeName = db.Themes.FirstOrDefault(pt => pt.ThemeID == themeID).ThemeName;
+            ViewBag.CurrentFilter = sort;
+            ViewBag.CurrentSize = size;
 
             return View(products);
         }
