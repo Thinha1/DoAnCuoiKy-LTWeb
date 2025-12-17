@@ -67,47 +67,76 @@
             color: #e73685;
         }
 
-    /* THÔNG BÁO CỐ ĐỊNH */
+    /* THÔNG BÁO GÓC PHẢI */
     .cart-notification-fixed {
         position: fixed;
         top: 100px;
-        right: 20px;
+        right: 20px; /* GÓC PHẢI */
         z-index: 10000;
-        min-width: 300px;
+        width: 320px; /* CỐ ĐỊNH KÍCH THƯỚC */
+        max-width: 320px;
+        min-height: 60px;
         background: #28a745;
         color: white;
         padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         font-weight: bold;
-        animation: slideIn 0.5s ease-out;
+        text-align: center;
+        font-size: 14px;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        overflow: hidden;
+        animation: fadeInOut 3s ease-in-out;
+        line-height: 1.4;
     }
 
-    /* THÔNG BÁO YÊU CẦU ĐĂNG NHẬP */
     .login-notification-fixed {
         position: fixed;
         top: 100px;
-        right: 20px;
+        right: 20px; /* GÓC PHẢI */
         z-index: 10000;
-        min-width: 300px;
+        width: 320px; /* CỐ ĐỊNH KÍCH THƯỚC */
+        max-width: 320px;
+        min-height: 60px;
         background: #dc3545;
         color: white;
         padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         font-weight: bold;
-        animation: slideIn 0.5s ease-out;
+        text-align: center;
+        font-size: 14px;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        overflow: hidden;
+        animation: fadeInOut 3s ease-in-out;
+        line-height: 1.4;
     }
 
-    @@keyframes slideIn {
-        from {
-            transform: translateY(-100%);
+    @@keyframes fadeInOut {
+        0% {
             opacity: 0;
+            transform: translateY(-20px);
         }
 
-        to {
-            transform: translateY(0);
+        10% {
             opacity: 1;
+            transform: translateY(0);
+        }
+
+        90% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(-20px);
         }
     }
 </style>
@@ -251,42 +280,42 @@
             }
 
             <!-- NÚT CHỨC NĂNG -->
-        <div class="row g-2 my-2">
-            <div class="col-4 d-grid">
-                @if (isLoggedIn)
-                {
-                    <!-- FORM THÊM VÀO GIỎ HÀNG VÀ THANH TOÁN NGAY -->
-                    <form method="get" action="@Url.Action("ThemVaoGioHangVaThanhToan", "Cart")" style="margin: 0;">
-                        <input type="hidden" name="id" value="@Model.ProductID" />
-                        <input type="hidden" name="soLuong" value="1" />
-                        <button type="submit" class="btn btn-outline-warning text-dark w-100">
+            <div class="row g-2 my-2">
+                <div class="col-4 d-grid">
+                    @if (isLoggedIn)
+                    {
+                        <!-- FORM THÊM VÀO GIỎ HÀNG VÀ THANH TOÁN NGAY -->
+                        <form method="get" action="@Url.Action("ThemVaoGioHangVaThanhToan", "Cart")" style="margin: 0;">
+                            <input type="hidden" name="id" value="@Model.ProductID" />
+                            <input type="hidden" name="soLuong" value="1" />
+                            <button type="submit" class="btn btn-outline-warning text-dark w-100">
+                                <i class="bi bi-lightning-fill"></i> Đặt nhanh
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })"
+                           class="btn btn-outline-warning text-dark">
                             <i class="bi bi-lightning-fill"></i> Đặt nhanh
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })"
-                       class="btn btn-outline-warning text-dark">
-                        <i class="bi bi-lightning-fill"></i> Đặt nhanh
+                        </a>
+                    }
+                </div>
+                <div class="col-4 d-grid">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="bi bi-chat-left-text"></i> Zalo OA
                     </a>
-                }
+                </div>
+                <div class="col-4 d-grid">
+                    <a href="https://www.facebook.com/hai.quan.241416?mibextid=wwXIfr&rdid=FD3mgh8JBhaAsNvk&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1FDHCNhDEc%2F%3Fmibextid%3DwwXIfr#"
+                       class="btn btn-outline-primary" target="_blank">
+                        <i class="bi bi-facebook"></i> Facebook
+                    </a>
+                </div>
             </div>
-            <div class="col-4 d-grid">
-                <a href="#" class="btn btn-outline-primary">
-                    <i class="bi bi-chat-left-text"></i> Zalo OA
-                </a>
-            </div>
-            <div class="col-4 d-grid">
-                <a href="https://www.facebook.com/hai.quan.241416?mibextid=wwXIfr&rdid=FD3mgh8JBhaAsNvk&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1FDHCNhDEc%2F%3Fmibextid%3DwwXIfr#"
-                   class="btn btn-outline-primary" target="_blank">
-                    <i class="bi bi-facebook"></i> Facebook
-                </a>
-            </div>
-        </div>
         </div>
 
-        <!-- MÔ TẢ SẢN PHẨM (ĐẶT DƯỚI CÙNG, CHIẾM TOÀN BỘ CHIỀU RỘNG) -->
+        <!-- MÔ TẢ SẢN PHẨM -->
         <div class="col-12 mt-4">
             <div class="product-description-container">
                 <ul class="nav nav-tabs" style="border-bottom: 2px solid #dee2e6;">
@@ -311,9 +340,6 @@
             <div class="cart-notification-fixed">
                 <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
             </div>
-
-            <!-- Tự động ẩn bằng meta refresh (không dùng JS) -->
-            <meta http-equiv="refresh" content="3;url=@Request.Url.PathAndQuery" />
         }
 
         @if (TempData["ErrorMessage"] != null)
@@ -321,22 +347,14 @@
             <div class="login-notification-fixed">
                 <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
             </div>
-
-            <!-- Tự động ẩn bằng meta refresh (không dùng JS) -->
-            <meta http-equiv="refresh" content="3;url=@Request.Url.PathAndQuery" />
         }
 
-        <!-- SẢN PHẨM LIÊN QUAN (ĐẶT DƯỚI MÔ TẢ) -->
+        <!-- SẢN PHẨM LIÊN QUAN -->
         <div class="col-12 mt-4">
             @Html.Action("_RelevantProducts", "Home", new { categoryID = Model.CategoryID, productID = Model.ProductID })
         </div>
     </div>
 </div>
-
-<!-- IFRAME ẨN ĐỂ NHẬN RESPONSE -->
-<iframe name="cartIframe"
-        id="cartIframe"
-        style="display:none; width:0; height:0; border:0; position:absolute; left:-9999px;"></iframe>
 
 <!-- META TAG ĐỂ TỰ ĐỘNG TẢI LẠI TRANG SAU 3 GIÂY NẾU CÓ THÔNG BÁO -->
 @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)

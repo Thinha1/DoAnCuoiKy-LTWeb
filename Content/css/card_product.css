@@ -1,96 +1,165 @@
-﻿/* CSS tùy chỉnh */
+﻿/* CSS tùy chỉnh - NO SEPARATOR LINES */
 body {
-	background-color: #f8f9fa; /* Màu nền xám nhạt */
+	background-color: #f8f9fa;
 	font-family: Montserrat, sans-serif;
 }
 
+/* Card hoàn toàn không có border */
 .product-card {
 	background-color: #fff;
-	border: 1px solid #eee;
-	border-radius: 8px;
-	overflow: hidden; /* Đảm bảo ảnh bo góc theo card */
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-	transition: box-shadow 0.3s ease;
+	border: none !important; /* KHÔNG border */
+	border-radius: 10px; /* Bo góc đẹp hơn */
+	overflow: hidden;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Shadow nhẹ */
+	transition: all 0.3s ease;
+	height: 420px; /* Chiều cao tối ưu */
+	display: flex;
+	flex-direction: column;
 }
 
 	.product-card:hover {
-		cursor: pointer;
-		box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+		transform: translateY(-5px); /* Hiệu ứng nổi */
 	}
 
-/* Container cho ảnh để định vị nhãn giảm giá */
+/* Ảnh container */
 .product-image-container {
 	position: relative;
+	height: 230px;
+	overflow: hidden;
+	border-bottom: none !important; /* KHÔNG có đường kẻ dưới ảnh */
+}
+
+	/* Ảnh */
+	.product-image-container img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		transition: transform 0.4s ease;
+	}
+
+.product-card:hover .product-image-container img {
+	transform: scale(1.08);
 }
 
 /* Nhãn giảm giá */
 .sale-badge {
 	position: absolute;
-	top: 10px;
-	right: 15px;
-	background-color: #e74c3c; /* Màu đỏ */
+	top: 12px;
+	right: 12px;
+	background: linear-gradient(135deg, #ff416c, #ff4b2b); /* Gradient đẹp */
 	color: white;
-	width: 65px; /* Kích thước hình tròn */
-	height: 65px;
-	border-radius: 50%; /* Biến thành hình tròn */
-	/* Dùng Flexbox để căn chữ vào giữa */
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
 	display: flex;
-	flex-direction: column; /* Xếp chữ theo chiều dọc */
 	align-items: center;
 	justify-content: center;
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: bold;
 	line-height: 1.2;
 	text-align: center;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-	overflow: hidden;
+	box-shadow: 0 4px 8px rgba(255, 75, 43, 0.3);
+	z-index: 2;
 }
 
-/* Phần thông tin sản phẩm */
+/* Phần thông tin - KHÔNG có border/padding tạo vạch */
 .product-info {
 	padding: 20px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 12px; /* Dùng gap thay vì margin để không có khoảng trống lạ */
 }
 
-/* Tên sản phẩm */
+/* Tên sản phẩm - KHÔNG border-bottom */
 .product-name {
-	font-size: 1.15rem;
-	font-weight: 600;
+	font-size: 1.05rem;
+	font-weight: 700;
 	color: #333;
-	margin-bottom: 12px;
-	/* Tên "Nồng Nàn Tình Yêu" đã được căn giữa bằng text-center */
+	line-height: 1.4;
+	height: 2.8em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	margin: 0 !important; /* Xóa margin */
+	padding: 0 !important; /* Xóa padding */
+	border: none !important; /* Chắc chắn không border */
 }
 
-/* Phần giá */
+/* Phần giá - XÓA mọi đường kẻ */
 .product-price {
-	margin-bottom: 20px;
+	margin: 0 !important;
+	padding: 0 !important;
+	min-height: 40px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	border: none !important;
 }
 
 .price-sale {
-	font-size: 1.2rem;
-	font-weight: bold;
-	color: #e91e63; /* Màu hồng/đỏ của giá */
-	margin-right: 8px;
+	font-size: 1.15rem;
+	font-weight: 800;
+	color: #e91e63;
+	display: block;
 }
 
 .price-original {
-	font-size: 0.95rem;
+	font-size: 0.85rem;
 	color: #999;
-	text-decoration: line-through; /* Kiểu gạch ngang */
+	text-decoration: line-through;
+	display: block;
 }
 
-/* Nút Đặt Hàng */
+/* Nút - KHÔNG border-top */
 .btn-order {
-	background-color: #e91e63; /* Màu hồng như hình */
+	background: linear-gradient(to right, #e91e63, #ff4081);
 	color: white;
-	font-weight: bold;
-	border-radius: 5px;
-	padding: 10px 24px;
-	text-transform: uppercase; /* In hoa chữ */
-	transition: background-color 0.3s ease;
+	font-weight: 700;
+	border-radius: 8px;
+	padding: 12px 20px;
+	text-transform: uppercase;
+	font-size: 0.9rem;
+	letter-spacing: 0.5px;
+	transition: all 0.3s ease;
 	border: none;
+	width: 100%;
+	margin-top: 5px; /* Chỉ margin nhỏ */
+	box-shadow: 0 4px 10px rgba(233, 30, 99, 0.2);
 }
 
 	.btn-order:hover {
-		background-color: #c2185b; /* Màu hồng đậm hơn khi hover */
-		color: white;
+		background: linear-gradient(to right, #c2185b, #e91e63);
+		transform: translateY(-2px);
+		box-shadow: 0 6px 15px rgba(233, 30, 99, 0.3);
 	}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.product-card {
+		height: 380px;
+		border-radius: 8px;
+	}
+
+	.product-image-container {
+		height: 200px;
+	}
+
+	.product-info {
+		padding: 15px;
+		gap: 10px;
+	}
+
+	.product-name {
+		font-size: 0.95rem;
+	}
+
+	.btn-order {
+		padding: 10px 15px;
+		font-size: 0.85rem;
+	}
+}

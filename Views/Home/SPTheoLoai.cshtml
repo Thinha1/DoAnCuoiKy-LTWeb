@@ -102,6 +102,7 @@
             box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
         }
 </style>
+<link href="~/Content/css/card_product.css" rel="stylesheet" />
 <h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ProductTypeName </h2>
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center sort-bar mb-4">
@@ -115,21 +116,22 @@
             new { @class = "d-flex align-items-center" }
         ))
         {
+            string currentFilter = ViewBag.CurrentFilter as string ?? "0";
+            string currentSize = ViewBag.CurrentSize as string ?? "12";
             @Html.Hidden("categoryID", Model.FirstOrDefault().CategoryID)
             <label for="sort-by" class="form-label mb-0 me-2 text-nowrap">Sắp xếp theo</label>
             <select class="form-select form-select-sm me-3" id="sort-by" name="sort">
-                <option selected value="0">Mặc định</option>
-                <option value="1">Tên (A-Z)</option>
-                <option value="2">Tên (Z-A)</option>
-                <option value="3">Giá tăng dần</option>
-                <option value="4">Giá giảm dần</option>
+                <option value="1" @(currentFilter == "1" ? "selected" : "")>Tên (A-Z)</option>
+                <option value="2" @(currentFilter == "2" ? "selected" : "")>Tên (Z-A)</option>
+                <option value="3" @(currentFilter == "3" ? "selected" : "")>Giá tăng dần</option>
+                <option value="4" @(currentFilter == "4" ? "selected" : "")>Giá giảm dần</option>
             </select>
 
             <label for="show-qty" class="form-label mb-0 me-2 text-nowrap">Số Lượng</label>
             <select class="form-select form-select-sm" id="show-qty" name="size">
-                <option selected value="12">12</option>
-                <option value="24">24</option>
-                <option value="36">36</option>
+                <option value="12" @(currentSize == "12" ? "selected" : "")>12</option>
+                <option value="24" @(currentSize == "24" ? "selected" : "")>24</option>
+                <option value="36" @(currentSize == "36" ? "selected" : "")>36</option>
             </select>
             <button type="submit" class="btn btn-primary">Lọc</button>
         }
@@ -150,18 +152,21 @@
                         <h5 class="product-title fs-6 mb-2">
                             <span>@sp.ProductName</span>
                         </h5>
-                        <div class="price-text">
-                            @if (sp.DiscountRate != null)
+                        <div class="price-text d-flex flex-column justify-content-center align-items-center">
+                            @if (sp.DiscountRate != null && sp.DiscountRate > 0)
                             {
                                 var finalPrice = sp.Price - (sp.Price * (decimal)sp.DiscountRate / 100);
-                                <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
-                                <span class="text-danger fw-bold me-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
-
-                                <span class="badge bg-danger fs-6">GIẢM @sp.DiscountRate%</span>
+                                <div>
+                                    <span class="text-muted text-decoration-line-through me-2" style="font-size: 0.9rem;">@String.Format("{0:N0}", sp.Price) đ</span>
+                                    <span class="badge bg-danger">GIẢM @sp.DiscountRate%</span>
+                                </div>
+                                <span class="text-danger fw-bold fs-5">@String.Format("{0:N0}", finalPrice) VNĐ</span>
                             }
                             else
                             {
-                                <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                /* Thêm thẻ div rỗng để giữ chiều cao dòng đồng đều với thẻ có giảm giá */
+                                <div style="height: 24px;"></div>
+                                <span class="text-danger fw-bold fs-5">@String.Format("{0:N0}", sp.Price) VNĐ</span>
                             }
                         </div>
                         <span class="btn btn-custom-pink btn-sm text-uppercase mt-auto">ĐẶT HÀNG</span>

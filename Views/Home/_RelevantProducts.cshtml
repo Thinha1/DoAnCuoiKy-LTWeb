@@ -1,48 +1,94 @@
 ﻿@model List<WebBanHoa.Models.ProductDTO>
+@{
+    bool isLoggedIn = Session["UserID"] != null;
+}
 
 <link href="~/Content/css/relevantProducts.css" rel="stylesheet" />
-<div class="container my-5">
+<style>
+    /* FIX: NÚT THÊM VÀO GIỎ DÀI BẰNG CARD */
+    .btn-custom-pink {
+        width: 100% !important;
+        padding: 12px 5px !important;
+        display: block !important;
+        margin: 0 !important;
+    }
 
+    /* FORM CHIẾM TOÀN BỘ CHIỀU RỘNG */
+    .card-body form {
+        width: 100% !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card-body a.btn-custom-pink {
+        width: 100% !important;
+        display: block !important;
+        text-align: center !important;
+    }
+
+    /* ĐẢM BẢO CARD-BODY CÓ ĐÚNG LAYOUT */
+    .card-body {
+        padding: 15px !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="container my-5">
     <h2 class="mb-4 fw-bold">Sản phẩm liên quan</h2>
 
     <div class="row g-4">
-
         @foreach (var sp in Model)
         {
             <div class="col-lg-3 col-md-6 col-6">
-                <a href="@Url.Action("Details", "Home", new {productID = sp.ProductID})" style="text-decoration: none">
-                    <div class="card h-100 product-card shadow-sm">
-                        <img src="@Url.Content("~/Content/Images/" + sp.Image)" class="card-img-top" alt="Mong Manh">
-                        <div class="card-body text-center d-flex flex-column">
-                            <h5 class="product-title fs-6 mb-2">
-                                <a href="#">@sp.ProductName</a>
-                            </h5>
-                            <div class="price-text">
-                                @if (sp.DiscountRate > 0)
-                                {
-                                    // 1. Tính giá cuối cùng (vì DiscountRate là 0.15)
-                                    var finalPrice = sp.Price - (sp.Price * (decimal)sp.DiscountRate/100);
+                <div class="card h-100 product-card shadow-sm">
+                    <!-- THẺ A BAO NGOÀI ẢNH -->
+                    <a href="@Url.Action("Details", "Home", new {productID = sp.ProductID})" style="text-decoration: none">
+                        <img src="@Url.Content("~/Content/Images/" + sp.Image)" class="card-img-top" alt="@sp.ProductName">
+                    </a>
 
-                                    // 2. Hiển thị giá mới (màu đỏ)
-                                    <span class="text-danger fw-bold me-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
+                    <div class="card-body text-center d-flex flex-column">
+                        <!-- TÊN SẢN PHẨM -->
+                        <h5 class="product-title fs-6 mb-2">
+                            @sp.ProductName
+                        </h5>
 
-                                    // 3. Hiển thị giá gốc (gạch ngang)
-                                    <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
-                                }
-                                else
-                                {
-                                    // Không giảm giá: Chỉ hiển thị giá gốc màu đỏ
-                                    <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
-                                }
-                                </div>
-                                <a href="#" class="btn btn-custom-pink btn-sm text-uppercase mt-auto">Đặt hàng</a>
-                            </div>
+                        <div class="price-text">
+                            @if (sp.DiscountRate > 0)
+                            {
+                                var finalPrice = sp.Price - (sp.Price * (decimal)sp.DiscountRate / 100);
+                                <span class="text-danger fw-bold me-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
+                                <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                            }
                         </div>
-                </a>
+
+                        <!-- THAY NÚT "ĐẶT HÀNG" THÀNH "THÊM VÀO GIỎ" -->
+                        @if (isLoggedIn)
+                        {
+                            <form method="post" action="@Url.Action("ThemVaoGioHang", "Cart")"
+                                  class="w-100 mt-auto">
+                                <input type="hidden" name="id" value="@sp.ProductID" />
+                                <input type="hidden" name="soLuong" value="1" />
+                                <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery" />
+                                <button type="submit" class="btn btn-custom-pink btn-sm text-uppercase w-100">
+                                    Thêm vào giỏ
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })"
+                               class="btn btn-custom-pink btn-sm text-uppercase mt-auto w-100">
+                                Thêm vào giỏ
+                            </a>
+                        }
+                    </div>
+                </div>
             </div>
-
         }
-
     </div>
 </div>
-

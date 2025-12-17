@@ -26,6 +26,12 @@
         white-space: nowrap;
     }
 
+    .status-paid {
+        background-color: #ccfbf1; /* Màu nền xanh ngọc nhạt */
+        color: #0f766e; /* Chữ màu xanh ngọc đậm */
+        border: 1px solid #99f6e4; /* Viền nhẹ cho nổi bật */
+    }
+
     .admin-table tbody tr {
         transition: all 0.2s;
     }
@@ -258,6 +264,12 @@
                                         statusStyle = "status-info";
                                         statusIcon = "fas fa-truck";
                                     }
+                                    else if (od.Status == "Đã thanh toán")
+                                    {
+                                        statusStyle = "status-paid";
+                                        statusIcon = "fas fa-file-invoice-dollar"; // Icon hóa đơn tiền
+                                    }
+                                    // -----------------------------
                                     else if (od.Status == "Đã huỷ")
                                     {
                                         statusStyle = "status-danger";

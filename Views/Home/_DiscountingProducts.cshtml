@@ -7,21 +7,7 @@
 
 <!-- BỔ SUNG CSS THÔNG BÁO (GIỮ NGUYÊN) -->
 <style>
-    .cart-notification {
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        z-index: 10000;
-        min-width: 300px;
-        background: #28a745;
-        color: white;
-        padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        font-weight: bold;
-        display: none;
-        animation: fadeInOut 3s ease-in-out;
-    }
+    
 
     .login-required-notification {
         position: fixed;
@@ -144,7 +130,7 @@
 </div>
 
 <!-- HIỂN THỊ THÔNG BÁO TỪ SERVER (KHÔNG CẦN SCRIPT) -->
-@if (TempData["SuccessMessage"] != null)
+@*@if (TempData["SuccessMessage"] != null)
 {
     <div id="cart-notification" class="cart-notification" style="display: block;">
         @TempData["SuccessMessage"]
@@ -159,7 +145,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-}
+}*@
 
 <!-- SỬA FORM ẨN THÀNH GET METHOD -->
 <form id="globalCartForm" method="get" action="@Url.Action("ThemVaoGioHang", "Cart")"

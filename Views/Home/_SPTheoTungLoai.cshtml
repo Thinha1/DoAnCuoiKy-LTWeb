@@ -1,4 +1,7 @@
-﻿@model  List<WebBanHoa.Models.ProductDTO>
+﻿@model List<WebBanHoa.Models.ProductDTO>
+@{
+    bool isLoggedIn = Session["UserID"] != null;
+}
 
 <link href="~/Content/css/card_product.css" rel="stylesheet" />
 <h2 class="mb-4 mt-4 text-center">@ViewBag.ParentProductType</h2>
@@ -26,7 +29,6 @@
                     <div class="product-info text-center">
                         <h5 class="product-name">@sp.ProductName</h5>
                         @{
-
                             decimal? salePrice;
                             var discount = sp.DiscountRate;
                             if (discount != null)
@@ -44,10 +46,32 @@
                                     <span class="price-sale" style="text-decoration: none">@String.Format("{0:N0}", sp.Price) VNĐ</span>
                                 </div>
                             }
-
                         }
 
-                        <a href="#" class="btn btn-order">ĐẶT HÀNG</a>
+                        <!-- THAY NÚT "ĐẶT HÀNG" THÀNH "THÊM VÀO GIỎ" -->
+                        @if (isLoggedIn)
+                        {
+                            <form method="post" action="@Url.Action("ThemVaoGioHang", "Cart")"
+                                  style="display: inline;">
+                                <input type="hidden" name="id" value="@sp.ProductID" />
+                                <input type="hidden" name="soLuong" value="1" />
+                                <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery" />
+                                <button type="submit" class="btn btn-order add-to-cart-list"
+                                        data-product-id="@sp.ProductID"
+                                        data-product-name="@sp.ProductName">
+                                    Thêm vào giỏ
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })"
+                               class="btn btn-order add-to-cart-list"
+                               data-product-id="@sp.ProductID"
+                               data-product-name="@sp.ProductName">
+                                Thêm vào giỏ
+                            </a>
+                        }
                     </div>
 
                 </div>
