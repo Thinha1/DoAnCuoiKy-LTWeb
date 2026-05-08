@@ -33,5 +33,7 @@ namespace WebBanHoa.Models
         public Nullable<int> TotalSold { get; set; }
 
         public Nullable<decimal> TotalRevenue { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Web.Mvc;
 using System.Linq;
 using WebBanHoa.Models;
@@ -24,7 +24,7 @@ namespace WebBanHoa.Controllers
                 try
                 {
                     var user = db.Users.FirstOrDefault(u => u.Email == model.Email);
-                    if (user != null && PasswordHelper.VerifyPassword(model.Password, user.Password))
+                    if (user != null && PasswordHelper.VerifyPassword(model.Password, user.Password) && user.IsEnabled == 1)
                     {
                         var role = db.Roles.FirstOrDefault(r => r.RoleID == user.RoleID);
                         var userDTO = new UserDTO
@@ -107,6 +107,16 @@ namespace WebBanHoa.Controllers
                     ViewBag.Message = "Lỗi email đã tồn tại!";
                     return View(model);
                 }
+                if (model.Password.Length < 8 || model.Password.Length > 50)
+                {
+                    ViewBag.Message = "Mật khẩu phải từ 8 đến 50 ký tự!";
+                    return View(model);
+                }
+                if (!model.Password.Any(ch => !char.IsLetterOrDigit(ch)))
+                {
+                    ViewBag.Message = "Mật khẩu phải có ít nhất một ký tự đặc biệt!";
+                    return View(model);
+                }
 
                 string userID = IDGenerator.GenerateUserID();
                 string cartID = IDGenerator.GenerateShoppingCartID();
@@ -121,7 +131,8 @@ namespace WebBanHoa.Controllers
                     Gender = model.Gender,
                     Address = model.Address,
                     CreatedAt = DateTime.Now,
-                    CreatedBy = "System"
+                    CreatedBy = "System",
+                    IsEnabled = 1
                 };
 
                 var shoppingCart = new ShoppingCart
@@ -234,8 +245,8 @@ namespace WebBanHoa.Controllers
             }
         }
 
-        // GET: /Account/Profile
-        public ActionResult Profile()
+        // GET: /Account/UpdateProfile
+        public ActionResult UpdateProfile()
         {
             var user = SessionHelper.GetUserSession();
             if (user == null)

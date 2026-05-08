@@ -1,4 +1,4 @@
-﻿namespace WebBanHoa.Models
+namespace WebBanHoa.Models
 {
     public class CartItemDTO
     {
@@ -9,5 +9,6 @@
         public int? Quantity { get; set; }
         public string Image { get; set; }
         public decimal? UnitPrice { get; set; }
+        public int MaxQuantity { get; set; }
     }
 }

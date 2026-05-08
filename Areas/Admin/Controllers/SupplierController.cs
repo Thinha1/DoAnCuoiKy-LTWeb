@@ -31,6 +31,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(Supplier s)
         {
             if (ModelState.IsValid)
@@ -63,6 +64,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(Supplier s)
         {
             if (ModelState.IsValid)
@@ -97,6 +99,24 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 s.UpdatedAt = DateTime.Now;
                 s.UpdatedBy = Session["UserID"].ToString();
                 TempData["Success"] = "Đã xoá nhà cung cấp thành công!";
+                db.SaveChanges();
+            }
+            else
+            {
+                TempData["Error"] = "Không tìm thấy nhà cung cấp!";
+            }
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Restore(string supplierId)
+        {
+            Supplier s = db.Suppliers.Find(supplierId);
+            if (s != null)
+            {
+                s.IsDeleted = 0;
+                s.UpdatedAt = DateTime.Now;
+                s.UpdatedBy = Session["UserID"].ToString();
+                TempData["Success"] = "Đã phục hồi nhà cung cấp thành công!";
                 db.SaveChanges();
             }
             else

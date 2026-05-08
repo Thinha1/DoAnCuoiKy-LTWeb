@@ -1,0 +1,218 @@
+@model WebBanHoa.Models.UserDTO
+@{
+    ViewBag.Title = "Thông tin tài khoản - FLOWER CORNER";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Thông tin cá nhân -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-pink text-white">
+                    <h4 class="mb-0">Thông tin tài khoản của tôi</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-muted mb-4">Thông tin cá nhân của bạn</h5>
+                    <form id="formUpdateProfile">
+                        <input type="hidden" id="userId" value="@Model.UserID" />
+                        
+                        <div class="form-group row mb-3 align-items-center">
+                            <label for="Name" class="col-sm-3 col-form-label text-end text-danger fw-bold">* Họ tên</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3 align-items-center">
+                            <label for="Email" class="col-sm-3 col-form-label text-end text-danger fw-bold">* E-mail</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Quay lại</a>
+                            <button type="button" class="btn btn-pink" onclick="updateProfile()">Tiếp tục</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đổi mật khẩu -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-pink text-white">
+                    <h4 class="mb-0">Đổi mật khẩu</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-muted mb-4">Mật khẩu của bạn</h5>
+                    <form id="formChangePassword">
+                        <div class="form-group row mb-3 align-items-center">
+                            <label for="OldPassword" class="col-sm-4 col-form-label text-end text-danger fw-bold">* Mật khẩu cũ</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="OldPassword" name="OldPassword" placeholder="Mật khẩu cũ" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3 align-items-center">
+                            <label for="NewPassword" class="col-sm-4 col-form-label text-end text-danger fw-bold">* Mật khẩu mới</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="NewPassword" name="NewPassword" placeholder="Mật khẩu mới" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4 align-items-center">
+                            <label for="ConfirmPassword" class="col-sm-4 col-form-label text-end text-danger fw-bold">* Xác nhận mật khẩu</label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" placeholder="Xác nhận mật khẩu" required>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Quay lại</a>
+                            <button type="button" class="btn btn-pink" onclick="changePassword()">Tiếp tục</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-pink {
+        background-color: #e91e63;
+    }
+
+    .btn-pink {
+        background-color: #e91e63;
+        color: white;
+        border: none;
+    }
+
+    .btn-pink:hover {
+        background-color: #c2185b;
+        color: white;
+    }
+    
+    .text-pink {
+        color: #e91e63;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function updateProfile() {
+        var userId = document.getElementById('userId').value;
+        var data = {
+            Name: document.getElementById('Name').value,
+            Email: document.getElementById('Email').value,
+            Phone: document.getElementById('Phone').value
+        };
+
+        if(!data.Name || !data.Email || !data.Phone) {
+            Swal.fire('Lỗi', 'Vui lòng nhập đầy đủ thông tin cá nhân', 'error');
+            return;
+        }
+
+        fetch('/api/account/update-profile/' + userId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json().then(res => ({status: response.status, body: res})))
+        .then(res => {
+            if (res.status === 200 && res.body.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: res.body.message
+                });
+            } else {
+                var errorMsg = res.body.message || 'Cập nhật thất bại';
+                if(res.body.ModelState) {
+                     errorMsg = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: typeof errorMsg === 'string' ? errorMsg : 'Đã xảy ra lỗi'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Đã xảy ra lỗi khi cập nhật thông tin'
+            });
+        });
+    }
+
+    function changePassword() {
+        var userId = document.getElementById('userId').value;
+        var data = {
+            OldPassword: document.getElementById('OldPassword').value,
+            NewPassword: document.getElementById('NewPassword').value,
+            ConfirmPassword: document.getElementById('ConfirmPassword').value
+        };
+
+        if(!data.OldPassword || !data.NewPassword || !data.ConfirmPassword) {
+            Swal.fire('Lỗi', 'Vui lòng nhập đầy đủ thông tin mật khẩu', 'error');
+            return;
+        }
+
+        if(data.NewPassword !== data.ConfirmPassword) {
+            Swal.fire('Lỗi', 'Mật khẩu xác nhận không khớp', 'error');
+            return;
+        }
+        
+        if(data.NewPassword.length < 8 || data.NewPassword.length > 50) {
+            Swal.fire('Lỗi', 'Mật khẩu mới phải từ 8 đến 50 ký tự', 'error');
+            return;
+        }
+
+        fetch('/api/account/change-password/' + userId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json().then(res => ({status: response.status, body: res})))
+        .then(res => {
+            if (res.status === 200 && res.body.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: res.body.message
+                }).then(() => {
+                    document.getElementById('formChangePassword').reset();
+                });
+            } else {
+                var errorMsg = res.body.Message || res.body.message || res.body || 'Đổi mật khẩu thất bại';
+                if(res.body.ModelState) {
+                     errorMsg = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: typeof errorMsg === 'string' ? errorMsg : 'Đổi mật khẩu thất bại'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Đã xảy ra lỗi khi đổi mật khẩu'
+            });
+        });
+    }
+</script>

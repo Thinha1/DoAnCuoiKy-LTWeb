@@ -7,7 +7,7 @@
 
 <!-- BỔ SUNG CSS THÔNG BÁO (GIỮ NGUYÊN) -->
 <style>
-    
+
 
     .login-required-notification {
         position: fixed;
@@ -53,7 +53,7 @@
     }
 </style>
 
-<h2 class="mb-4 mt-4 text-center">ĐANG GIẢM GIÁ</h2>
+<h2 class="mb-4 mt-4 text-center">MỚI NHẤT</h2>
 <div class="row" style="margin-top: 10px">
 
     @foreach (var sp in Model)
@@ -121,21 +121,21 @@
 
 <!-- HIỂN THỊ THÔNG BÁO TỪ SERVER (KHÔNG CẦN SCRIPT) -->
 @*@if (TempData["SuccessMessage"] != null)
-{
-    <div id="cart-notification" class="cart-notification" style="display: block;">
-        @TempData["SuccessMessage"]
-    </div>
-}
+    {
+        <div id="cart-notification" class="cart-notification" style="display: block;">
+            @TempData["SuccessMessage"]
+        </div>
+    }
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-        <strong>Lỗi!</strong> @TempData["ErrorMessage"]
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}*@
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <strong>Lỗi!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }*@
 
 <!-- SỬA FORM ẨN THÀNH GET METHOD -->
 <form id="globalCartForm" method="get" action="@Url.Action("ThemVaoGioHang", "Cart")"

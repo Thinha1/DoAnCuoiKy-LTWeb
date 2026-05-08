@@ -11,54 +11,48 @@
     @foreach (var sp in Model)
     {
         <div class="col-md-3 col-sm-6 col-xs-6 mb-4">
-            <a href="@Url.Action("Details", "Home", new {ProductID = sp.ProductID.Trim()})" style="text-decoration: none">
-                <div class="product-card">
+            <div class="product-card">
 
+                <a href="@Url.Action("Details", "Home", new {ProductID = sp.ProductID.Trim()})" class="d-block text-decoration-none">
                     <div class="product-image-container">
                         <img src="@Url.Content("~/Content/Images/" + sp.Image)" alt="@sp.ProductName" class="img-fluid" />
-                        @{
-                            if (sp.DiscountRate != null)
-                            {
-                                <div class="sale-badge">
-                                    GIẢM @sp.DiscountRate%
-                                </div>
-                            }
+                        @if (sp.DiscountRate != null && sp.DiscountRate > 0)
+                        {
+                            <div class="sale-badge">GIẢM @sp.DiscountRate%</div>
+                        }
+                    </div>
+                </a>
+
+                <div class="product-info text-center">
+                    <a href="@Url.Action("Details", "Home", new {ProductID = sp.ProductID.Trim()})" class="text-decoration-none">
+                        <h5 class="product-name">@sp.ProductName</h5>
+                    </a>
+
+                    <div class="product-price">
+                        @if (sp.DiscountRate != null && sp.DiscountRate > 0)
+                        {
+                            decimal originalPrice = sp.Price ?? 0;
+                            decimal discount = (decimal)(sp.DiscountRate ?? 0);
+                            decimal salePrice = originalPrice - (originalPrice * discount / 100);
+
+                            <span class="price-sale">@String.Format("{0:N0}", salePrice) VNĐ</span>
+                            <span class="price-original">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                        }
+                        else
+                        {
+                            <span class="price-sale">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                            <span class="price-original" style="visibility: hidden;">-</span>
                         }
                     </div>
 
-                    <div class="product-info text-center">
-                        <h5 class="product-name">@sp.ProductName</h5>
-                        @{
-                            decimal? salePrice;
-                            var discount = sp.DiscountRate;
-                            if (discount != null)
-                            {
-                                salePrice = sp.Price - (sp.Price * (decimal)discount / 100);
-                                <div class="product-price">
-                                    <span class="price-sale">@String.Format("{0:N0}", salePrice) VNĐ</span>
-                                    <span class="price-original">@String.Format("{0:N0}", sp.Price) VNĐ</span>
-                                </div>
-                            }
-                            else
-                            {
-                                salePrice = sp.Price;
-                                <div class="product-price">
-                                    <span class="price-sale" style="text-decoration: none">@String.Format("{0:N0}", sp.Price) VNĐ</span>
-                                </div>
-                            }
-                        }
-
-                        <!-- THÊM VÀO GIỎ HÀNG GIỐNG _DiscountingProducts -->
+                    <div class="mt-auto w-100">
                         @if (isLoggedIn)
                         {
-                            <form method="post" action="@Url.Action("ThemVaoGioHang", "Cart")"
-                                  style="display: inline;">
+                            <form method="post" action="@Url.Action("ThemVaoGioHang", "Cart")">
                                 <input type="hidden" name="id" value="@sp.ProductID" />
                                 <input type="hidden" name="soLuong" value="1" />
                                 <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery" />
-                                <button type="submit" class="btn btn-order add-to-cart-list"
-                                        data-product-id="@sp.ProductID"
-                                        data-product-name="@sp.ProductName">
+                                <button type="submit" class="btn btn-order">
                                     Thêm vào giỏ
                                 </button>
                             </form>
@@ -66,16 +60,13 @@
                         else
                         {
                             <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })"
-                               class="btn btn-order add-to-cart-list"
-                               data-product-id="@sp.ProductID"
-                               data-product-name="@sp.ProductName">
+                               class="btn btn-order d-block text-decoration-none">
                                 Thêm vào giỏ
                             </a>
                         }
                     </div>
-
                 </div>
-            </a>
+            </div>
         </div>
     }
 </div>

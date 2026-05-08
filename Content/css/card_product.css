@@ -74,31 +74,29 @@ body {
 }
 
 /* Tên sản phẩm - KHÔNG border-bottom */
-.product-name {
-	font-size: 1.05rem;
-	font-weight: 700;
-	color: #333;
-	line-height: 1.4;
-	height: 2.8em;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-	margin: 0 !important; /* Xóa margin */
-	padding: 0 !important; /* Xóa padding */
-	border: none !important; /* Chắc chắn không border */
-}
-
-/* Phần giá - XÓA mọi đường kẻ */
 .product-price {
-	margin: 0 !important;
-	padding: 0 !important;
-	min-height: 40px;
+	min-height: 50px; /* Đủ cho 2 dòng */
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
-	border: none !important;
+	justify-content: flex-start; /* Luôn bắt đầu từ trên cùng */
+	gap: 2px;
+	margin-bottom: 10px !important;
+}
+
+/* Đảm bảo tên sản phẩm không quá dài làm đẩy khung */
+.product-name {
+	/* 1. Thiết lập font chữ */
+	font-size: 16px;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 5px !important;
+	/* 2. Bộ code cắt 1 dòng chuẩn nhất (Không cần tính chiều cao) */
+	white-space: nowrap; /* Bắt buộc chữ nằm trên 1 dòng */
+	overflow: hidden; /* Ẩn phần thừa */
+	text-overflow: ellipsis; /* Thêm dấu ... vào cuối nếu dài quá */
+
+	display: block; /* Đảm bảo chiếm hết chiều ngang */
+	width: 100%;
 }
 
 .price-sale {
@@ -121,14 +119,13 @@ body {
 	color: white;
 	font-weight: 700;
 	border-radius: 8px;
-	padding: 12px 20px;
+	padding: 10px 10px; /* Giảm padding một chút cho cân đối */
 	text-transform: uppercase;
 	font-size: 0.9rem;
 	letter-spacing: 0.5px;
 	transition: all 0.3s ease;
 	border: none;
 	width: 100%;
-	margin-top: 5px; /* Chỉ margin nhỏ */
 	box-shadow: 0 4px 10px rgba(233, 30, 99, 0.2);
 }
 
@@ -136,6 +133,7 @@ body {
 		background: linear-gradient(to right, #c2185b, #e91e63);
 		transform: translateY(-2px);
 		box-shadow: 0 6px 15px rgba(233, 30, 99, 0.3);
+		color: white; /* Đảm bảo chữ vẫn trắng khi hover */
 	}
 
 /* Responsive */

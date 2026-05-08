@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 namespace WebBanHoa.Models
@@ -10,8 +10,8 @@ namespace WebBanHoa.Models
         public static string GenerateUserID()
         {
             // THỬ CÁC TÊN ENTITY KHÁC NHAU
-            var lastUser = db.Users.OrderByDescending(u => u.UserID).FirstOrDefault();
-            // HOẶC: var lastUser = db.User.OrderByDescending(u => u.UserID).FirstOrDefault();
+            var lastUser = db.Users.Where(u => u.UserID.StartsWith("US")).OrderByDescending(u => u.UserID.Length).ThenByDescending(u => u.UserID).FirstOrDefault();
+            // HOẶC: var lastUser = db.User.Where(u => u.UserID.StartsWith("US")).OrderByDescending(u => u.UserID.Length).ThenByDescending(u => u.UserID).FirstOrDefault();
 
             if (lastUser == null) return "US001";
 
@@ -32,8 +32,8 @@ namespace WebBanHoa.Models
         public static string GenerateShoppingCartID()
         {
 
-            var lastCart = db.ShoppingCarts.OrderByDescending(s => s.ShoppingCartID).FirstOrDefault();
-            // HOẶC: var lastCart = db.ShoppingCart.OrderByDescending(s => s.ShoppingCartID).FirstOrDefault();
+            var lastCart = db.ShoppingCarts.Where(s => s.ShoppingCartID.StartsWith("GH")).OrderByDescending(s => s.ShoppingCartID.Length).ThenByDescending(s => s.ShoppingCartID).FirstOrDefault();
+            // HOẶC: var lastCart = db.ShoppingCart.Where(s => s.ShoppingCartID.StartsWith("GH")).OrderByDescending(s => s.ShoppingCartID.Length).ThenByDescending(s => s.ShoppingCartID).FirstOrDefault();
 
             if (lastCart == null) return "GH001";
 
@@ -53,7 +53,7 @@ namespace WebBanHoa.Models
 
         public static string GenerateProductID()
         {
-            var lastProduct = db.Products.OrderByDescending(p => p.ProductID).FirstOrDefault();
+            var lastProduct = db.Products.Where(p => p.ProductID.StartsWith("SP")).OrderByDescending(p => p.ProductID.Length).ThenByDescending(p => p.ProductID).FirstOrDefault();
 
             if (lastProduct == null) return "SP001";
 
@@ -72,7 +72,7 @@ namespace WebBanHoa.Models
 
         public static string GenerateOrderID()
         {
-            var lastOrder = db.Orders.OrderByDescending(o => o.OrderID).FirstOrDefault();
+            var lastOrder = db.Orders.Where(o => o.OrderID.StartsWith("OD")).OrderByDescending(o => o.OrderID.Length).ThenByDescending(o => o.OrderID).FirstOrDefault();
 
             if (lastOrder == null) return "OD001";
 
@@ -91,7 +91,7 @@ namespace WebBanHoa.Models
 
         public static string GenerateDiscountID()
         {
-            var lastDiscount = db.Discounts.OrderByDescending(o => o.DiscountID).FirstOrDefault();
+            var lastDiscount = db.Discounts.Where(o => o.DiscountID.StartsWith("GG")).OrderByDescending(o => o.DiscountID.Length).ThenByDescending(o => o.DiscountID).FirstOrDefault();
 
             if (lastDiscount == null) return "GG001";
 
@@ -110,7 +110,7 @@ namespace WebBanHoa.Models
 
         public static string GenerateSupplierID()
         {
-            var lastSupplier = db.Suppliers.OrderByDescending(s => s.SupplierID).FirstOrDefault();
+            var lastSupplier = db.Suppliers.Where(s => s.SupplierID.StartsWith("NCC")).OrderByDescending(s => s.SupplierID.Length).ThenByDescending(s => s.SupplierID).FirstOrDefault();
 
             if (lastSupplier == null) return "NCC001";
 
@@ -129,7 +129,7 @@ namespace WebBanHoa.Models
 
         public static string GenerateGoodsReceiptNoteID()
         {
-            var lastNote = db.GoodsReceiptNotes.OrderByDescending(g => g.GoodsReceiptNoteID).FirstOrDefault();
+            var lastNote = db.GoodsReceiptNotes.Where(g => g.GoodsReceiptNoteID.StartsWith("PH")).OrderByDescending(g => g.GoodsReceiptNoteID.Length).ThenByDescending(g => g.GoodsReceiptNoteID).FirstOrDefault();
 
             if (lastNote == null) return "PH001";
 

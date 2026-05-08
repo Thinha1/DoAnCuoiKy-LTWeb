@@ -159,6 +159,7 @@
             <select name="trangThai" class="form-select border-start-0 ps-0" style="margin-left: 10px">
                 <option value="">-- Trạng thái --</option>
                 <option value="Chờ xử lý" @(ViewBag.CurrentStatus == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+                <option value="Đã thanh toán" @(ViewBag.CurrentStatus == "Đã thanh toán" ? "selected" : "")>Đã thanh toán</option>
                 <option value="Đang giao" @(ViewBag.CurrentStatus == "Đang giao" ? "selected" : "")>Đang giao</option>
                 <option value="Đã giao" @(ViewBag.CurrentStatus == "Đã giao" ? "selected" : "")>Đã giao</option>
                 <option value="Đã huỷ" @(ViewBag.CurrentStatus == "Đã huỷ" ? "selected" : "")>Đã huỷ</option>
@@ -293,7 +294,7 @@
                                     </a>
                                     <a href="@Url.Action("CancelOrder", "Order", new { orderID = od.OrderID, area = "Admin" })"
                                        class="btn btn-sm btn-light text-danger delete-btn" title="Hủy đơn">
-                                        <i class="fas fa-trash-alt"></i>
+                                        <i class="fa-solid fa-ban"></i>
                                     </a>
                                 </div>
                             </td>

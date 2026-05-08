@@ -39,6 +39,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(DiscountDTO discount)
         {
             
@@ -86,6 +87,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(DiscountDTO dto)
         {
             if (ModelState.IsValid)
