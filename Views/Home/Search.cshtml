@@ -1,4 +1,4 @@
-﻿@model List<WebBanHoa.Models.ProductDTO>
+@model List<WebBanHoa.Models.ProductDTO>
 @{
     ViewBag.Title = "Tìm kiếm sản phẩm";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -102,10 +102,36 @@
             box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
         }
 </style>
-<h2 class="text-center mb-5 fw-bold page-title">@ViewBag.ThemeName </h2>
+<h2 class="text-center mb-4 fw-bold page-title">Tìm kiếm</h2>
 
+<div class="row mb-5">
+    <div class="col-12">
+        <form action="@Url.Action("Search", "Home")" method="get">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tiêu chí tìm kiếm</label>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="TuKhoa" class="form-control" placeholder="Từ khóa" value="@ViewBag.Keyword">
+                    </div>
+                    <div class="col-md-6">
+                        @Html.DropDownList("danhMucId", (IEnumerable<SelectListItem>)ViewBag.DanhMucList, new { @class = "form-select" })
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-custom-pink px-4">Tìm kiếm</button>
+        </form>
+    </div>
+</div>
 
-<div class="row g-4">
+@if (Model.Count == 0)
+{
+    <div class="alert alert-warning text-center mt-4">
+        Không có sản phẩm phù hợp với tiêu chí tìm kiếm.
+    </div>
+}
+else
+{
+    <div class="row g-4">
 
     @foreach (var sp in Model)
     {
@@ -153,23 +179,23 @@
                 }
             }
 
-            <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = prevPage})">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, danhMucId = ViewBag.DanhMucId, page = prevPage})">Previous</a></li>
             @for (int i = 0; i < ViewBag.NoOfPages; i++)
             {
                 int pageNumber = i + 1;
                 if (pageNumber == ViewBag.Page)
                 {
-                    <li class="page-item"><a class="page-link active" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = pageNumber})">@(i + 1) </a></li>
+                    <li class="page-item"><a class="page-link active" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, danhMucId = ViewBag.DanhMucId, page = pageNumber})">@(i + 1) </a></li>
                 }
                 else
                 {
-                    <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = pageNumber})">@(i + 1) </a></li>
+                    <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, danhMucId = ViewBag.DanhMucId, page = pageNumber})">@(i + 1) </a></li>
                 }
 
             }
-            <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, page = nextPage})">Next</a></li>
+            <li class="page-item"><a class="page-link" href="@Url.Action("Search", "Home", new { TuKhoa = ViewBag.Keyword, danhMucId = ViewBag.DanhMucId, page = nextPage})">Next</a></li>
         </ul>
     </nav>
 </div>
-
+}
 

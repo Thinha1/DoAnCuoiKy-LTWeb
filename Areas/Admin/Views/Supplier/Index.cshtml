@@ -133,78 +133,59 @@
                     int i = 1;
                     foreach (var item in Model)
                     {
-                        <tr class="@(item.IsDeleted == 1 ? "row-deleted" : "")">
+                        // Giả sử 1 là đã xóa/khóa, 0 là đang hoạt động
+                        bool isLocked = item.IsDeleted == 1;
+
+                        <tr class="@(isLocked ? "row-deleted" : "")">
                             <td class="text-center text-muted">@(i++)</td>
 
-                            @* Cột 1: Tên + Mã *@
+                            @* Cột 1: Thông tin *@
                             <td>
                                 <div class="fw-bold text-dark fs-6">@item.Name</div>
                                 <span class="supplier-id">@item.SupplierID</span>
-                                @if (item.CreatedAt.HasValue)
+                                @if (isLocked)
                                 {
-                                    <div class="text-muted mt-1" style="font-size: 0.7rem">
-                                        <i class="far fa-calendar-alt me-1"></i>@item.CreatedAt.Value.ToString("dd/MM/yyyy")
-                                    </div>
+                                    <span class="badge bg-danger ms-1" style="font-size: 0.6rem">Đã khóa</span>
                                 }
                             </td>
 
-                            @* Cột 2: Liên hệ (SĐT + Email) *@
+                            @* Cột 2: Liên hệ *@
                             <td>
-                                @if (!string.IsNullOrEmpty(item.Phone))
-                                {
-                                    <div class="mb-1 text-nowrap">
-                                        <i class="fas fa-phone-alt text-success me-2 small" style="width:15px"></i>
-                                        <span class="fw-bold text-secondary" style="font-family:monospace">@item.Phone</span>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="mb-1 text-muted small"><i class="fas fa-phone-alt me-2" style="width:15px"></i>---</div>
-                                }
-
-                                @if (!string.IsNullOrEmpty(item.Email))
-                                {
-                                    <div class="text-nowrap" title="@item.Email">
-                                        <i class="fas fa-envelope text-warning me-2 small" style="width:15px"></i>
-                                        <span class="small text-muted">
-                                            @* Cắt ngắn email nếu quá dài *@
-                                            @(item.Email.Length > 20 ? item.Email.Substring(0, 18) + "..." : item.Email)
-                                        </span>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="text-muted small"><i class="fas fa-envelope me-2" style="width:15px"></i>---</div>
-                                }
+                                @* ... Giữ nguyên phần hiển thị Phone/Email ... *@
+                                <div class="small text-secondary">@item.Phone</div>
+                                <div class="small text-muted">@item.Email</div>
                             </td>
 
                             @* Cột 3: Địa chỉ *@
                             <td>
-                                @if (!string.IsNullOrEmpty(item.Address))
-                                {
-                                    <span class="text-secondary small">
-                                        <i class="fas fa-map-marker-alt text-danger me-1 opacity-50"></i>
-                                        @item.Address
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted small fst-italic">Chưa cập nhật</span>
-                                }
+                                <span class="text-secondary small">@item.Address</span>
                             </td>
 
-                            @* Cột 4: Thao tác *@
+                            @* Cột 4: Thao tác (PHẦN CHỈNH SỬA CHÍNH) *@
                             <td class="text-center">
                                 <div class="btn-group shadow-sm" role="group">
+                                    @* Luôn cho phép sửa *@
                                     <a href="@Url.Action("Edit", "Supplier", new { supplierId = item.SupplierID })"
                                        class="btn btn-sm btn-light text-primary" title="Sửa thông tin">
                                         <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <a href="@Url.Action("Delete", "Supplier", new { supplierId = item.SupplierID})"
-                                       class="btn btn-sm btn-light text-danger delete-btn" title="Xóa nhà cung cấp">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
+                                    @if (isLocked)
+                                    {
+                                        @* Nút MỞ LẠI - Hiện khi IsDeleted == 1 *@
+                                        <a href="@Url.Action("Restore", "Supplier", new { supplierId = item.SupplierID })"
+                                           class="btn btn-sm btn-light text-success restore-btn" title="Mở lại nhà cung cấp">
+                                            <i class="fas fa-redo-alt"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @* Nút XÓA/KHÓA - Hiện khi đang hoạt động *@
+                                        <a href="@Url.Action("Delete", "Supplier", new { supplierId = item.SupplierID })"
+                                           class="btn btn-sm btn-light text-danger delete-btn" title="Xóa nhà cung cấp">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    }
                                 </div>
                             </td>
                         </tr>
@@ -256,6 +237,26 @@
                         window.location.href = deleteUrl;
                     }
                 });
+            });
+        });
+        $('.restore-btn').on('click', function (e) {
+            e.preventDefault();
+            var self = $(this);
+            var url = self.attr('href');
+
+            Swal.fire({
+                title: 'Xác nhận mở lại?',
+                text: "Nhà cung cấp này sẽ hoạt động trở lại bình thường!",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Đồng ý mở',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
             });
         });
     </script>

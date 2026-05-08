@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -96,6 +96,7 @@ namespace WebBanHoa.Controllers
 
         // POST: Xử lý thanh toán
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ThanhToan(string Address, string PaymentMethod)
         {
             try
@@ -149,7 +150,7 @@ namespace WebBanHoa.Controllers
                     }
                 }
                 // 4. Tạo mã đơn hàng mới
-                string orderId = GenerateOrderID();
+                string orderId = IDGenerator.GenerateOrderID();
 
                 // 5. Tạo đơn hàng mới
                 var order = new Order
@@ -192,14 +193,7 @@ namespace WebBanHoa.Controllers
                     db.OrderDetails.Add(orderDetail);
 
                     // Cập nhật số lượng tồn kho
-                    if (product.Quantity.HasValue)
-                    {
-                        product.Quantity = product.Quantity.Value - itemQuantity;
-                    }
-                    else
-                    {
-                        product.Quantity = -itemQuantity;
-                    }
+                    product.Quantity = (product.Quantity ?? 0) - itemQuantity;
 
                     totalOrderAmount += itemQuantity * discountedPrice;
                 }
@@ -410,9 +404,7 @@ namespace WebBanHoa.Controllers
 
                 var orderFromDb = db.Orders
                     .Include("OrderDetails.Product")
-                    .Where(o => o.UserID == userId)
-                    .ToList()
-                    .FirstOrDefault(o => o.OrderID.Replace(" ", "") == id);
+                    .FirstOrDefault(o => o.UserID == userId && o.OrderID.Trim() == id);
 
                 if (orderFromDb != null)
                 {
@@ -542,20 +534,7 @@ namespace WebBanHoa.Controllers
                 : 0;
         }
 
-        private string GenerateOrderID()
-        {
-            var lastOrder = db.Orders
-                .OrderByDescending(o => o.OrderID)
-                .FirstOrDefault();
 
-            if (lastOrder == null)
-            {
-                return "OD001";
-            }
-
-            var number = int.Parse(lastOrder.OrderID.Substring(2)) + 1;
-            return $"OD{number:D3}";
-        }
 
 
     }

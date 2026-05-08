@@ -89,6 +89,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(OrderDTO dto)
         {
             Order order = db.Orders.FirstOrDefault(o => o.OrderID == dto.OrderID);

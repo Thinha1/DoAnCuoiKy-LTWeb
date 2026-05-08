@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebBanHoa.Models
 {
@@ -12,6 +12,7 @@ namespace WebBanHoa.Models
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
+        [StringLength(50, MinimumLength = 8, ErrorMessage = "Mật khẩu phải từ 8 đến 50 ký tự")]
         public string Password { get; set; }
 
         [Compare("Password", ErrorMessage = "Mật khẩu xác nhận không khớp")]

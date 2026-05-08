@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace WebBanHoa.Controllers
             return View();
         }
 
-        public ActionResult Search(string TuKhoa, int page = 1)
+        public ActionResult Search(string TuKhoa, string danhMucId, int page = 1)
         {
             int numberOfRecordPerPage = 8;
             int noOfRecordToSkip = (page - 1) * numberOfRecordPerPage;
@@ -36,6 +36,46 @@ namespace WebBanHoa.Controllers
                 TuKhoa = TuKhoa.Trim();
                 query = query.Where(pd => pd.ProductName.Contains(TuKhoa));
             }
+
+            // Create Dropdownlist
+            List<SelectListItem> dropdownItems = new List<SelectListItem>();
+            
+            // Add default option
+            dropdownItems.Add(new SelectListItem { Value = "", Text = "Tất cả danh mục", Selected = string.IsNullOrEmpty(danhMucId) });
+
+            var categories = db.Categories.Where(c => c.ParentCategoryID == null).ToList();
+            var selectGroupCategory = new SelectListGroup { Name = "Danh mục" };
+            foreach (var c in categories)
+            {
+                dropdownItems.Add(new SelectListItem { Value = "CAT_" + c.CategoryID, Text = c.CategoryName, Group = selectGroupCategory, Selected = danhMucId == "CAT_" + c.CategoryID });
+            }
+
+            var themes = db.Themes.Where(t => t.ParentThemeID == null).ToList();
+            var selectGroupTheme = new SelectListGroup { Name = "Chủ đề" };
+            foreach (var t in themes)
+            {
+                dropdownItems.Add(new SelectListItem { Value = "THEME_" + t.ThemeID, Text = t.ThemeName, Group = selectGroupTheme, Selected = danhMucId == "THEME_" + t.ThemeID });
+            }
+
+            ViewBag.DanhMucList = dropdownItems;
+
+            // Filter logic
+            if (!string.IsNullOrEmpty(danhMucId))
+            {
+                if (danhMucId.StartsWith("CAT_"))
+                {
+                    string cId = danhMucId.Substring(4);
+                    var childTypeIds = db.Categories.Where(t => t.ParentCategoryID == cId).Select(t => t.CategoryID).ToList();
+                    query = query.Where(p => p.CategoryID == cId || childTypeIds.Contains(p.CategoryID));
+                }
+                else if (danhMucId.StartsWith("THEME_"))
+                {
+                    string tId = danhMucId.Substring(6);
+                    var childThemeIds = db.Themes.Where(t => t.ParentThemeID == tId).Select(t => t.ThemeID).ToList();
+                    query = query.Where(p => p.ThemeID == tId || childThemeIds.Contains(p.ThemeID));
+                }
+            }
+
             int totalRecords = query.Count();
             int noOfPages = (int)Math.Ceiling((double)totalRecords / numberOfRecordPerPage);
             //Lấy toàn bộ sản phẩm
@@ -43,7 +83,7 @@ namespace WebBanHoa.Controllers
                 .OrderBy(p => p.ProductName)
                 .Skip(noOfRecordToSkip)
                 .Take(numberOfRecordPerPage)
-                .Where(pd => pd.IsAvailable == 1).Select(p => new ProductDTO
+                .Select(p => new ProductDTO
             {
                 ProductID = p.ProductID,
                 ProductName = p.ProductName,
@@ -55,11 +95,12 @@ namespace WebBanHoa.Controllers
             }).ToList();
            
             ViewBag.Keyword = TuKhoa;
+            ViewBag.DanhMucId = danhMucId;
             ViewBag.Page = page;
             ViewBag.NoOfPages = noOfPages;
             if (lst.Count == 0 && page > 1 && totalRecords > 0)
             {
-                return RedirectToAction("Search", new { TuKhoa = TuKhoa, page = 1 });
+                return RedirectToAction("Search", new { TuKhoa = TuKhoa, danhMucId = danhMucId, page = 1 });
             }
             return View(lst);
         }
@@ -68,6 +109,25 @@ namespace WebBanHoa.Controllers
         {
             List<Category> lst = db.Categories.Where(pt => pt.ParentCategoryID == null).ToList();
             ViewBag.Themes = db.Themes.Where(t => t.ParentThemeID == null).ToList();
+            return PartialView(lst);
+        }
+
+        public ActionResult _NewestProducts()
+        {
+            //lấy ra những sản phẩm nhiều người đặt nhất
+            List<ProductDTO> lst = db.Products.Where(sp => sp.IsAvailable == 1).Select(p => new ProductDTO
+            {
+                ProductID = p.ProductID,
+                ProductName = p.ProductName,
+                Price = p.Price,
+                Image = p.Image,
+                //Lấy giảm giá sâu nhất còn hạn sử dụng
+                DiscountRate = p.Discounts.Where(d => d.EndDate > DateTime.Now && d.StartDate <= DateTime.Now).OrderByDescending(d => d.DiscountRate).FirstOrDefault().DiscountRate,
+                Description = p.Description,
+                TotalSold = p.OrderDetails.Sum(od => od.Quantity).Value,
+                CreatedAt = p.CreatedAt
+            }).OrderByDescending(p => p.CreatedAt).Take(8).ToList();
+
             return PartialView(lst);
         }
 

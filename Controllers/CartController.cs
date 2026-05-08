@@ -1,4 +1,4 @@
-﻿using WebBanHoa.Models;
+using WebBanHoa.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,19 +41,45 @@ namespace WebBanHoa.Controllers
                 };
 
                 decimal totalAmount = 0;
+                bool isCartUpdated = false;
 
-                foreach (var item in cartItems)
+                foreach (var item in cartItems.ToList())
                 {
                     var product = db.Products.Find(item.ProductID);
                     if (product != null)
                     {
+                        if (product.IsAvailable == 0)
+                        {
+                            db.ShoppingCartItems.Remove(item);
+                            TempData["WarningMessage"] = (TempData["WarningMessage"]?.ToString() ?? "") + $"Sản phẩm '{product.ProductName}' đã ngừng kinh doanh và được tự động xóa khỏi giỏ.<br/>";
+                            isCartUpdated = true;
+                            continue;
+                        }
+
                         var discountRate = GetCurrentDiscountRate(product.ProductID);
                         decimal price = (decimal)product.Price;
                         decimal discountedPrice = price - (price * discountRate / 100);
 
-                        
                         int itemQuantity = item.Quantity ?? 0;
                         int productQuantity = product.Quantity ?? 0;
+
+                        if (itemQuantity > productQuantity)
+                        {
+                            if (productQuantity <= 0)
+                            {
+                                db.ShoppingCartItems.Remove(item);
+                                TempData["WarningMessage"] = (TempData["WarningMessage"]?.ToString() ?? "") + $"Sản phẩm '{product.ProductName}' đã hết hàng và được tự động xóa khỏi giỏ.<br/>";
+                                isCartUpdated = true;
+                                continue;
+                            }
+                            else
+                            {
+                                item.Quantity = productQuantity;
+                                itemQuantity = productQuantity;
+                                TempData["WarningMessage"] = (TempData["WarningMessage"]?.ToString() ?? "") + $"Số lượng '{product.ProductName}' được giảm xuống {productQuantity} do tồn kho thay đổi.<br/>";
+                                isCartUpdated = true;
+                            }
+                        }
 
                         cartDTO.Items.Add(new CartItemDTO
                         {
@@ -62,11 +88,17 @@ namespace WebBanHoa.Controllers
                             Price = price,
                             DiscountRate = discountRate,
                             Quantity = item.Quantity, 
-                            Image = product.Image
+                            Image = product.Image,
+                            MaxQuantity = productQuantity
                         });
 
                         totalAmount += discountedPrice * itemQuantity;
                     }
+                }
+
+                if (isCartUpdated)
+                {
+                    db.SaveChanges();
                 }
 
                 ViewBag.TotalAmount = totalAmount;
@@ -98,6 +130,12 @@ namespace WebBanHoa.Controllers
                     return RedirectToAction("Details", "Home", new { id = id });
                 }
 
+                if (product.IsAvailable == 0)
+                {
+                    TempData["ErrorMessage"] = "Sản phẩm đã ngừng kinh doanh";
+                    return RedirectToAction("Details", "Home", new { id = id });
+                }
+
                 // Kiểm tra số lượng tồn - SỬA: xử lý int?
                 int productQuantity = product.Quantity ?? 0;
                 if (productQuantity < soLuong)
@@ -120,7 +158,7 @@ namespace WebBanHoa.Controllers
                 // 2. Tạo giỏ hàng mới chỉ với sản phẩm này
                 var shoppingCart = new ShoppingCart
                 {
-                    ShoppingCartID = GenerateCartID(),
+                    ShoppingCartID = IDGenerator.GenerateShoppingCartID(),
                     UserID = userId
                 };
                 db.ShoppingCarts.Add(shoppingCart);
@@ -163,17 +201,36 @@ namespace WebBanHoa.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Kiểm tra số lượng tồn
-            if (sanPham.Quantity < soLuong)
+            if (sanPham.IsAvailable == 0)
             {
-                TempData["ErrorMessage"] = $"Sản phẩm '{sanPham.ProductName}' chỉ còn {sanPham.Quantity} sản phẩm";
-                return RedirectToAction("Details", "Home", new { productID = id });
+                TempData["ErrorMessage"] = "Sản phẩm đã ngừng kinh doanh";
+                return RedirectToAction("Details", "Home", new { id = id });
             }
 
-            var gioHang = db.ShoppingCarts.FirstOrDefault(sc => sc.UserID == user);
+            var gioHang = GetOrCreateShoppingCart(user);
 
             var itemInCart = db.ShoppingCartItems.FirstOrDefault(
                         i => i.ShoppingCartID == gioHang.ShoppingCartID && i.ProductID == id);
+
+            int currentQuantity = itemInCart != null ? (itemInCart.Quantity ?? 0) : 0;
+            int totalQuantityRequested = currentQuantity + soLuong;
+            int productQuantity = sanPham.Quantity ?? 0;
+
+            // Kiểm tra tổng số lượng so với tồn kho
+            if (productQuantity < totalQuantityRequested)
+            {
+                int remaining = productQuantity - currentQuantity;
+                if (remaining > 0)
+                {
+                    TempData["ErrorMessage"] = $"Bạn đã có {currentQuantity} sản phẩm trong giỏ. Chỉ có thể thêm tối đa {remaining} sản phẩm nữa.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"Bạn đã thêm tối đa số lượng tồn kho ({productQuantity}) của sản phẩm này vào giỏ hàng.";
+                }
+                
+                return RedirectToAction("Details", "Home", new { productID = id });
+            }
 
             if (itemInCart != null)
             {
@@ -374,7 +431,7 @@ namespace WebBanHoa.Controllers
             {
                 shoppingCart = new ShoppingCart
                 {
-                    ShoppingCartID = GenerateCartID(),
+                    ShoppingCartID = IDGenerator.GenerateShoppingCartID(),
                     UserID = userId
                 };
                 db.ShoppingCarts.Add(shoppingCart);
@@ -385,20 +442,7 @@ namespace WebBanHoa.Controllers
         }
 
         
-        private string GenerateCartID()
-        {
-            var lastCart = db.ShoppingCarts
-                .OrderByDescending(sc => sc.ShoppingCartID)
-                .FirstOrDefault();
 
-            if (lastCart == null)
-            {
-                return "CART001";
-            }
-
-            var number = int.Parse(lastCart.ShoppingCartID.Substring(4)) + 1;
-            return $"CART{number:D3}";
-        }
 
         // Lấy tỉ lệ giảm giá
         private decimal GetCurrentDiscountRate(string productId)

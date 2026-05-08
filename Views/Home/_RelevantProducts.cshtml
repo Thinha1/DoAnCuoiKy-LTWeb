@@ -5,6 +5,14 @@
 
 <link href="~/Content/css/relevantProducts.css" rel="stylesheet" />
 <style>
+    .price-text {
+        min-height: 45px; /* Chiều cao đủ cho 2 dòng giá */
+        display: flex;
+        flex-direction: column; /* Xếp giá mới lên trên, giá cũ xuống dưới cho gọn */
+        justify-content: center; /* Căn giữa theo chiều dọc */
+        align-items: center;
+        margin-bottom: 10px;
+    }
     /* FIX: NÚT THÊM VÀO GIỎ DÀI BẰNG CARD */
     .btn-custom-pink {
         width: 100% !important;
@@ -57,12 +65,22 @@
                             @if (sp.DiscountRate > 0)
                             {
                                 var finalPrice = sp.Price - (sp.Price * (decimal)sp.DiscountRate / 100);
-                                <span class="text-danger fw-bold me-2">@String.Format("{0:N0}", finalPrice) VNĐ</span>
-                                <span class="text-muted text-decoration-line-through">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+
+                                <span class="text-danger fw-bold">
+                                    @String.Format("{0:N0}", finalPrice) VNĐ
+                                </span>
+
+                                <span class="text-muted text-decoration-line-through" style="font-size: 0.9em;">
+                                    @String.Format("{0:N0}", sp.Price) VNĐ
+                                </span>
                             }
                             else
                             {
-                                <span class="text-danger fw-bold">@String.Format("{0:N0}", sp.Price) VNĐ</span>
+                                <span class="text-danger fw-bold">
+                                    @String.Format("{0:N0}", sp.Price) VNĐ
+                                </span>
+
+                                <span style="visibility: hidden; font-size: 0.9em;">-</span>
                             }
                         </div>
 

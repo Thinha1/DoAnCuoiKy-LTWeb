@@ -1,54 +1,142 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Index";
     Layout = "~/Areas/Admin/Views/Shared/Admin_Layout.cshtml";
 }
 
 <section id="dashboard" class="active-section">
-    <h2 class="mb-4">Dashboard</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Dashboard</h2>
+    </div>
+
     <div class="row">
         <div class="col-md-3">
-            <div class="card text-white bg-primary">
+            <div class="card text-white bg-primary mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-basket-shopping me-2"></i>Tổng sản phẩm
-                    </h5>
+                    <h5 class="card-title"><i class="fas fa-basket-shopping me-2"></i>Tổng sản phẩm</h5>
                     <h2>@ViewBag.NoOfProducts</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-success">
+            <div class="card text-white bg-success mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-shopping-cart me-2"></i>Tổng đơn hàng
-                    </h5>
+                    <h5 class="card-title"><i class="fas fa-shopping-cart me-2"></i>Tổng đơn hàng</h5>
                     <h2>@ViewBag.NoOfOrders</h2>
+                    @if (ViewBag.FilteredOrders != null)
+                    {<small>(@ViewBag.FilteredOrders trong khoảng chọn)</small>}
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-warning">
+            <div class="card text-white bg-warning mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-users me-2"></i>Tổng khách hàng
-                    </h5>
+                    <h5 class="card-title"><i class="fas fa-users me-2"></i>Tổng khách hàng</h5>
                     <h2>@ViewBag.NoOfCustomers</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-info">
+            <div class="card text-white bg-info mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-money-bill-wave me-2"></i>Doanh thu
-                    </h5>
+                    <h5 class="card-title"><i class="fas fa-money-bill-wave me-2"></i>Doanh thu</h5>
                     <h2>@string.Format("{0:N0} đ", ViewBag.Revenue)</h2>
+                    @if (ViewBag.FilteredRevenue != null)
+                    {<small>(@string.Format("{0:N0} đ", ViewBag.FilteredRevenue) trong khoảng chọn)</small>}
                 </div>
             </div>
         </div>
     </div>
-    <div class="row mt-5">
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold text-success">
+                        <i class="fas fa-chart-line me-2"></i>Báo cáo chi tiết theo tháng
+                    </h5>
+                </div>
+                <form method="get" class="d-flex gap-2 align-items-center bg-white p-2 rounded shadow-sm border">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light">Từ</span>
+                        <input type="date" name="fromDate" class="form-control" value="@Request.QueryString["fromDate"]">
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light">Đến</span>
+                        <input type="date" name="toDate" class="form-control" value="@Request.QueryString["toDate"]">
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fas fa-filter me-1"></i> Xem
+                    </button>
+                    @if (!string.IsNullOrEmpty(Request.QueryString["fromDate"]))
+                    {
+                        <a href="@Url.Action("Index")" class="btn btn-sm btn-outline-secondary" title="Xóa lọc">
+                            <i class="fas fa-sync-alt"></i>
+                        </a>
+                    }
+                </form>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-striped table-hover mb-0 text-center align-middle">
+                            <thead class="bg-light text-secondary sticky-top">
+                                <tr>
+                                    <th>Thời gian (Tháng/Năm)</th>
+                                    <th>Số lượng đơn hàng</th>
+                                    <th>Tổng doanh thu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    // 1. Lấy list đơn hàng thô từ Controller
+                                    var rawOrders = ViewBag.MonthlyOrders as List<WebBanHoa.Models.Order>;
+                                }
+
+                                @if (rawOrders != null && rawOrders.Any())
+                                {
+                                    // 2. Tự gom nhóm theo tháng và tính tổng ngay tại View
+                                    var monthlyStats = rawOrders
+                                        .Where(o => o.OrderDate != null) // Đảm bảo ngày không null
+                                        .GroupBy(o => new { Month = o.OrderDate.Value.Month, Year = o.OrderDate.Value.Year })
+                                        .Select(g => new
+                                        {
+                                            Month = g.Key.Month,
+                                            Year = g.Key.Year,
+                                            OrderCount = g.Count(), // Đếm số đơn
+                                            TotalRevenue = g.Sum(o => (decimal?)o.OrderDetails.Sum(od => od.Quantity * od.UnitPrice)) ?? 0
+                                        })
+                                        .OrderByDescending(x => x.Year)
+                                        .ThenByDescending(x => x.Month)
+                                        .ToList();
+
+                                    // 3. Hiển thị ra bảng
+                                    foreach (var item in monthlyStats)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold">Tháng @item.Month / @item.Year</td>
+                                            <td>
+                                                <span class="badge bg-secondary">@item.OrderCount đơn</span>
+                                            </td>
+                                            <td class="fw-bold text-danger">
+                                                @string.Format("{0:N0} đ", item.TotalRevenue)
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-muted py-3">Chưa có dữ liệu thống kê.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 mb-5">
         <div class="col-12">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
@@ -83,49 +171,23 @@
                                         <tr>
                                             <td class="text-center">
                                                 @if (rank == 1)
-                                                {
-                                                    <span class="badge rounded-pill bg-warning text-dark"><i class="fas fa-trophy"></i> 1</span>
-                                                }
+                                                {<span class="badge rounded-pill bg-warning text-dark"><i class="fas fa-trophy"></i> 1</span> }
                                                 else if (rank == 2)
-                                                {
-                                                    <span class="badge rounded-pill bg-secondary bg-opacity-50 text-dark">2</span>
-                                                }
+                                                { <span class="badge rounded-pill bg-secondary bg-opacity-50 text-dark">2</span> }
                                                 else if (rank == 3)
-                                                {
-                                                    <span class="badge rounded-pill bg-secondary bg-opacity-25 text-dark">3</span>
-                                                }
+                                                { <span class="badge rounded-pill bg-secondary bg-opacity-25 text-dark">3</span> }
                                                 else
-                                                {
-                                                    <span class="fw-bold text-muted">@rank</span>
-                                                }
+                                                { <span class="fw-bold text-muted">@rank</span>}
                                             </td>
-
                                             <td>
                                                 <div class="rounded-3 overflow-hidden border" style="width: 60px; height: 60px;">
-                                                    <img src="@Url.Content("~/Content/Images/" + item.Image)"
-                                                         alt="@item.ProductName"
-                                                         class="w-100 h-100 object-fit-cover"
-                                                         onerror="this.src='https://via.placeholder.com/60'" />
+                                                    <img src="@Url.Content("~/Content/Images/" + item.Image)" alt="@item.ProductName" class="w-100 h-100 object-fit-cover" onerror="this.src='https://via.placeholder.com/60'" />
                                                 </div>
                                             </td>
-
-                                            <td>
-                                                <div class="fw-bold text-dark">@item.ProductName</div>
-                                            </td>
-
-                                            <td class="text-end text-muted">
-                                                @string.Format("{0:N0} đ", item.Price)
-                                            </td>
-
-                                            <td class="text-center">
-                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                                                    @item.TotalSold
-                                                </span>
-                                            </td>
-
-                                            <td class="text-end fw-bold text-primary">
-                                                @string.Format("{0:N0} đ", item.TotalRevenue)
-                                            </td>
+                                            <td><div class="fw-bold text-dark">@item.ProductName</div></td>
+                                            <td class="text-end text-muted">@string.Format("{0:N0} đ", item.Price)</td>
+                                            <td class="text-center"><span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">@item.TotalSold</span></td>
+                                            <td class="text-end fw-bold text-primary">@string.Format("{0:N0} đ", item.TotalRevenue)</td>
                                         </tr>
                                         rank++;
                                     }
@@ -133,9 +195,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="6" class="text-center py-4 text-muted">
-                                            Chưa có dữ liệu bán hàng.
-                                        </td>
+                                        <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu bán hàng.</td>
                                     </tr>
                                 }
                             </tbody>
@@ -146,4 +206,3 @@
         </div>
     </div>
 </section>
-

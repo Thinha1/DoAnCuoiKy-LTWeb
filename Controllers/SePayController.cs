@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -24,7 +24,6 @@ namespace WebBanHoa.Controllers
                 // ---------------------------------------------------------
                 string authHeader = Request.Headers["Authorization"];
 
-                // SePay gửi token dạng: "Bearer API_KEY_CUA_BAN"
                 if (string.IsNullOrEmpty(authHeader) || !authHeader.Contains(SePayApiKey))
                 {
                     // Nếu sai key -> Chặn ngay lập tức
@@ -35,7 +34,7 @@ namespace WebBanHoa.Controllers
                 // 2. PHÂN TÍCH DỮ LIỆU: Lấy mã đơn hàng từ nội dung CK
                 // ---------------------------------------------------------
 
-                var match = Regex.Match(data.content, @"OD(\d+)");
+                var match = Regex.Match(data.content, @"OD(\d+)", RegexOptions.IgnoreCase);
 
                 if (!match.Success)
                 {
@@ -43,8 +42,8 @@ namespace WebBanHoa.Controllers
                     return Json(new { success = false, message = "Không tìm thấy mã đơn hàng" });
                 }
 
-                // Lấy được ID đơn hàng (ví dụ: 1055)
-                string orderId = match.Value;
+                // Lấy được ID đơn hàng (ví dụ: 1055) và chuyển về chữ hoa
+                string orderId = match.Value.ToUpper();
 
                 // ---------------------------------------------------------
                 // 3. CẬP NHẬT DATABASE

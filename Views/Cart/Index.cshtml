@@ -1,4 +1,4 @@
-﻿@model WebBanHoa.Models.CartDTO
+@model WebBanHoa.Models.CartDTO
 
 @{
     ViewBag.Title = "Giỏ Hàng";
@@ -80,6 +80,7 @@ else
                                        name="soLuong"
                                        value="@itemQuantity"
                                        min="1"
+                                       max="@item.MaxQuantity"
                                        class="form-control text-center"
                                        aria-label="Số lượng">
 
@@ -203,6 +204,16 @@ else
                 </a>
             }
         </div>
+    </div>
+}
+
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+        <strong>Lưu ý!</strong> @Html.Raw(TempData["WarningMessage"])
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 }
 

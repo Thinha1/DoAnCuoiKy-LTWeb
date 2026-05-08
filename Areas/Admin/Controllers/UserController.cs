@@ -64,6 +64,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(UserDTO user, string isEnabled)
         {
             if (ModelState.IsValid)

@@ -62,6 +62,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(GoodsReceiptNoteDTO dto)
         {
             // 1. VALIDATION THỦ CÔNG (Dùng TempData và Redirect ngay nếu lỗi)

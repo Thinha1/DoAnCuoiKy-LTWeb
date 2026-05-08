@@ -50,6 +50,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(ProductDTO dto, HttpPostedFileBase ImageUpload, string IsAvailable)
         {
             if (ModelState.IsValid)
@@ -87,13 +88,14 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 p.CreatedBy = Session["UserID"].ToString();
                 db.Products.Add(p);
                 db.SaveChanges();
-
+                TempData["Success"] = "Thêm thành công sản phẩm mới!";
                 return RedirectToAction("Index");
             }
             else
             {
                 ViewBag.Theme = db.Themes.Where(t => t.ParentThemeID != null).ToList();
                 ViewBag.Category = db.Categories.Where(ct => ct.ParentCategoryID != null).ToList();
+                TempData["Error"] = "Thêm thất bại!";
                 return View("Create", dto);
             }
         }
@@ -119,10 +121,12 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 ViewBag.Category = db.Categories.Where(ct => ct.ParentCategoryID != null).ToList();
                 return View(productDTO);
             }
+            TempData["Error"] = "Không tìm thấy sản phẩm!";
             return RedirectToAction("Index");
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(ProductDTO dto, HttpPostedFileBase ImageUpload, string isAvailable)
         {
             if (ModelState.IsValid)
@@ -155,6 +159,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 p.UpdatedAt = DateTime.Now;
                 p.UpdatedBy = Session["UserID"].ToString();
                 db.SaveChanges();
+                TempData["Success"] = "Cập nhật thành công thông tin sản phẩm!";
                 return RedirectToAction("Index");
             }
             else
@@ -203,6 +208,17 @@ namespace WebBanHoa.Areas.Admin.Controllers
                 foreach (var order in orders)
                 {
                     order.Status = "Đã huỷ";
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        // Tìm sản phẩm trong bảng Products để cộng lại số lượng tồn
+                        var product = db.Products.Find(detail.ProductID);
+                        if (product != null)
+                        {
+                            product.Quantity += detail.Quantity;
+                            product.UpdatedAt = DateTime.Now;
+                            product.UpdatedBy = Session["UserID"].ToString();
+                        }
+                    }
                 }
             }
         }
